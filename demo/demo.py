@@ -22,6 +22,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 from src.denoiser import Denoiser
+from src.asr import ASRWrapper
 # from src.pitch_shifter import PitchShifter  # Add when ready
 # from src.formant_shifter import FormantShifter  # Add when ready
 
@@ -71,33 +72,28 @@ def main():
     denoiser = Denoiser(model_name="DeepFilterNet3", post_filter=True)
     audio = denoiser.process_frame(audio)
     print("  ✓ Denoising complete")
-    
+
     # ============================================================
-    # STEP 3: PITCH SHIFT (placeholder)
-    # ============================================================
-    print("\n" + "="*50)
-    print("STEP 3: Pitch Shift")
-    print("="*50)
-    
-    # TODO: Add pitch shifting
-    # pitch_shifter = PitchShifter(semitones=-2)
-    # audio = pitch_shifter.process(audio, sr)
-    print("  [Not implemented yet - skipping]")
-    
-    # ============================================================
-    # STEP 4: FORMANT SHIFT (placeholder)
+    # STEP 3: ASR TRANSCRIPTION
     # ============================================================
     print("\n" + "="*50)
-    print("STEP 4: Formant Shift")
+    print("STEP 3: ASR Transcription")
     print("="*50)
-    
-    # TODO: Add formant shifting
-    # formant_shifter = FormantShifter(shift_factor=0.9)
-    # audio = formant_shifter.process(audio, sr)
-    print("  [Not implemented yet - skipping]")
-    
+
+    asr = ASRWrapper(model_name="tiny")
+
+    result = asr.transcribe_full(audio, sr=sr)
+
+    for i, (word, start, end, conf) in enumerate(result):
+        print(f"  {i+1}. '{word}' [{start:.2f}s - {end:.2f}s] (confidence: {conf:.3f})")
+
+    # Print full transcription
+    print("\nFull transcription:")
+    full_text = " ".join([word for word, _, _, _ in result])
+    print(f"  \"{full_text}\"")
+
     # ============================================================
-    # STEP 5: SAVE OUTPUT
+    # FINAL STEP: SAVE OUTPUT
     # ============================================================
     print("\n" + "="*50)
     print("STEP 5: Save Output")
@@ -133,6 +129,30 @@ def main():
     # If you need to stream the output later, you can chunk it here
     # But DSP processing should already be done at this point
 
-
 if __name__ == "__main__":
     main()
+
+'''    # ============================================================
+    # STEP 3: PITCH SHIFT (placeholder)
+    # ============================================================
+    print("\n" + "="*50)
+    print("STEP 3: Pitch Shift")
+    print("="*50)
+    
+    # TODO: Add pitch shifting
+    # pitch_shifter = PitchShifter(semitones=-2)
+    # audio = pitch_shifter.process(audio, sr)
+    print("  [Not implemented yet - skipping]")
+    
+    # ============================================================
+    # STEP 4: FORMANT SHIFT (placeholder)
+    # ============================================================
+    print("\n" + "="*50)
+    print("STEP 4: Formant Shift")
+    print("="*50)
+    
+    # TODO: Add formant shifting
+    # formant_shifter = FormantShifter(shift_factor=0.9)
+    # audio = formant_shifter.process(audio, sr)
+    print("  [Not implemented yet - skipping]")
+'''
