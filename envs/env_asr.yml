@@ -1,0 +1,12 @@
+name: accent-asr
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - numpy>=2.0.2
+      - torch==2.8.0
+      - torchaudio==2.8.0
+      - whisperx==3.7.4
+      - soundfile

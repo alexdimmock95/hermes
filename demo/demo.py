@@ -4,14 +4,13 @@ Main demo/workflow file - orchestrates the complete accent softening pipeline.
 Architecture:
 1. Load audio
 2. Denoise (full file)
-3. Pitch shift (full file)
-4. Formant shift (full file)
-5. [Any other DSP on full file]
-6. Save output
-7. (Optional) Chunk for streaming if needed
+3. ASR with phoneme detection
+4. Filter vowels for formant shifting
+5. Save output
 
 No chunking during DSP - all processing happens on the full file.
 """
+
 
 import sys
 import numpy as np
@@ -22,13 +21,13 @@ from pathlib import Path
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 from src.denoiser import Denoiser
-from src.asr import ASRWrapper
+from src.asr import PhonemeAligner
 # from src.pitch_shifter import PitchShifter  # Add when ready
 # from src.formant_shifter import FormantShifter  # Add when ready
 
 
 def main():
-    print("Accent Softener - Complete Workflow")
+    print("Accent Softener")
     print("=" * 50)
     
     # Define input and output paths
@@ -36,6 +35,10 @@ def main():
     output_folder = Path("audio_files/output")
     output_folder.mkdir(parents=True, exist_ok=True)
     output_file = output_folder / f"{input_file.stem}_processed.wav"
+
+    # Define temp path
+    temp_folder = Path("audio_files/temp")
+    temp_folder.mkdir(parents=True, exist_ok=True)
     
     if not input_file.exists():
         print(f"ERROR: File not found: {input_file}")
@@ -74,23 +77,31 @@ def main():
     print("  ✓ Denoising complete")
 
     # ============================================================
-    # STEP 3: ASR TRANSCRIPTION
+    # STEP 3: ASR TRANSCRIPTION & PHONEME ALIGNMENT
     # ============================================================
     print("\n" + "="*50)
-    print("STEP 3: ASR Transcription")
+    print("STEP 3: ASR Transcription & Phoneme Alignment")
     print("="*50)
 
-    asr = ASRWrapper(model_name="tiny")
+    # --- 3.1 Save denoised audio to temp file ---
+    temp_asr_file = temp_folder / f"{input_file.stem}_tempasr{input_file.suffix}"
+    sf.write(temp_asr_file, audio, sr)
 
-    result = asr.transcribe_full(audio, sr=sr)
+    # --- 3.2 Initialise phoneme aligner ---
+    aligner = PhonemeAligner(
+        device="cpu",
+        model_size="base",
+        compute_type="int8",
+        batch_size=16
+    )
 
-    for i, (word, start, end, conf) in enumerate(result):
-        print(f"  {i+1}. '{word}' [{start:.2f}s - {end:.2f}s] (confidence: {conf:.3f})")
+    aligner.load_models()
 
-    # Print full transcription
-    print("\nFull transcription:")
-    full_text = " ".join([word for word, _, _, _ in result])
-    print(f"  \"{full_text}\"")
+    # --- 3.3 Run ASR + alignment ---
+
+    result, vowel_phonemes = aligner.process(str(temp_asr_file))
+
+    print("✓ ASR + phoneme alignment complete")
 
     # ============================================================
     # FINAL STEP: SAVE OUTPUT
@@ -131,6 +142,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+#### Find parts of spectrogram corresponding to vowels only (for formant shifting)
+#### Modify these parts of the spectrogram accordingly
+
 
 '''    # ============================================================
     # STEP 3: PITCH SHIFT (placeholder)

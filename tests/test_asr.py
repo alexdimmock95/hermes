@@ -1,108 +1,365 @@
-"""
-Standalone behaviour test for ASR wrapper.
-"""
+import torch
 
-import sys
-from pathlib import Path
-import soundfile as sf
-import numpy as np
+import warnings
+import os
 
-sys.path.append(str(Path(__file__).parent.parent))
-from src.asr import ASRWrapper
+# Suppress specific warning categories
+warnings.filterwarnings('ignore', category=UserWarning)
+warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 
+# Set espeak library
+os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = '/opt/homebrew/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.dylib'
+os.environ['PHONEMIZER_ESPEAK_PATH'] = '/opt/homebrew/bin/espeak-ng'
 
-def load_audio(path: Path):
-    audio, sr = sf.read(path)
+# Monkey patch torch.load
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs.setdefault('weights_only', False)
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
 
-    # Limit to first N seconds
-    max_seconds = 5 # seconds
-    audio = audio[: int(max_seconds * sr)]
+import whisperx
+from phonemizer import phonemize
 
-    # Ensure float 32
-    if audio.dtype != np.float32:
-        audio = audio.astype(np.float32)
+# Configuration
+device = "cpu"
+audio_file = "/Users/Alex/Documents/Coding/personal_project/accent_softener/audio_files/input/youtube_noise.wav"
+batch_size = 16
+compute_type = "int8"
 
-    return audio, sr
+print("="*80)
+print("PHONEME ALIGNMENT PIPELINE")
+print("="*80)
 
-def main():
-    audio_path = Path("/Users/Alex/Documents/Coding/personal_project/accent_softener/audio_files/input/sat_plans.wav")
+print("\nStep 1: Transcribing audio with WhisperX...")
+model = whisperx.load_model("base", device, compute_type=compute_type, language="en")
+audio = whisperx.load_audio(audio_file)
+transcription_result = model.transcribe(audio, batch_size=batch_size)
 
-    # Check if file exists
-    if not audio_path.exists():
-        print(f"ERROR: Audio file not found at {audio_path}")
-        return
+# Handle both dict and list formats
+if isinstance(transcription_result, dict):
+    initial_segments = transcription_result["segments"]
+else:
+    initial_segments = transcription_result
 
-    audio, sr = load_audio(audio_path)
+print("\nStep 2: Aligning words with WhisperX...")
+try:
+    model_a, metadata = whisperx.load_align_model(language_code="en", device=device)
+    aligned_result = whisperx.align(
+        initial_segments, 
+        model_a, 
+        metadata, 
+        audio, 
+        device, 
+        return_char_alignments=False
+    )
+    segments = aligned_result["segments"]
+    print("✓ Word alignment successful")
+except Exception as e:
+    print(f"✗ Word alignment failed: {e}")
+    print("  Continuing with segment-level timestamps only...")
+    segments = initial_segments
 
-    print("Audio shape:", audio.shape)
-    print("Audio dtype:", audio.dtype)
-    print("Original sample rate:", sr)
+print("\nStep 3: Converting words to phonemes and distributing timestamps...")
 
-    asr = ASRWrapper(model_name="tiny")
-    print("Model loaded")
+phoneme_data = []
 
-    print("Transcribing...")
-    result = asr.transcribe_full(audio, sr=sr)
+for segment in segments:
+    segment_data = {
+        'segment_text': segment['text'],
+        'segment_start': segment['start'],
+        'segment_end': segment['end'],
+        'words': []
+    }
     
-    print("\n" + "="*50)
-    print(f"Number of words/segments returned: {len(result)}")
-    print("="*50)
-
-    if len(result) == 0:
-        print("WARNING: ASR returned no words")
-        print("Possible reasons:")
-        print("  - Audio file is silent or too quiet")
-        print("  - Audio duration is too short")
-        print("  - Audio format issue")
-        return
+    # Check if we have word-level timestamps
+    if 'words' in segment:
+        for word_info in segment['words']:
+            word_text = word_info['word'].strip()
+            word_start = word_info['start']
+            word_end = word_info['end']
+            
+            # Convert word to phonemes
+            word_phonemes = phonemize(
+                word_text, 
+                language='en-us', 
+                backend='espeak',
+                strip=True
+            )
+            
+            # Split phonemes (they come as a string like "həˈloʊ")
+            phoneme_list = list(word_phonemes.replace(' ', ''))
+            
+            # Distribute phonemes evenly across word duration
+            word_duration = word_end - word_start
+            phoneme_count = len(phoneme_list)
+            
+            if phoneme_count > 0:
+                phoneme_duration = word_duration / phoneme_count
+                
+                phoneme_timings = []
+                for i, phoneme in enumerate(phoneme_list):
+                    phoneme_start = word_start + (i * phoneme_duration)
+                    phoneme_end = phoneme_start + phoneme_duration
+                    phoneme_timings.append({
+                        'phoneme': phoneme,
+                        'start': phoneme_start,
+                        'end': phoneme_end
+                    })
+                
+                segment_data['words'].append({
+                    'word': word_text,
+                    'word_start': word_start,
+                    'word_end': word_end,
+                    'phonemes': word_phonemes,
+                    'phoneme_timings': phoneme_timings
+                })
+    else:
+        # No word-level timestamps, just phonemize the whole segment
+        segment_phonemes = phonemize(
+            segment['text'], 
+            language='en-us', 
+            backend='espeak',
+            strip=True
+        )
+        segment_data['segment_phonemes'] = segment_phonemes
     
-    # Print first 5 words
-    print("\nFirst 5 words:")
-    for i, (word, start, end, conf) in enumerate(result[:5]):
-        print(f"  {i+1}. '{word}' [{start:.2f}s - {end:.2f}s] (confidence: {conf:.3f})")
+    phoneme_data.append(segment_data)
 
-    # Run structural assertions
-    print("\nRunning structural tests...")
+print("\n" + "="*80)
+print("RESULTS")
+print("="*80)
+
+for i, seg_data in enumerate(phoneme_data):
+    print(f"\nSegment {i+1}: [{seg_data['segment_start']:.2f}s - {seg_data['segment_end']:.2f}s]")
+    print(f"Text: {seg_data['segment_text']}")
+    print()
     
-    # Structure: must be a list
-    assert isinstance(result, list), "ASR did not return a list"
-    print("✓ Result is a list")
+    if seg_data['words']:
+        for word_data in seg_data['words']:
+            print(f"  Word: '{word_data['word']}' [{word_data['word_start']:.3f}s - {word_data['word_end']:.3f}s]")
+            print(f"  Phonemes: {word_data['phonemes']}")
+            print(f"  Phoneme timings:")
+            for pt in word_data['phoneme_timings']:
+                print(f"    {pt['phoneme']:<3} [{pt['start']:.3f}s - {pt['end']:.3f}s]")
+            print()
+    else:
+        print(f"  Segment phonemes: {seg_data.get('segment_phonemes', 'N/A')}")
+        print()
 
-    # Non-empty
-    assert len(result) > 0, "ASR returned an empty word list"
-    print("✓ Result is non-empty")
+print("="*80)
+print("EXPORT DATA")
+print("="*80)
 
-    # Check first element structure
-    w0 = result[0]
-    assert isinstance(w0, tuple) and len(w0) == 4, "Each item should be a 4-tuple"
-    print("✓ Each item is a 4-tuple")
+# Create a flat list of all phonemes with timestamps for easy export
+all_phonemes = []
+for seg_data in phoneme_data:
+    for word_data in seg_data.get('words', []):
+        for pt in word_data['phoneme_timings']:
+            all_phonemes.append({
+                'phoneme': pt['phoneme'],
+                'start': pt['start'],
+                'end': pt['end'],
+                'word': word_data['word'],
+                'segment': seg_data['segment_text']
+            })
 
-    word, start, end, conf = w0
+print(f"\nTotal phonemes with timestamps: {len(all_phonemes)}")
+print("\nFirst 20 phonemes:")
+for i, p in enumerate(all_phonemes[:20]):
+    print(f"{i+1}. {p['phoneme']:<3} [{p['start']:.3f}s - {p['end']:.3f}s] (word: '{p['word']}')")
 
-    # Word checks
-    assert isinstance(word, str) and word.strip() != "", "Invalid word format"
-    print("✓ Word is a non-empty string")
+# You can now export this data
+import json
+output_file = "/Users/Alex/Documents/Coding/personal_project/accent_softener/phoneme_output.json"
+with open(output_file, 'w') as f:
+    json.dump({
+        'segments': phoneme_data,
+        'all_phonemes': all_phonemes
+    }, f, indent=2)
 
-    # Timing checks
-    assert start < end, "Start time must be < end time"
-    assert start >= 0, "Start time can't be negative"
-    print("✓ Timing values are valid")
+print(f"\n✓ Data exported to: {output_file}")
+print("\n" + "="*80)
+
+
+
+'''
+#### THE BELOW CODE WORKS WITH GETTING WORD TIMESTAMPS AND SHARES PHONEME ACROSS WORD DURATION
+
+import torch
+import os
+
+# Set espeak library
+os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = '/opt/homebrew/Cellar/espeak-ng/1.52.0/lib/libespeak-ng.dylib'
+os.environ['PHONEMIZER_ESPEAK_PATH'] = '/opt/homebrew/bin/espeak-ng'
+
+# Monkey patch torch.load
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs.setdefault('weights_only', False)
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
+
+import whisperx
+from phonemizer import phonemize
+
+# Configuration
+device = "cpu"
+audio_file = "/Users/Alex/Documents/Coding/personal_project/accent_softener/audio_files/input/youtube_noise.wav"
+batch_size = 16
+compute_type = "int8"
+
+print("="*80)
+print("PHONEME ALIGNMENT PIPELINE")
+print("="*80)
+
+print("\nStep 1: Transcribing audio with WhisperX...")
+model = whisperx.load_model("base", device, compute_type=compute_type, language="en")
+audio = whisperx.load_audio(audio_file)
+transcription_result = model.transcribe(audio, batch_size=batch_size)
+
+# Handle both dict and list formats
+if isinstance(transcription_result, dict):
+    initial_segments = transcription_result["segments"]
+else:
+    initial_segments = transcription_result
+
+print("\nStep 2: Aligning words with WhisperX...")
+try:
+    model_a, metadata = whisperx.load_align_model(language_code="en", device=device)
+    aligned_result = whisperx.align(
+        initial_segments, 
+        model_a, 
+        metadata, 
+        audio, 
+        device, 
+        return_char_alignments=False
+    )
+    segments = aligned_result["segments"]
+    print("✓ Word alignment successful")
+except Exception as e:
+    print(f"✗ Word alignment failed: {e}")
+    print("  Continuing with segment-level timestamps only...")
+    segments = initial_segments
+
+print("\nStep 3: Converting words to phonemes and distributing timestamps...")
+
+phoneme_data = []
+
+for segment in segments:
+    segment_data = {
+        'segment_text': segment['text'],
+        'segment_start': segment['start'],
+        'segment_end': segment['end'],
+        'words': []
+    }
     
-    assert 0 <= conf <= 1, "Confidence must be between 0 and 1"
-    print("✓ Confidence is in valid range [0, 1]")
-
-    # Type checks
-    assert audio.dtype == np.float32, "Audio must be float32"
-    print("✓ Audio dtype is float32")
-
-    print("\n" + "="*50)
-    print("ALL TESTS PASSED! ✓")
-    print("="*50)
+    # Check if we have word-level timestamps
+    if 'words' in segment:
+        for word_info in segment['words']:
+            word_text = word_info['word'].strip()
+            word_start = word_info['start']
+            word_end = word_info['end']
+            
+            # Convert word to phonemes
+            word_phonemes = phonemize(
+                word_text, 
+                language='en-us', 
+                backend='espeak',
+                strip=True
+            )
+            
+            # Split phonemes (they come as a string like "həˈloʊ")
+            phoneme_list = list(word_phonemes.replace(' ', ''))
+            
+            # Distribute phonemes evenly across word duration
+            word_duration = word_end - word_start
+            phoneme_count = len(phoneme_list)
+            
+            if phoneme_count > 0:
+                phoneme_duration = word_duration / phoneme_count
+                
+                phoneme_timings = []
+                for i, phoneme in enumerate(phoneme_list):
+                    phoneme_start = word_start + (i * phoneme_duration)
+                    phoneme_end = phoneme_start + phoneme_duration
+                    phoneme_timings.append({
+                        'phoneme': phoneme,
+                        'start': phoneme_start,
+                        'end': phoneme_end
+                    })
+                
+                segment_data['words'].append({
+                    'word': word_text,
+                    'word_start': word_start,
+                    'word_end': word_end,
+                    'phonemes': word_phonemes,
+                    'phoneme_timings': phoneme_timings
+                })
+    else:
+        # No word-level timestamps, just phonemize the whole segment
+        segment_phonemes = phonemize(
+            segment['text'], 
+            language='en-us', 
+            backend='espeak',
+            strip=True
+        )
+        segment_data['segment_phonemes'] = segment_phonemes
     
-    # Print full transcription
-    print("\nFull transcription:")
-    full_text = " ".join([word for word, _, _, _ in result])
-    print(f"  \"{full_text}\"")
+    phoneme_data.append(segment_data)
 
-if __name__ == "__main__":
-    main()
+print("\n" + "="*80)
+print("RESULTS")
+print("="*80)
+
+for i, seg_data in enumerate(phoneme_data):
+    print(f"\nSegment {i+1}: [{seg_data['segment_start']:.2f}s - {seg_data['segment_end']:.2f}s]")
+    print(f"Text: {seg_data['segment_text']}")
+    print()
+    
+    if seg_data['words']:
+        for word_data in seg_data['words']:
+            print(f"  Word: '{word_data['word']}' [{word_data['word_start']:.3f}s - {word_data['word_end']:.3f}s]")
+            print(f"  Phonemes: {word_data['phonemes']}")
+            print(f"  Phoneme timings:")
+            for pt in word_data['phoneme_timings']:
+                print(f"    {pt['phoneme']:<3} [{pt['start']:.3f}s - {pt['end']:.3f}s]")
+            print()
+    else:
+        print(f"  Segment phonemes: {seg_data.get('segment_phonemes', 'N/A')}")
+        print()
+
+print("="*80)
+print("EXPORT DATA")
+print("="*80)
+
+# Create a flat list of all phonemes with timestamps for easy export
+all_phonemes = []
+for seg_data in phoneme_data:
+    for word_data in seg_data.get('words', []):
+        for pt in word_data['phoneme_timings']:
+            all_phonemes.append({
+                'phoneme': pt['phoneme'],
+                'start': pt['start'],
+                'end': pt['end'],
+                'word': word_data['word'],
+                'segment': seg_data['segment_text']
+            })
+
+print(f"\nTotal phonemes with timestamps: {len(all_phonemes)}")
+print("\nFirst 20 phonemes:")
+for i, p in enumerate(all_phonemes[:20]):
+    print(f"{i+1}. {p['phoneme']:<3} [{p['start']:.3f}s - {p['end']:.3f}s] (word: '{p['word']}')")
+
+# You can now export this data
+import json
+output_file = "/Users/Alex/Documents/Coding/personal_project/accent_softener/phoneme_output.json"
+with open(output_file, 'w') as f:
+    json.dump({
+        'segments': phoneme_data,
+        'all_phonemes': all_phonemes
+    }, f, indent=2)
+
+print(f"\n✓ Data exported to: {output_file}")
+print("\n" + "="*80)'''

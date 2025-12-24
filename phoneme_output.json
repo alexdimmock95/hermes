@@ -1,0 +1,4243 @@
+{
+  "segments": [
+    {
+      "segment_text": " It turns out that the first website that was ever put up is still available to us.",
+      "segment_start": 0.009,
+      "segment_end": 9.482,
+      "words": [
+        {
+          "word": "It",
+          "word_start": 0.009,
+          "word_end": 0.81,
+          "phonemes": "\u026at",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 0.009,
+              "end": 0.40950000000000003
+            },
+            {
+              "phoneme": "t",
+              "start": 0.40950000000000003,
+              "end": 0.81
+            }
+          ]
+        },
+        {
+          "word": "turns",
+          "word_start": 1.952,
+          "word_end": 5.296,
+          "phonemes": "t\u025c\u02d0nz",
+          "phoneme_timings": [
+            {
+              "phoneme": "t",
+              "start": 1.952,
+              "end": 2.6208
+            },
+            {
+              "phoneme": "\u025c",
+              "start": 2.6208,
+              "end": 3.2896
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 3.2896,
+              "end": 3.9584
+            },
+            {
+              "phoneme": "n",
+              "start": 3.9584,
+              "end": 4.6272
+            },
+            {
+              "phoneme": "z",
+              "start": 4.6272,
+              "end": 5.296
+            }
+          ]
+        },
+        {
+          "word": "out",
+          "word_start": 5.436,
+          "word_end": 5.536,
+          "phonemes": "a\u028at",
+          "phoneme_timings": [
+            {
+              "phoneme": "a",
+              "start": 5.436,
+              "end": 5.469333333333333
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 5.469333333333333,
+              "end": 5.502666666666666
+            },
+            {
+              "phoneme": "t",
+              "start": 5.502666666666666,
+              "end": 5.536
+            }
+          ]
+        },
+        {
+          "word": "that",
+          "word_start": 5.797,
+          "word_end": 5.977,
+          "phonemes": "\u00f0\u00e6t",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 5.797,
+              "end": 5.857
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 5.857,
+              "end": 5.917000000000001
+            },
+            {
+              "phoneme": "t",
+              "start": 5.917,
+              "end": 5.977
+            }
+          ]
+        },
+        {
+          "word": "the",
+          "word_start": 6.137,
+          "word_end": 6.257,
+          "phonemes": "\u00f0\u0259",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 6.137,
+              "end": 6.196999999999999
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 6.196999999999999,
+              "end": 6.257
+            }
+          ]
+        },
+        {
+          "word": "first",
+          "word_start": 6.337,
+          "word_end": 6.598,
+          "phonemes": "f\u025c\u02d0st",
+          "phoneme_timings": [
+            {
+              "phoneme": "f",
+              "start": 6.337,
+              "end": 6.3892
+            },
+            {
+              "phoneme": "\u025c",
+              "start": 6.3892,
+              "end": 6.4414
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 6.4414,
+              "end": 6.4936
+            },
+            {
+              "phoneme": "s",
+              "start": 6.4936,
+              "end": 6.5458
+            },
+            {
+              "phoneme": "t",
+              "start": 6.5458,
+              "end": 6.598
+            }
+          ]
+        },
+        {
+          "word": "website",
+          "word_start": 6.658,
+          "word_end": 7.159,
+          "phonemes": "w\u025bbsa\u026at",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 6.658,
+              "end": 6.729571428571429
+            },
+            {
+              "phoneme": "\u025b",
+              "start": 6.729571428571429,
+              "end": 6.801142857142858
+            },
+            {
+              "phoneme": "b",
+              "start": 6.801142857142858,
+              "end": 6.872714285714286
+            },
+            {
+              "phoneme": "s",
+              "start": 6.872714285714286,
+              "end": 6.944285714285715
+            },
+            {
+              "phoneme": "a",
+              "start": 6.944285714285714,
+              "end": 7.015857142857143
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 7.015857142857143,
+              "end": 7.087428571428571
+            },
+            {
+              "phoneme": "t",
+              "start": 7.087428571428571,
+              "end": 7.159
+            }
+          ]
+        },
+        {
+          "word": "that",
+          "word_start": 7.199,
+          "word_end": 7.319,
+          "phonemes": "\u00f0\u00e6t",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 7.199,
+              "end": 7.239
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 7.239,
+              "end": 7.279
+            },
+            {
+              "phoneme": "t",
+              "start": 7.279,
+              "end": 7.319
+            }
+          ]
+        },
+        {
+          "word": "was",
+          "word_start": 7.359,
+          "word_end": 7.499,
+          "phonemes": "w\u028cz",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 7.359,
+              "end": 7.405666666666667
+            },
+            {
+              "phoneme": "\u028c",
+              "start": 7.405666666666667,
+              "end": 7.452333333333334
+            },
+            {
+              "phoneme": "z",
+              "start": 7.452333333333333,
+              "end": 7.499
+            }
+          ]
+        },
+        {
+          "word": "ever",
+          "word_start": 7.639,
+          "word_end": 7.839,
+          "phonemes": "\u025bv\u025a",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u025b",
+              "start": 7.639,
+              "end": 7.705666666666667
+            },
+            {
+              "phoneme": "v",
+              "start": 7.705666666666667,
+              "end": 7.772333333333333
+            },
+            {
+              "phoneme": "\u025a",
+              "start": 7.772333333333334,
+              "end": 7.839
+            }
+          ]
+        },
+        {
+          "word": "put",
+          "word_start": 7.9,
+          "word_end": 8.04,
+          "phonemes": "p\u028at",
+          "phoneme_timings": [
+            {
+              "phoneme": "p",
+              "start": 7.9,
+              "end": 7.946666666666666
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 7.946666666666666,
+              "end": 7.993333333333332
+            },
+            {
+              "phoneme": "t",
+              "start": 7.993333333333333,
+              "end": 8.04
+            }
+          ]
+        },
+        {
+          "word": "up",
+          "word_start": 8.1,
+          "word_end": 8.2,
+          "phonemes": "\u028cp",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u028c",
+              "start": 8.1,
+              "end": 8.149999999999999
+            },
+            {
+              "phoneme": "p",
+              "start": 8.149999999999999,
+              "end": 8.2
+            }
+          ]
+        },
+        {
+          "word": "is",
+          "word_start": 8.4,
+          "word_end": 8.52,
+          "phonemes": "\u026az",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 8.4,
+              "end": 8.46
+            },
+            {
+              "phoneme": "z",
+              "start": 8.46,
+              "end": 8.52
+            }
+          ]
+        },
+        {
+          "word": "still",
+          "word_start": 8.821,
+          "word_end": 8.981,
+          "phonemes": "st\u026al",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 8.821,
+              "end": 8.861
+            },
+            {
+              "phoneme": "t",
+              "start": 8.861,
+              "end": 8.901
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 8.901,
+              "end": 8.940999999999999
+            },
+            {
+              "phoneme": "l",
+              "start": 8.940999999999999,
+              "end": 8.980999999999998
+            }
+          ]
+        },
+        {
+          "word": "available",
+          "word_start": 9.081,
+          "word_end": 9.261,
+          "phonemes": "\u0250ve\u026al\u0259b\u0259l",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u0250",
+              "start": 9.081,
+              "end": 9.100999999999999
+            },
+            {
+              "phoneme": "v",
+              "start": 9.100999999999999,
+              "end": 9.120999999999999
+            },
+            {
+              "phoneme": "e",
+              "start": 9.120999999999999,
+              "end": 9.140999999999998
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 9.141,
+              "end": 9.161
+            },
+            {
+              "phoneme": "l",
+              "start": 9.161,
+              "end": 9.181
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 9.181,
+              "end": 9.200999999999999
+            },
+            {
+              "phoneme": "b",
+              "start": 9.200999999999999,
+              "end": 9.220999999999998
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 9.221,
+              "end": 9.241
+            },
+            {
+              "phoneme": "l",
+              "start": 9.241,
+              "end": 9.261
+            }
+          ]
+        },
+        {
+          "word": "to",
+          "word_start": 9.281,
+          "word_end": 9.321,
+          "phonemes": "tu\u02d0",
+          "phoneme_timings": [
+            {
+              "phoneme": "t",
+              "start": 9.281,
+              "end": 9.294333333333334
+            },
+            {
+              "phoneme": "u",
+              "start": 9.294333333333334,
+              "end": 9.307666666666668
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 9.307666666666666,
+              "end": 9.321
+            }
+          ]
+        },
+        {
+          "word": "us.",
+          "word_start": 9.341,
+          "word_end": 9.482,
+          "phonemes": "\u028cs",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u028c",
+              "start": 9.341,
+              "end": 9.4115
+            },
+            {
+              "phoneme": "s",
+              "start": 9.4115,
+              "end": 9.482
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "So I actually have it here on my laptop right now.",
+      "segment_start": 9.502,
+      "segment_end": 11.524,
+      "words": [
+        {
+          "word": "So",
+          "word_start": 9.502,
+          "word_end": 9.542,
+          "phonemes": "so\u028a",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 9.502,
+              "end": 9.515333333333334
+            },
+            {
+              "phoneme": "o",
+              "start": 9.515333333333334,
+              "end": 9.528666666666668
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 9.528666666666666,
+              "end": 9.542
+            }
+          ]
+        },
+        {
+          "word": "I",
+          "word_start": 9.562,
+          "word_end": 9.582,
+          "phonemes": "a\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "a",
+              "start": 9.562,
+              "end": 9.572
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 9.572,
+              "end": 9.582
+            }
+          ]
+        },
+        {
+          "word": "actually",
+          "word_start": 9.602,
+          "word_end": 9.862,
+          "phonemes": "\u00e6kt\u0283u\u02d0\u0259li",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 9.602,
+              "end": 9.630888888888888
+            },
+            {
+              "phoneme": "k",
+              "start": 9.630888888888888,
+              "end": 9.659777777777776
+            },
+            {
+              "phoneme": "t",
+              "start": 9.659777777777778,
+              "end": 9.688666666666666
+            },
+            {
+              "phoneme": "\u0283",
+              "start": 9.688666666666666,
+              "end": 9.717555555555554
+            },
+            {
+              "phoneme": "u",
+              "start": 9.717555555555556,
+              "end": 9.746444444444444
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 9.746444444444444,
+              "end": 9.775333333333332
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 9.775333333333334,
+              "end": 9.804222222222222
+            },
+            {
+              "phoneme": "l",
+              "start": 9.804222222222222,
+              "end": 9.83311111111111
+            },
+            {
+              "phoneme": "i",
+              "start": 9.833111111111112,
+              "end": 9.862
+            }
+          ]
+        },
+        {
+          "word": "have",
+          "word_start": 9.902,
+          "word_end": 10.102,
+          "phonemes": "h\u00e6v",
+          "phoneme_timings": [
+            {
+              "phoneme": "h",
+              "start": 9.902,
+              "end": 9.968666666666666
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 9.968666666666666,
+              "end": 10.035333333333332
+            },
+            {
+              "phoneme": "v",
+              "start": 10.035333333333334,
+              "end": 10.102
+            }
+          ]
+        },
+        {
+          "word": "it",
+          "word_start": 10.143,
+          "word_end": 10.203,
+          "phonemes": "\u026at",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 10.143,
+              "end": 10.173
+            },
+            {
+              "phoneme": "t",
+              "start": 10.173,
+              "end": 10.203
+            }
+          ]
+        },
+        {
+          "word": "here",
+          "word_start": 10.243,
+          "word_end": 10.403,
+          "phonemes": "h\u026a\u0279",
+          "phoneme_timings": [
+            {
+              "phoneme": "h",
+              "start": 10.243,
+              "end": 10.296333333333333
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 10.296333333333333,
+              "end": 10.349666666666666
+            },
+            {
+              "phoneme": "\u0279",
+              "start": 10.349666666666668,
+              "end": 10.403
+            }
+          ]
+        },
+        {
+          "word": "on",
+          "word_start": 10.483,
+          "word_end": 10.543,
+          "phonemes": "\u0254n",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u0254",
+              "start": 10.483,
+              "end": 10.513
+            },
+            {
+              "phoneme": "n",
+              "start": 10.513,
+              "end": 10.543
+            }
+          ]
+        },
+        {
+          "word": "my",
+          "word_start": 10.603,
+          "word_end": 10.703,
+          "phonemes": "ma\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "m",
+              "start": 10.603,
+              "end": 10.636333333333333
+            },
+            {
+              "phoneme": "a",
+              "start": 10.636333333333333,
+              "end": 10.669666666666666
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 10.669666666666666,
+              "end": 10.703
+            }
+          ]
+        },
+        {
+          "word": "laptop",
+          "word_start": 10.723,
+          "word_end": 11.144,
+          "phonemes": "l\u00e6pt\u0251\u02d0p",
+          "phoneme_timings": [
+            {
+              "phoneme": "l",
+              "start": 10.723,
+              "end": 10.783142857142858
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 10.783142857142858,
+              "end": 10.843285714285715
+            },
+            {
+              "phoneme": "p",
+              "start": 10.843285714285715,
+              "end": 10.903428571428572
+            },
+            {
+              "phoneme": "t",
+              "start": 10.903428571428572,
+              "end": 10.963571428571429
+            },
+            {
+              "phoneme": "\u0251",
+              "start": 10.963571428571429,
+              "end": 11.023714285714286
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 11.023714285714286,
+              "end": 11.083857142857143
+            },
+            {
+              "phoneme": "p",
+              "start": 11.083857142857143,
+              "end": 11.144
+            }
+          ]
+        },
+        {
+          "word": "right",
+          "word_start": 11.164,
+          "word_end": 11.264,
+          "phonemes": "\u0279a\u026at",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u0279",
+              "start": 11.164,
+              "end": 11.189
+            },
+            {
+              "phoneme": "a",
+              "start": 11.189,
+              "end": 11.214
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 11.213999999999999,
+              "end": 11.238999999999999
+            },
+            {
+              "phoneme": "t",
+              "start": 11.238999999999999,
+              "end": 11.264
+            }
+          ]
+        },
+        {
+          "word": "now.",
+          "word_start": 11.304,
+          "word_end": 11.524,
+          "phonemes": "na\u028a",
+          "phoneme_timings": [
+            {
+              "phoneme": "n",
+              "start": 11.304,
+              "end": 11.377333333333333
+            },
+            {
+              "phoneme": "a",
+              "start": 11.377333333333333,
+              "end": 11.450666666666665
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 11.450666666666667,
+              "end": 11.524
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "So this is a webpage put up in the early 90s by 2.30.",
+      "segment_start": 11.665,
+      "segment_end": 24.582,
+      "words": [
+        {
+          "word": "So",
+          "word_start": 11.665,
+          "word_end": 11.785,
+          "phonemes": "so\u028a",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 11.665,
+              "end": 11.705
+            },
+            {
+              "phoneme": "o",
+              "start": 11.705,
+              "end": 11.745000000000001
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 11.745,
+              "end": 11.785
+            }
+          ]
+        },
+        {
+          "word": "this",
+          "word_start": 11.825,
+          "word_end": 11.945,
+          "phonemes": "\u00f0\u026as",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 11.825,
+              "end": 11.865
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 11.865,
+              "end": 11.905000000000001
+            },
+            {
+              "phoneme": "s",
+              "start": 11.905,
+              "end": 11.945
+            }
+          ]
+        },
+        {
+          "word": "is",
+          "word_start": 12.005,
+          "word_end": 12.065,
+          "phonemes": "\u026az",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 12.005,
+              "end": 12.035
+            },
+            {
+              "phoneme": "z",
+              "start": 12.035,
+              "end": 12.065
+            }
+          ]
+        },
+        {
+          "word": "a",
+          "word_start": 12.145,
+          "word_end": 12.165,
+          "phonemes": "e\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "e",
+              "start": 12.145,
+              "end": 12.155
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 12.155,
+              "end": 12.165
+            }
+          ]
+        },
+        {
+          "word": "webpage",
+          "word_start": 12.225,
+          "word_end": 12.586,
+          "phonemes": "w\u025bbpe\u026ad\u0292",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 12.225,
+              "end": 12.270125
+            },
+            {
+              "phoneme": "\u025b",
+              "start": 12.270125,
+              "end": 12.31525
+            },
+            {
+              "phoneme": "b",
+              "start": 12.315249999999999,
+              "end": 12.360375
+            },
+            {
+              "phoneme": "p",
+              "start": 12.360375,
+              "end": 12.4055
+            },
+            {
+              "phoneme": "e",
+              "start": 12.4055,
+              "end": 12.450625
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 12.450625,
+              "end": 12.495750000000001
+            },
+            {
+              "phoneme": "d",
+              "start": 12.495750000000001,
+              "end": 12.540875000000002
+            },
+            {
+              "phoneme": "\u0292",
+              "start": 12.540875,
+              "end": 12.586
+            }
+          ]
+        },
+        {
+          "word": "put",
+          "word_start": 12.746,
+          "word_end": 13.086,
+          "phonemes": "p\u028at",
+          "phoneme_timings": [
+            {
+              "phoneme": "p",
+              "start": 12.746,
+              "end": 12.859333333333334
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 12.859333333333334,
+              "end": 12.972666666666667
+            },
+            {
+              "phoneme": "t",
+              "start": 12.972666666666667,
+              "end": 13.086
+            }
+          ]
+        },
+        {
+          "word": "up",
+          "word_start": 14.628,
+          "word_end": 14.769,
+          "phonemes": "\u028cp",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u028c",
+              "start": 14.628,
+              "end": 14.6985
+            },
+            {
+              "phoneme": "p",
+              "start": 14.6985,
+              "end": 14.768999999999998
+            }
+          ]
+        },
+        {
+          "word": "in",
+          "word_start": 15.329,
+          "word_end": 15.369,
+          "phonemes": "\u026an",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 15.329,
+              "end": 15.349
+            },
+            {
+              "phoneme": "n",
+              "start": 15.349,
+              "end": 15.369
+            }
+          ]
+        },
+        {
+          "word": "the",
+          "word_start": 15.39,
+          "word_end": 15.45,
+          "phonemes": "\u00f0\u0259",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 15.39,
+              "end": 15.42
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 15.42,
+              "end": 15.45
+            }
+          ]
+        },
+        {
+          "word": "early",
+          "word_start": 15.47,
+          "word_end": 15.57,
+          "phonemes": "\u025c\u02d0li",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u025c",
+              "start": 15.47,
+              "end": 15.495000000000001
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 15.495000000000001,
+              "end": 15.520000000000001
+            },
+            {
+              "phoneme": "l",
+              "start": 15.52,
+              "end": 15.545
+            },
+            {
+              "phoneme": "i",
+              "start": 15.545,
+              "end": 15.57
+            }
+          ]
+        },
+        {
+          "word": "90s",
+          "word_start": 15.89,
+          "word_end": 15.95,
+          "phonemes": "na\u026anti z",
+          "phoneme_timings": [
+            {
+              "phoneme": "n",
+              "start": 15.89,
+              "end": 15.89857142857143
+            },
+            {
+              "phoneme": "a",
+              "start": 15.89857142857143,
+              "end": 15.907142857142858
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 15.907142857142857,
+              "end": 15.915714285714285
+            },
+            {
+              "phoneme": "n",
+              "start": 15.915714285714285,
+              "end": 15.924285714285714
+            },
+            {
+              "phoneme": "t",
+              "start": 15.924285714285714,
+              "end": 15.932857142857143
+            },
+            {
+              "phoneme": "i",
+              "start": 15.932857142857143,
+              "end": 15.941428571428572
+            },
+            {
+              "phoneme": "z",
+              "start": 15.94142857142857,
+              "end": 15.95
+            }
+          ]
+        },
+        {
+          "word": "by",
+          "word_start": 16.291,
+          "word_end": 24.462,
+          "phonemes": "ba\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "b",
+              "start": 16.291,
+              "end": 19.014666666666667
+            },
+            {
+              "phoneme": "a",
+              "start": 19.014666666666667,
+              "end": 21.738333333333333
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 21.738333333333333,
+              "end": 24.462
+            }
+          ]
+        },
+        {
+          "word": "2.30.",
+          "word_start": 24.482,
+          "word_end": 24.582,
+          "phonemes": "tu\u02d0 \u03b8\u025c\u02d0\u027ei",
+          "phoneme_timings": [
+            {
+              "phoneme": "t",
+              "start": 24.482,
+              "end": 24.4945
+            },
+            {
+              "phoneme": "u",
+              "start": 24.4945,
+              "end": 24.506999999999998
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 24.506999999999998,
+              "end": 24.519499999999997
+            },
+            {
+              "phoneme": "\u03b8",
+              "start": 24.5195,
+              "end": 24.532
+            },
+            {
+              "phoneme": "\u025c",
+              "start": 24.532,
+              "end": 24.5445
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 24.5445,
+              "end": 24.557
+            },
+            {
+              "phoneme": "\u027e",
+              "start": 24.557000000000002,
+              "end": 24.5695
+            },
+            {
+              "phoneme": "i",
+              "start": 24.5695,
+              "end": 24.582
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "It's describing what the wildlife web is.",
+      "segment_start": 24.602,
+      "segment_end": 25.423,
+      "words": [
+        {
+          "word": "It's",
+          "word_start": 24.602,
+          "word_end": 24.682,
+          "phonemes": "\u026ats",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 24.602,
+              "end": 24.628666666666668
+            },
+            {
+              "phoneme": "t",
+              "start": 24.628666666666668,
+              "end": 24.655333333333335
+            },
+            {
+              "phoneme": "s",
+              "start": 24.65533333333333,
+              "end": 24.682
+            }
+          ]
+        },
+        {
+          "word": "describing",
+          "word_start": 24.702,
+          "word_end": 24.902,
+          "phonemes": "d\u1d7bsk\u0279a\u026ab\u026a\u014b",
+          "phoneme_timings": [
+            {
+              "phoneme": "d",
+              "start": 24.702,
+              "end": 24.722
+            },
+            {
+              "phoneme": "\u1d7b",
+              "start": 24.722,
+              "end": 24.742
+            },
+            {
+              "phoneme": "s",
+              "start": 24.742,
+              "end": 24.762
+            },
+            {
+              "phoneme": "k",
+              "start": 24.762,
+              "end": 24.782
+            },
+            {
+              "phoneme": "\u0279",
+              "start": 24.782,
+              "end": 24.802
+            },
+            {
+              "phoneme": "a",
+              "start": 24.802,
+              "end": 24.822
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 24.822000000000003,
+              "end": 24.842000000000002
+            },
+            {
+              "phoneme": "b",
+              "start": 24.842000000000002,
+              "end": 24.862000000000002
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 24.862000000000002,
+              "end": 24.882
+            },
+            {
+              "phoneme": "\u014b",
+              "start": 24.882,
+              "end": 24.902
+            }
+          ]
+        },
+        {
+          "word": "what",
+          "word_start": 24.922,
+          "word_end": 25.002,
+          "phonemes": "w\u028ct",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 24.922,
+              "end": 24.948666666666668
+            },
+            {
+              "phoneme": "\u028c",
+              "start": 24.948666666666668,
+              "end": 24.975333333333335
+            },
+            {
+              "phoneme": "t",
+              "start": 24.97533333333333,
+              "end": 25.002
+            }
+          ]
+        },
+        {
+          "word": "the",
+          "word_start": 25.022,
+          "word_end": 25.082,
+          "phonemes": "\u00f0\u0259",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 25.022,
+              "end": 25.052
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 25.052,
+              "end": 25.082
+            }
+          ]
+        },
+        {
+          "word": "wildlife",
+          "word_start": 25.102,
+          "word_end": 25.263,
+          "phonemes": "wa\u026aldla\u026af",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 25.102,
+              "end": 25.11988888888889
+            },
+            {
+              "phoneme": "a",
+              "start": 25.11988888888889,
+              "end": 25.13777777777778
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 25.137777777777778,
+              "end": 25.15566666666667
+            },
+            {
+              "phoneme": "l",
+              "start": 25.15566666666667,
+              "end": 25.17355555555556
+            },
+            {
+              "phoneme": "d",
+              "start": 25.173555555555556,
+              "end": 25.191444444444446
+            },
+            {
+              "phoneme": "l",
+              "start": 25.191444444444446,
+              "end": 25.209333333333337
+            },
+            {
+              "phoneme": "a",
+              "start": 25.209333333333333,
+              "end": 25.227222222222224
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 25.227222222222224,
+              "end": 25.245111111111115
+            },
+            {
+              "phoneme": "f",
+              "start": 25.24511111111111,
+              "end": 25.263
+            }
+          ]
+        },
+        {
+          "word": "web",
+          "word_start": 25.283,
+          "word_end": 25.343,
+          "phonemes": "w\u025bb",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 25.283,
+              "end": 25.303
+            },
+            {
+              "phoneme": "\u025b",
+              "start": 25.303,
+              "end": 25.323
+            },
+            {
+              "phoneme": "b",
+              "start": 25.323,
+              "end": 25.343
+            }
+          ]
+        },
+        {
+          "word": "is.",
+          "word_start": 25.363,
+          "word_end": 25.423,
+          "phonemes": "\u026az",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 25.363,
+              "end": 25.393
+            },
+            {
+              "phoneme": "z",
+              "start": 25.393,
+              "end": 25.423000000000002
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "And we can see that it's still displayed in a full and readable manner.",
+      "segment_start": 25.443,
+      "segment_end": 26.865,
+      "words": [
+        {
+          "word": "And",
+          "word_start": 25.443,
+          "word_end": 25.503,
+          "phonemes": "\u00e6nd",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 25.443,
+              "end": 25.463
+            },
+            {
+              "phoneme": "n",
+              "start": 25.463,
+              "end": 25.483
+            },
+            {
+              "phoneme": "d",
+              "start": 25.483,
+              "end": 25.503
+            }
+          ]
+        },
+        {
+          "word": "we",
+          "word_start": 25.523,
+          "word_end": 25.563,
+          "phonemes": "wi\u02d0",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 25.523,
+              "end": 25.53633333333333
+            },
+            {
+              "phoneme": "i",
+              "start": 25.53633333333333,
+              "end": 25.549666666666663
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 25.549666666666667,
+              "end": 25.563
+            }
+          ]
+        },
+        {
+          "word": "can",
+          "word_start": 25.583,
+          "word_end": 25.643,
+          "phonemes": "k\u00e6n",
+          "phoneme_timings": [
+            {
+              "phoneme": "k",
+              "start": 25.583,
+              "end": 25.602999999999998
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 25.602999999999998,
+              "end": 25.622999999999998
+            },
+            {
+              "phoneme": "n",
+              "start": 25.623,
+              "end": 25.643
+            }
+          ]
+        },
+        {
+          "word": "see",
+          "word_start": 25.663,
+          "word_end": 25.723,
+          "phonemes": "si\u02d0",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 25.663,
+              "end": 25.683
+            },
+            {
+              "phoneme": "i",
+              "start": 25.683,
+              "end": 25.703
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 25.703,
+              "end": 25.723
+            }
+          ]
+        },
+        {
+          "word": "that",
+          "word_start": 25.743,
+          "word_end": 25.823,
+          "phonemes": "\u00f0\u00e6t",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 25.743,
+              "end": 25.769666666666666
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 25.769666666666666,
+              "end": 25.796333333333333
+            },
+            {
+              "phoneme": "t",
+              "start": 25.796333333333333,
+              "end": 25.823
+            }
+          ]
+        },
+        {
+          "word": "it's",
+          "word_start": 25.843,
+          "word_end": 25.924,
+          "phonemes": "\u026ats",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 25.843,
+              "end": 25.87
+            },
+            {
+              "phoneme": "t",
+              "start": 25.87,
+              "end": 25.897000000000002
+            },
+            {
+              "phoneme": "s",
+              "start": 25.897,
+              "end": 25.924
+            }
+          ]
+        },
+        {
+          "word": "still",
+          "word_start": 25.944,
+          "word_end": 26.044,
+          "phonemes": "st\u026al",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 25.944,
+              "end": 25.969
+            },
+            {
+              "phoneme": "t",
+              "start": 25.969,
+              "end": 25.994
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 25.994,
+              "end": 26.019
+            },
+            {
+              "phoneme": "l",
+              "start": 26.019,
+              "end": 26.043999999999997
+            }
+          ]
+        },
+        {
+          "word": "displayed",
+          "word_start": 26.064,
+          "word_end": 26.244,
+          "phonemes": "d\u026asple\u026ad",
+          "phoneme_timings": [
+            {
+              "phoneme": "d",
+              "start": 26.064,
+              "end": 26.0865
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 26.0865,
+              "end": 26.109
+            },
+            {
+              "phoneme": "s",
+              "start": 26.109,
+              "end": 26.131500000000003
+            },
+            {
+              "phoneme": "p",
+              "start": 26.1315,
+              "end": 26.154
+            },
+            {
+              "phoneme": "l",
+              "start": 26.154,
+              "end": 26.1765
+            },
+            {
+              "phoneme": "e",
+              "start": 26.1765,
+              "end": 26.199
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 26.198999999999998,
+              "end": 26.2215
+            },
+            {
+              "phoneme": "d",
+              "start": 26.2215,
+              "end": 26.244
+            }
+          ]
+        },
+        {
+          "word": "in",
+          "word_start": 26.264,
+          "word_end": 26.304,
+          "phonemes": "\u026an",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 26.264,
+              "end": 26.284
+            },
+            {
+              "phoneme": "n",
+              "start": 26.284,
+              "end": 26.304
+            }
+          ]
+        },
+        {
+          "word": "a",
+          "word_start": 26.324,
+          "word_end": 26.344,
+          "phonemes": "e\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "e",
+              "start": 26.324,
+              "end": 26.334000000000003
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 26.334000000000003,
+              "end": 26.344
+            }
+          ]
+        },
+        {
+          "word": "full",
+          "word_start": 26.364,
+          "word_end": 26.444,
+          "phonemes": "f\u028al",
+          "phoneme_timings": [
+            {
+              "phoneme": "f",
+              "start": 26.364,
+              "end": 26.390666666666668
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 26.390666666666668,
+              "end": 26.417333333333335
+            },
+            {
+              "phoneme": "l",
+              "start": 26.417333333333332,
+              "end": 26.444
+            }
+          ]
+        },
+        {
+          "word": "and",
+          "word_start": 26.464,
+          "word_end": 26.524,
+          "phonemes": "\u00e6nd",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 26.464,
+              "end": 26.483999999999998
+            },
+            {
+              "phoneme": "n",
+              "start": 26.483999999999998,
+              "end": 26.503999999999998
+            },
+            {
+              "phoneme": "d",
+              "start": 26.504,
+              "end": 26.524
+            }
+          ]
+        },
+        {
+          "word": "readable",
+          "word_start": 26.544,
+          "word_end": 26.705,
+          "phonemes": "\u0279i\u02d0d\u0259b\u0259l",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u0279",
+              "start": 26.544,
+              "end": 26.564125
+            },
+            {
+              "phoneme": "i",
+              "start": 26.564125,
+              "end": 26.58425
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 26.58425,
+              "end": 26.604375
+            },
+            {
+              "phoneme": "d",
+              "start": 26.604375,
+              "end": 26.6245
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 26.624499999999998,
+              "end": 26.644624999999998
+            },
+            {
+              "phoneme": "b",
+              "start": 26.644624999999998,
+              "end": 26.664749999999998
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 26.664749999999998,
+              "end": 26.684874999999998
+            },
+            {
+              "phoneme": "l",
+              "start": 26.684874999999998,
+              "end": 26.705
+            }
+          ]
+        },
+        {
+          "word": "manner.",
+          "word_start": 26.725,
+          "word_end": 26.865,
+          "phonemes": "m\u00e6n\u025a",
+          "phoneme_timings": [
+            {
+              "phoneme": "m",
+              "start": 26.725,
+              "end": 26.76
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 26.76,
+              "end": 26.795
+            },
+            {
+              "phoneme": "n",
+              "start": 26.795,
+              "end": 26.830000000000002
+            },
+            {
+              "phoneme": "\u025a",
+              "start": 26.83,
+              "end": 26.865
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "And I don't think that's the case at all.",
+      "segment_start": 26.885,
+      "segment_end": 27.706,
+      "words": [
+        {
+          "word": "And",
+          "word_start": 26.885,
+          "word_end": 26.945,
+          "phonemes": "\u00e6nd",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 26.885,
+              "end": 26.905
+            },
+            {
+              "phoneme": "n",
+              "start": 26.905,
+              "end": 26.925
+            },
+            {
+              "phoneme": "d",
+              "start": 26.925,
+              "end": 26.945
+            }
+          ]
+        },
+        {
+          "word": "I",
+          "word_start": 26.965,
+          "word_end": 26.985,
+          "phonemes": "a\u026a",
+          "phoneme_timings": [
+            {
+              "phoneme": "a",
+              "start": 26.965,
+              "end": 26.975
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 26.975,
+              "end": 26.985
+            }
+          ]
+        },
+        {
+          "word": "don't",
+          "word_start": 27.005,
+          "word_end": 27.105,
+          "phonemes": "do\u028ant",
+          "phoneme_timings": [
+            {
+              "phoneme": "d",
+              "start": 27.005,
+              "end": 27.025
+            },
+            {
+              "phoneme": "o",
+              "start": 27.025,
+              "end": 27.044999999999998
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 27.044999999999998,
+              "end": 27.064999999999998
+            },
+            {
+              "phoneme": "n",
+              "start": 27.065,
+              "end": 27.085
+            },
+            {
+              "phoneme": "t",
+              "start": 27.085,
+              "end": 27.105
+            }
+          ]
+        },
+        {
+          "word": "think",
+          "word_start": 27.125,
+          "word_end": 27.225,
+          "phonemes": "\u03b8\u026a\u014bk",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u03b8",
+              "start": 27.125,
+              "end": 27.15
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 27.15,
+              "end": 27.174999999999997
+            },
+            {
+              "phoneme": "\u014b",
+              "start": 27.175,
+              "end": 27.200000000000003
+            },
+            {
+              "phoneme": "k",
+              "start": 27.200000000000003,
+              "end": 27.225
+            }
+          ]
+        },
+        {
+          "word": "that's",
+          "word_start": 27.245,
+          "word_end": 27.365,
+          "phonemes": "\u00f0\u00e6ts",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 27.245,
+              "end": 27.275
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 27.275,
+              "end": 27.305
+            },
+            {
+              "phoneme": "t",
+              "start": 27.305,
+              "end": 27.335
+            },
+            {
+              "phoneme": "s",
+              "start": 27.335,
+              "end": 27.365000000000002
+            }
+          ]
+        },
+        {
+          "word": "the",
+          "word_start": 27.386,
+          "word_end": 27.446,
+          "phonemes": "\u00f0\u0259",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 27.386,
+              "end": 27.416
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 27.416,
+              "end": 27.446
+            }
+          ]
+        },
+        {
+          "word": "case",
+          "word_start": 27.466,
+          "word_end": 27.546,
+          "phonemes": "ke\u026as",
+          "phoneme_timings": [
+            {
+              "phoneme": "k",
+              "start": 27.466,
+              "end": 27.486
+            },
+            {
+              "phoneme": "e",
+              "start": 27.486,
+              "end": 27.506
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 27.506,
+              "end": 27.526
+            },
+            {
+              "phoneme": "s",
+              "start": 27.526,
+              "end": 27.546
+            }
+          ]
+        },
+        {
+          "word": "at",
+          "word_start": 27.566,
+          "word_end": 27.606,
+          "phonemes": "\u00e6t",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 27.566,
+              "end": 27.586
+            },
+            {
+              "phoneme": "t",
+              "start": 27.586,
+              "end": 27.606
+            }
+          ]
+        },
+        {
+          "word": "all.",
+          "word_start": 27.626,
+          "word_end": 27.706,
+          "phonemes": "\u0254\u02d0l",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u0254",
+              "start": 27.626,
+              "end": 27.65266666666667
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 27.65266666666667,
+              "end": 27.679333333333336
+            },
+            {
+              "phoneme": "l",
+              "start": 27.679333333333332,
+              "end": 27.706
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment_text": "But see that it's actually located where",
+      "segment_start": 27.726,
+      "segment_end": 28.527,
+      "words": [
+        {
+          "word": "But",
+          "word_start": 27.726,
+          "word_end": 27.786,
+          "phonemes": "b\u028ct",
+          "phoneme_timings": [
+            {
+              "phoneme": "b",
+              "start": 27.726,
+              "end": 27.746
+            },
+            {
+              "phoneme": "\u028c",
+              "start": 27.746,
+              "end": 27.766
+            },
+            {
+              "phoneme": "t",
+              "start": 27.766000000000002,
+              "end": 27.786
+            }
+          ]
+        },
+        {
+          "word": "see",
+          "word_start": 27.806,
+          "word_end": 27.866,
+          "phonemes": "si\u02d0",
+          "phoneme_timings": [
+            {
+              "phoneme": "s",
+              "start": 27.806,
+              "end": 27.826
+            },
+            {
+              "phoneme": "i",
+              "start": 27.826,
+              "end": 27.846
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 27.846,
+              "end": 27.866
+            }
+          ]
+        },
+        {
+          "word": "that",
+          "word_start": 27.886,
+          "word_end": 27.966,
+          "phonemes": "\u00f0\u00e6t",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00f0",
+              "start": 27.886,
+              "end": 27.912666666666667
+            },
+            {
+              "phoneme": "\u00e6",
+              "start": 27.912666666666667,
+              "end": 27.939333333333334
+            },
+            {
+              "phoneme": "t",
+              "start": 27.939333333333334,
+              "end": 27.966
+            }
+          ]
+        },
+        {
+          "word": "it's",
+          "word_start": 27.986,
+          "word_end": 28.066,
+          "phonemes": "\u026ats",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u026a",
+              "start": 27.986,
+              "end": 28.012666666666668
+            },
+            {
+              "phoneme": "t",
+              "start": 28.012666666666668,
+              "end": 28.039333333333335
+            },
+            {
+              "phoneme": "s",
+              "start": 28.03933333333333,
+              "end": 28.066
+            }
+          ]
+        },
+        {
+          "word": "actually",
+          "word_start": 28.086,
+          "word_end": 28.247,
+          "phonemes": "\u00e6kt\u0283u\u02d0\u0259li",
+          "phoneme_timings": [
+            {
+              "phoneme": "\u00e6",
+              "start": 28.086,
+              "end": 28.10388888888889
+            },
+            {
+              "phoneme": "k",
+              "start": 28.10388888888889,
+              "end": 28.12177777777778
+            },
+            {
+              "phoneme": "t",
+              "start": 28.121777777777776,
+              "end": 28.139666666666667
+            },
+            {
+              "phoneme": "\u0283",
+              "start": 28.139666666666667,
+              "end": 28.157555555555557
+            },
+            {
+              "phoneme": "u",
+              "start": 28.157555555555554,
+              "end": 28.175444444444445
+            },
+            {
+              "phoneme": "\u02d0",
+              "start": 28.175444444444445,
+              "end": 28.193333333333335
+            },
+            {
+              "phoneme": "\u0259",
+              "start": 28.19333333333333,
+              "end": 28.211222222222222
+            },
+            {
+              "phoneme": "l",
+              "start": 28.211222222222222,
+              "end": 28.229111111111113
+            },
+            {
+              "phoneme": "i",
+              "start": 28.22911111111111,
+              "end": 28.247
+            }
+          ]
+        },
+        {
+          "word": "located",
+          "word_start": 28.267,
+          "word_end": 28.407,
+          "phonemes": "lo\u028ake\u026a\u027e\u1d7bd",
+          "phoneme_timings": [
+            {
+              "phoneme": "l",
+              "start": 28.267,
+              "end": 28.282555555555554
+            },
+            {
+              "phoneme": "o",
+              "start": 28.282555555555554,
+              "end": 28.29811111111111
+            },
+            {
+              "phoneme": "\u028a",
+              "start": 28.298111111111112,
+              "end": 28.313666666666666
+            },
+            {
+              "phoneme": "k",
+              "start": 28.313666666666666,
+              "end": 28.32922222222222
+            },
+            {
+              "phoneme": "e",
+              "start": 28.32922222222222,
+              "end": 28.344777777777775
+            },
+            {
+              "phoneme": "\u026a",
+              "start": 28.34477777777778,
+              "end": 28.360333333333333
+            },
+            {
+              "phoneme": "\u027e",
+              "start": 28.360333333333333,
+              "end": 28.375888888888888
+            },
+            {
+              "phoneme": "\u1d7b",
+              "start": 28.375888888888888,
+              "end": 28.391444444444442
+            },
+            {
+              "phoneme": "d",
+              "start": 28.391444444444446,
+              "end": 28.407
+            }
+          ]
+        },
+        {
+          "word": "where",
+          "word_start": 28.427,
+          "word_end": 28.527,
+          "phonemes": "w\u025b\u0279",
+          "phoneme_timings": [
+            {
+              "phoneme": "w",
+              "start": 28.427,
+              "end": 28.460333333333335
+            },
+            {
+              "phoneme": "\u025b",
+              "start": 28.460333333333335,
+              "end": 28.49366666666667
+            },
+            {
+              "phoneme": "\u0279",
+              "start": 28.493666666666666,
+              "end": 28.527
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "all_phonemes": [
+    {
+      "phoneme": "\u026a",
+      "start": 0.009,
+      "end": 0.40950000000000003,
+      "word": "It",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 0.40950000000000003,
+      "end": 0.81,
+      "word": "It",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 1.952,
+      "end": 2.6208,
+      "word": "turns",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u025c",
+      "start": 2.6208,
+      "end": 3.2896,
+      "word": "turns",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 3.2896,
+      "end": 3.9584,
+      "word": "turns",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "n",
+      "start": 3.9584,
+      "end": 4.6272,
+      "word": "turns",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "z",
+      "start": 4.6272,
+      "end": 5.296,
+      "word": "turns",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "a",
+      "start": 5.436,
+      "end": 5.469333333333333,
+      "word": "out",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 5.469333333333333,
+      "end": 5.502666666666666,
+      "word": "out",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 5.502666666666666,
+      "end": 5.536,
+      "word": "out",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 5.797,
+      "end": 5.857,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 5.857,
+      "end": 5.917000000000001,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 5.917,
+      "end": 5.977,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 6.137,
+      "end": 6.196999999999999,
+      "word": "the",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 6.196999999999999,
+      "end": 6.257,
+      "word": "the",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "f",
+      "start": 6.337,
+      "end": 6.3892,
+      "word": "first",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u025c",
+      "start": 6.3892,
+      "end": 6.4414,
+      "word": "first",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 6.4414,
+      "end": 6.4936,
+      "word": "first",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "s",
+      "start": 6.4936,
+      "end": 6.5458,
+      "word": "first",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 6.5458,
+      "end": 6.598,
+      "word": "first",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "w",
+      "start": 6.658,
+      "end": 6.729571428571429,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u025b",
+      "start": 6.729571428571429,
+      "end": 6.801142857142858,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "b",
+      "start": 6.801142857142858,
+      "end": 6.872714285714286,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "s",
+      "start": 6.872714285714286,
+      "end": 6.944285714285715,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "a",
+      "start": 6.944285714285714,
+      "end": 7.015857142857143,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 7.015857142857143,
+      "end": 7.087428571428571,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 7.087428571428571,
+      "end": 7.159,
+      "word": "website",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 7.199,
+      "end": 7.239,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 7.239,
+      "end": 7.279,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 7.279,
+      "end": 7.319,
+      "word": "that",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "w",
+      "start": 7.359,
+      "end": 7.405666666666667,
+      "word": "was",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 7.405666666666667,
+      "end": 7.452333333333334,
+      "word": "was",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "z",
+      "start": 7.452333333333333,
+      "end": 7.499,
+      "word": "was",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u025b",
+      "start": 7.639,
+      "end": 7.705666666666667,
+      "word": "ever",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "v",
+      "start": 7.705666666666667,
+      "end": 7.772333333333333,
+      "word": "ever",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u025a",
+      "start": 7.772333333333334,
+      "end": 7.839,
+      "word": "ever",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "p",
+      "start": 7.9,
+      "end": 7.946666666666666,
+      "word": "put",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 7.946666666666666,
+      "end": 7.993333333333332,
+      "word": "put",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 7.993333333333333,
+      "end": 8.04,
+      "word": "put",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 8.1,
+      "end": 8.149999999999999,
+      "word": "up",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "p",
+      "start": 8.149999999999999,
+      "end": 8.2,
+      "word": "up",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 8.4,
+      "end": 8.46,
+      "word": "is",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "z",
+      "start": 8.46,
+      "end": 8.52,
+      "word": "is",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "s",
+      "start": 8.821,
+      "end": 8.861,
+      "word": "still",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 8.861,
+      "end": 8.901,
+      "word": "still",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 8.901,
+      "end": 8.940999999999999,
+      "word": "still",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "l",
+      "start": 8.940999999999999,
+      "end": 8.980999999999998,
+      "word": "still",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u0250",
+      "start": 9.081,
+      "end": 9.100999999999999,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "v",
+      "start": 9.100999999999999,
+      "end": 9.120999999999999,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "e",
+      "start": 9.120999999999999,
+      "end": 9.140999999999998,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 9.141,
+      "end": 9.161,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "l",
+      "start": 9.161,
+      "end": 9.181,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 9.181,
+      "end": 9.200999999999999,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "b",
+      "start": 9.200999999999999,
+      "end": 9.220999999999998,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 9.221,
+      "end": 9.241,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "l",
+      "start": 9.241,
+      "end": 9.261,
+      "word": "available",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "t",
+      "start": 9.281,
+      "end": 9.294333333333334,
+      "word": "to",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "u",
+      "start": 9.294333333333334,
+      "end": 9.307666666666668,
+      "word": "to",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 9.307666666666666,
+      "end": 9.321,
+      "word": "to",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 9.341,
+      "end": 9.4115,
+      "word": "us.",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "s",
+      "start": 9.4115,
+      "end": 9.482,
+      "word": "us.",
+      "segment": " It turns out that the first website that was ever put up is still available to us."
+    },
+    {
+      "phoneme": "s",
+      "start": 9.502,
+      "end": 9.515333333333334,
+      "word": "So",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "o",
+      "start": 9.515333333333334,
+      "end": 9.528666666666668,
+      "word": "So",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 9.528666666666666,
+      "end": 9.542,
+      "word": "So",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "a",
+      "start": 9.562,
+      "end": 9.572,
+      "word": "I",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 9.572,
+      "end": 9.582,
+      "word": "I",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 9.602,
+      "end": 9.630888888888888,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "k",
+      "start": 9.630888888888888,
+      "end": 9.659777777777776,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "t",
+      "start": 9.659777777777778,
+      "end": 9.688666666666666,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0283",
+      "start": 9.688666666666666,
+      "end": 9.717555555555554,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "u",
+      "start": 9.717555555555556,
+      "end": 9.746444444444444,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 9.746444444444444,
+      "end": 9.775333333333332,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 9.775333333333334,
+      "end": 9.804222222222222,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "l",
+      "start": 9.804222222222222,
+      "end": 9.83311111111111,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "i",
+      "start": 9.833111111111112,
+      "end": 9.862,
+      "word": "actually",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "h",
+      "start": 9.902,
+      "end": 9.968666666666666,
+      "word": "have",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 9.968666666666666,
+      "end": 10.035333333333332,
+      "word": "have",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "v",
+      "start": 10.035333333333334,
+      "end": 10.102,
+      "word": "have",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 10.143,
+      "end": 10.173,
+      "word": "it",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "t",
+      "start": 10.173,
+      "end": 10.203,
+      "word": "it",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "h",
+      "start": 10.243,
+      "end": 10.296333333333333,
+      "word": "here",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 10.296333333333333,
+      "end": 10.349666666666666,
+      "word": "here",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0279",
+      "start": 10.349666666666668,
+      "end": 10.403,
+      "word": "here",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0254",
+      "start": 10.483,
+      "end": 10.513,
+      "word": "on",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "n",
+      "start": 10.513,
+      "end": 10.543,
+      "word": "on",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "m",
+      "start": 10.603,
+      "end": 10.636333333333333,
+      "word": "my",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "a",
+      "start": 10.636333333333333,
+      "end": 10.669666666666666,
+      "word": "my",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 10.669666666666666,
+      "end": 10.703,
+      "word": "my",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "l",
+      "start": 10.723,
+      "end": 10.783142857142858,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 10.783142857142858,
+      "end": 10.843285714285715,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "p",
+      "start": 10.843285714285715,
+      "end": 10.903428571428572,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "t",
+      "start": 10.903428571428572,
+      "end": 10.963571428571429,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0251",
+      "start": 10.963571428571429,
+      "end": 11.023714285714286,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 11.023714285714286,
+      "end": 11.083857142857143,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "p",
+      "start": 11.083857142857143,
+      "end": 11.144,
+      "word": "laptop",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u0279",
+      "start": 11.164,
+      "end": 11.189,
+      "word": "right",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "a",
+      "start": 11.189,
+      "end": 11.214,
+      "word": "right",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 11.213999999999999,
+      "end": 11.238999999999999,
+      "word": "right",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "t",
+      "start": 11.238999999999999,
+      "end": 11.264,
+      "word": "right",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "n",
+      "start": 11.304,
+      "end": 11.377333333333333,
+      "word": "now.",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "a",
+      "start": 11.377333333333333,
+      "end": 11.450666666666665,
+      "word": "now.",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 11.450666666666667,
+      "end": 11.524,
+      "word": "now.",
+      "segment": "So I actually have it here on my laptop right now."
+    },
+    {
+      "phoneme": "s",
+      "start": 11.665,
+      "end": 11.705,
+      "word": "So",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "o",
+      "start": 11.705,
+      "end": 11.745000000000001,
+      "word": "So",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 11.745,
+      "end": 11.785,
+      "word": "So",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 11.825,
+      "end": 11.865,
+      "word": "this",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 11.865,
+      "end": 11.905000000000001,
+      "word": "this",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "s",
+      "start": 11.905,
+      "end": 11.945,
+      "word": "this",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 12.005,
+      "end": 12.035,
+      "word": "is",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "z",
+      "start": 12.035,
+      "end": 12.065,
+      "word": "is",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "e",
+      "start": 12.145,
+      "end": 12.155,
+      "word": "a",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 12.155,
+      "end": 12.165,
+      "word": "a",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "w",
+      "start": 12.225,
+      "end": 12.270125,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u025b",
+      "start": 12.270125,
+      "end": 12.31525,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "b",
+      "start": 12.315249999999999,
+      "end": 12.360375,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "p",
+      "start": 12.360375,
+      "end": 12.4055,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "e",
+      "start": 12.4055,
+      "end": 12.450625,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 12.450625,
+      "end": 12.495750000000001,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "d",
+      "start": 12.495750000000001,
+      "end": 12.540875000000002,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u0292",
+      "start": 12.540875,
+      "end": 12.586,
+      "word": "webpage",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "p",
+      "start": 12.746,
+      "end": 12.859333333333334,
+      "word": "put",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 12.859333333333334,
+      "end": 12.972666666666667,
+      "word": "put",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "t",
+      "start": 12.972666666666667,
+      "end": 13.086,
+      "word": "put",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 14.628,
+      "end": 14.6985,
+      "word": "up",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "p",
+      "start": 14.6985,
+      "end": 14.768999999999998,
+      "word": "up",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 15.329,
+      "end": 15.349,
+      "word": "in",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "n",
+      "start": 15.349,
+      "end": 15.369,
+      "word": "in",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 15.39,
+      "end": 15.42,
+      "word": "the",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 15.42,
+      "end": 15.45,
+      "word": "the",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u025c",
+      "start": 15.47,
+      "end": 15.495000000000001,
+      "word": "early",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 15.495000000000001,
+      "end": 15.520000000000001,
+      "word": "early",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "l",
+      "start": 15.52,
+      "end": 15.545,
+      "word": "early",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "i",
+      "start": 15.545,
+      "end": 15.57,
+      "word": "early",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "n",
+      "start": 15.89,
+      "end": 15.89857142857143,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "a",
+      "start": 15.89857142857143,
+      "end": 15.907142857142858,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 15.907142857142857,
+      "end": 15.915714285714285,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "n",
+      "start": 15.915714285714285,
+      "end": 15.924285714285714,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "t",
+      "start": 15.924285714285714,
+      "end": 15.932857142857143,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "i",
+      "start": 15.932857142857143,
+      "end": 15.941428571428572,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "z",
+      "start": 15.94142857142857,
+      "end": 15.95,
+      "word": "90s",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "b",
+      "start": 16.291,
+      "end": 19.014666666666667,
+      "word": "by",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "a",
+      "start": 19.014666666666667,
+      "end": 21.738333333333333,
+      "word": "by",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 21.738333333333333,
+      "end": 24.462,
+      "word": "by",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "t",
+      "start": 24.482,
+      "end": 24.4945,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "u",
+      "start": 24.4945,
+      "end": 24.506999999999998,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 24.506999999999998,
+      "end": 24.519499999999997,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u03b8",
+      "start": 24.5195,
+      "end": 24.532,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u025c",
+      "start": 24.532,
+      "end": 24.5445,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 24.5445,
+      "end": 24.557,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u027e",
+      "start": 24.557000000000002,
+      "end": 24.5695,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "i",
+      "start": 24.5695,
+      "end": 24.582,
+      "word": "2.30.",
+      "segment": "So this is a webpage put up in the early 90s by 2.30."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 24.602,
+      "end": 24.628666666666668,
+      "word": "It's",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "t",
+      "start": 24.628666666666668,
+      "end": 24.655333333333335,
+      "word": "It's",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "s",
+      "start": 24.65533333333333,
+      "end": 24.682,
+      "word": "It's",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "d",
+      "start": 24.702,
+      "end": 24.722,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u1d7b",
+      "start": 24.722,
+      "end": 24.742,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "s",
+      "start": 24.742,
+      "end": 24.762,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "k",
+      "start": 24.762,
+      "end": 24.782,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u0279",
+      "start": 24.782,
+      "end": 24.802,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "a",
+      "start": 24.802,
+      "end": 24.822,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 24.822000000000003,
+      "end": 24.842000000000002,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "b",
+      "start": 24.842000000000002,
+      "end": 24.862000000000002,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 24.862000000000002,
+      "end": 24.882,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u014b",
+      "start": 24.882,
+      "end": 24.902,
+      "word": "describing",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "w",
+      "start": 24.922,
+      "end": 24.948666666666668,
+      "word": "what",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 24.948666666666668,
+      "end": 24.975333333333335,
+      "word": "what",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "t",
+      "start": 24.97533333333333,
+      "end": 25.002,
+      "word": "what",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 25.022,
+      "end": 25.052,
+      "word": "the",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 25.052,
+      "end": 25.082,
+      "word": "the",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "w",
+      "start": 25.102,
+      "end": 25.11988888888889,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "a",
+      "start": 25.11988888888889,
+      "end": 25.13777777777778,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 25.137777777777778,
+      "end": 25.15566666666667,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "l",
+      "start": 25.15566666666667,
+      "end": 25.17355555555556,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "d",
+      "start": 25.173555555555556,
+      "end": 25.191444444444446,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "l",
+      "start": 25.191444444444446,
+      "end": 25.209333333333337,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "a",
+      "start": 25.209333333333333,
+      "end": 25.227222222222224,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 25.227222222222224,
+      "end": 25.245111111111115,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "f",
+      "start": 25.24511111111111,
+      "end": 25.263,
+      "word": "wildlife",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "w",
+      "start": 25.283,
+      "end": 25.303,
+      "word": "web",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u025b",
+      "start": 25.303,
+      "end": 25.323,
+      "word": "web",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "b",
+      "start": 25.323,
+      "end": 25.343,
+      "word": "web",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 25.363,
+      "end": 25.393,
+      "word": "is.",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "z",
+      "start": 25.393,
+      "end": 25.423000000000002,
+      "word": "is.",
+      "segment": "It's describing what the wildlife web is."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 25.443,
+      "end": 25.463,
+      "word": "And",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "n",
+      "start": 25.463,
+      "end": 25.483,
+      "word": "And",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "d",
+      "start": 25.483,
+      "end": 25.503,
+      "word": "And",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "w",
+      "start": 25.523,
+      "end": 25.53633333333333,
+      "word": "we",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "i",
+      "start": 25.53633333333333,
+      "end": 25.549666666666663,
+      "word": "we",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 25.549666666666667,
+      "end": 25.563,
+      "word": "we",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "k",
+      "start": 25.583,
+      "end": 25.602999999999998,
+      "word": "can",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 25.602999999999998,
+      "end": 25.622999999999998,
+      "word": "can",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "n",
+      "start": 25.623,
+      "end": 25.643,
+      "word": "can",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "s",
+      "start": 25.663,
+      "end": 25.683,
+      "word": "see",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "i",
+      "start": 25.683,
+      "end": 25.703,
+      "word": "see",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 25.703,
+      "end": 25.723,
+      "word": "see",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 25.743,
+      "end": 25.769666666666666,
+      "word": "that",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 25.769666666666666,
+      "end": 25.796333333333333,
+      "word": "that",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "t",
+      "start": 25.796333333333333,
+      "end": 25.823,
+      "word": "that",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 25.843,
+      "end": 25.87,
+      "word": "it's",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "t",
+      "start": 25.87,
+      "end": 25.897000000000002,
+      "word": "it's",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "s",
+      "start": 25.897,
+      "end": 25.924,
+      "word": "it's",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "s",
+      "start": 25.944,
+      "end": 25.969,
+      "word": "still",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "t",
+      "start": 25.969,
+      "end": 25.994,
+      "word": "still",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 25.994,
+      "end": 26.019,
+      "word": "still",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "l",
+      "start": 26.019,
+      "end": 26.043999999999997,
+      "word": "still",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "d",
+      "start": 26.064,
+      "end": 26.0865,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 26.0865,
+      "end": 26.109,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "s",
+      "start": 26.109,
+      "end": 26.131500000000003,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "p",
+      "start": 26.1315,
+      "end": 26.154,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "l",
+      "start": 26.154,
+      "end": 26.1765,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "e",
+      "start": 26.1765,
+      "end": 26.199,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 26.198999999999998,
+      "end": 26.2215,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "d",
+      "start": 26.2215,
+      "end": 26.244,
+      "word": "displayed",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 26.264,
+      "end": 26.284,
+      "word": "in",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "n",
+      "start": 26.284,
+      "end": 26.304,
+      "word": "in",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "e",
+      "start": 26.324,
+      "end": 26.334000000000003,
+      "word": "a",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 26.334000000000003,
+      "end": 26.344,
+      "word": "a",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "f",
+      "start": 26.364,
+      "end": 26.390666666666668,
+      "word": "full",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 26.390666666666668,
+      "end": 26.417333333333335,
+      "word": "full",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "l",
+      "start": 26.417333333333332,
+      "end": 26.444,
+      "word": "full",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 26.464,
+      "end": 26.483999999999998,
+      "word": "and",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "n",
+      "start": 26.483999999999998,
+      "end": 26.503999999999998,
+      "word": "and",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "d",
+      "start": 26.504,
+      "end": 26.524,
+      "word": "and",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u0279",
+      "start": 26.544,
+      "end": 26.564125,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "i",
+      "start": 26.564125,
+      "end": 26.58425,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 26.58425,
+      "end": 26.604375,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "d",
+      "start": 26.604375,
+      "end": 26.6245,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 26.624499999999998,
+      "end": 26.644624999999998,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "b",
+      "start": 26.644624999999998,
+      "end": 26.664749999999998,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 26.664749999999998,
+      "end": 26.684874999999998,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "l",
+      "start": 26.684874999999998,
+      "end": 26.705,
+      "word": "readable",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "m",
+      "start": 26.725,
+      "end": 26.76,
+      "word": "manner.",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 26.76,
+      "end": 26.795,
+      "word": "manner.",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "n",
+      "start": 26.795,
+      "end": 26.830000000000002,
+      "word": "manner.",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u025a",
+      "start": 26.83,
+      "end": 26.865,
+      "word": "manner.",
+      "segment": "And we can see that it's still displayed in a full and readable manner."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 26.885,
+      "end": 26.905,
+      "word": "And",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "n",
+      "start": 26.905,
+      "end": 26.925,
+      "word": "And",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "d",
+      "start": 26.925,
+      "end": 26.945,
+      "word": "And",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "a",
+      "start": 26.965,
+      "end": 26.975,
+      "word": "I",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 26.975,
+      "end": 26.985,
+      "word": "I",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "d",
+      "start": 27.005,
+      "end": 27.025,
+      "word": "don't",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "o",
+      "start": 27.025,
+      "end": 27.044999999999998,
+      "word": "don't",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 27.044999999999998,
+      "end": 27.064999999999998,
+      "word": "don't",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "n",
+      "start": 27.065,
+      "end": 27.085,
+      "word": "don't",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "t",
+      "start": 27.085,
+      "end": 27.105,
+      "word": "don't",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u03b8",
+      "start": 27.125,
+      "end": 27.15,
+      "word": "think",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 27.15,
+      "end": 27.174999999999997,
+      "word": "think",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u014b",
+      "start": 27.175,
+      "end": 27.200000000000003,
+      "word": "think",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "k",
+      "start": 27.200000000000003,
+      "end": 27.225,
+      "word": "think",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 27.245,
+      "end": 27.275,
+      "word": "that's",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 27.275,
+      "end": 27.305,
+      "word": "that's",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "t",
+      "start": 27.305,
+      "end": 27.335,
+      "word": "that's",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "s",
+      "start": 27.335,
+      "end": 27.365000000000002,
+      "word": "that's",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 27.386,
+      "end": 27.416,
+      "word": "the",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 27.416,
+      "end": 27.446,
+      "word": "the",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "k",
+      "start": 27.466,
+      "end": 27.486,
+      "word": "case",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "e",
+      "start": 27.486,
+      "end": 27.506,
+      "word": "case",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 27.506,
+      "end": 27.526,
+      "word": "case",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "s",
+      "start": 27.526,
+      "end": 27.546,
+      "word": "case",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 27.566,
+      "end": 27.586,
+      "word": "at",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "t",
+      "start": 27.586,
+      "end": 27.606,
+      "word": "at",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u0254",
+      "start": 27.626,
+      "end": 27.65266666666667,
+      "word": "all.",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 27.65266666666667,
+      "end": 27.679333333333336,
+      "word": "all.",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "l",
+      "start": 27.679333333333332,
+      "end": 27.706,
+      "word": "all.",
+      "segment": "And I don't think that's the case at all."
+    },
+    {
+      "phoneme": "b",
+      "start": 27.726,
+      "end": 27.746,
+      "word": "But",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u028c",
+      "start": 27.746,
+      "end": 27.766,
+      "word": "But",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "t",
+      "start": 27.766000000000002,
+      "end": 27.786,
+      "word": "But",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "s",
+      "start": 27.806,
+      "end": 27.826,
+      "word": "see",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "i",
+      "start": 27.826,
+      "end": 27.846,
+      "word": "see",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 27.846,
+      "end": 27.866,
+      "word": "see",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u00f0",
+      "start": 27.886,
+      "end": 27.912666666666667,
+      "word": "that",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 27.912666666666667,
+      "end": 27.939333333333334,
+      "word": "that",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "t",
+      "start": 27.939333333333334,
+      "end": 27.966,
+      "word": "that",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 27.986,
+      "end": 28.012666666666668,
+      "word": "it's",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "t",
+      "start": 28.012666666666668,
+      "end": 28.039333333333335,
+      "word": "it's",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "s",
+      "start": 28.03933333333333,
+      "end": 28.066,
+      "word": "it's",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u00e6",
+      "start": 28.086,
+      "end": 28.10388888888889,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "k",
+      "start": 28.10388888888889,
+      "end": 28.12177777777778,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "t",
+      "start": 28.121777777777776,
+      "end": 28.139666666666667,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u0283",
+      "start": 28.139666666666667,
+      "end": 28.157555555555557,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "u",
+      "start": 28.157555555555554,
+      "end": 28.175444444444445,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u02d0",
+      "start": 28.175444444444445,
+      "end": 28.193333333333335,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u0259",
+      "start": 28.19333333333333,
+      "end": 28.211222222222222,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "l",
+      "start": 28.211222222222222,
+      "end": 28.229111111111113,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "i",
+      "start": 28.22911111111111,
+      "end": 28.247,
+      "word": "actually",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "l",
+      "start": 28.267,
+      "end": 28.282555555555554,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "o",
+      "start": 28.282555555555554,
+      "end": 28.29811111111111,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u028a",
+      "start": 28.298111111111112,
+      "end": 28.313666666666666,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "k",
+      "start": 28.313666666666666,
+      "end": 28.32922222222222,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "e",
+      "start": 28.32922222222222,
+      "end": 28.344777777777775,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u026a",
+      "start": 28.34477777777778,
+      "end": 28.360333333333333,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u027e",
+      "start": 28.360333333333333,
+      "end": 28.375888888888888,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u1d7b",
+      "start": 28.375888888888888,
+      "end": 28.391444444444442,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "d",
+      "start": 28.391444444444446,
+      "end": 28.407,
+      "word": "located",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "w",
+      "start": 28.427,
+      "end": 28.460333333333335,
+      "word": "where",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u025b",
+      "start": 28.460333333333335,
+      "end": 28.49366666666667,
+      "word": "where",
+      "segment": "But see that it's actually located where"
+    },
+    {
+      "phoneme": "\u0279",
+      "start": 28.493666666666666,
+      "end": 28.527,
+      "word": "where",
+      "segment": "But see that it's actually located where"
+    }
+  ]
+}
