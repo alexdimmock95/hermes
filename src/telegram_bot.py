@@ -22,6 +22,8 @@ if TOKEN is None:
 from src.speech_to_speech import SpeechToSpeechTranslator
 from src.voice_transformer import VoiceTransformer
 from src.dictionary.wiktionary_client import format_for_telegram
+from src.latiniser import latinise
+from src.latiniser import NON_LATIN_LANGS
 
 LANGUAGES = {
     "en": "🇬🇧 English (English)",
@@ -85,7 +87,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Snapshot target_lang NOW — we flip it after sending, but still need the old value for the button label
     target_lang = context.user_data.get('target_lang', 'fr')
@@ -105,14 +106,28 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         detected_lang_name = LANGUAGES.get(detected_lang_code, detected_lang_code)
 
         await transcribe_msg.edit_text(f"⏳ Transcribing...\n{detected_lang_name}")
-        await transcribe_msg.edit_text(f"{detected_lang_name} ➡️\n{input_text}")
+        await transcribe_msg.edit_text(f"*{detected_lang_name}* ➡️\n{input_text}", parse_mode="Markdown")
 
         # --- Translate ---
         translate_msg = await update.message.reply_text("⏳ Translating...")
         translated_text = translator.translate(input_text, target_language=target_lang)
-        await translate_msg.edit_text(
-            f"➡️ {LANGUAGES[target_lang]}\n{translated_text}\n\n⏳ Generating audio..."
-        )
+
+        # Check if target language is non-Latin
+        if target_lang in NON_LATIN_LANGS:
+            latin = latinise(translated_text, target_lang)
+            if latin:
+                final_text = (
+                    f"➡️ *{LANGUAGES[target_lang]}*\n"
+                    f"{translated_text}\n\n"
+                    f"_{latin}_\n\n"
+                    f"⏳ Generating audio..."
+                )
+            else:
+                final_text = f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}"
+        else:
+            final_text = f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}"
+
+        await translate_msg.edit_text(final_text, parse_mode="Markdown")
 
         output_audio, sr = translator.translate_speech(
             audio_path=tmp.name,
@@ -124,8 +139,13 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sf.write(output_path, output_audio, sr)
         context.user_data["last_audio_translated"] = output_path
 
-        # Clean up the translate status message
-        await translate_msg.edit_text(f"{LANGUAGES[target_lang]}\n{translated_text}")
+        # --- Store state for buttons / speed menu ---
+        context.user_data["last_target_lang"] = target_lang          # e.g. "fr"
+        context.user_data["last_detected_lang"] = detected_lang_code # e.g. "en"
+
+        # --- Store last translation for possible later use ---
+        context.user_data["last_translated_text"] = translated_text
+        context.user_data["last_translated_lang"] = target_lang
 
         # --- Auto-flip: next translation assumes the conversation continues,
         #     so target becomes what we just detected (the language the user spoke).
@@ -195,11 +215,13 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # --- Speed submenu: back arrow restores the post-translate buttons ---
     elif query.data == "close_speed":
-        current_target = context.user_data.get('target_lang', 'fr')
+        speak_lang = context.user_data.get("last_target_lang", "fr")
+        translate_into = context.user_data.get("last_detected_lang", "en")
+
         await query.edit_message_reply_markup(
             reply_markup=post_translate_keyboard(
-                speak_lang=current_target,
-                translate_into_lang=current_target  # best we can do without stored state
+                speak_lang=speak_lang,
+                translate_into_lang=translate_into
             )
         )
 
@@ -230,8 +252,8 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("translate", set_language))
-    app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     app.add_handler(CallbackQueryHandler(handle_buttons))
+    app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     print("🤖 Bot is running...")
@@ -277,8 +299,9 @@ if __name__ == '__main__':
 ### TODO/ language aware wiktionary - if detected language is french, wiktionary french version
 ##### TODO: if input speech/text messae is one word, automatically open up dictionary defenition with pronunciation
 #### TODO: load denoiser at the start too
-### TODO: add in latin for non latin alphabets for pronunciation. this should go in the translation text message under the non-latin translation
 ### TODO: What other models other than xtts can I use? Ones that are ideally faster, more languages
 ### TODO: Add home button in the post translation buttons, to go back to grammar etc
+## TODO: Ensure generating audio text disappears when the VM message appears
+## TODO: change post translation buttons to be 1 "translate to {last_detected_lang}" 2 choose another lang, 3 speed, 4 Home
 
 ## python -m src.telegram_bot ##
