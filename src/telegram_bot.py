@@ -21,7 +21,7 @@ if TOKEN is None:
 
 from src.speech_to_speech import SpeechToSpeechTranslator
 from src.voice_transformer import VoiceTransformer
-from src.dictionary.wiktionary_client import format_for_telegram
+from src.dictionary.wiktionary_client import format_for_telegram, format_etymology_for_telegram
 from src.latiniser import latinise
 from src.latiniser import NON_LATIN_LANGS
 
@@ -49,22 +49,39 @@ LANGUAGES = {
 # Initialize translator
 translator = SpeechToSpeechTranslator(device="cpu", model_size="base")
 
-
-def post_translate_keyboard(speak_lang, translate_into_lang):
-    """
-    Three-row menu attached to the translated audio message.
-    - speak_lang: the language the user will speak next (shown on the button label)
-    - translate_into_lang: the language to translate INTO when they press it (the callback)
-    """
+def post_translate_keyboard(last_detected_lang):
+    lang_label = LANGUAGES.get(last_detected_lang, last_detected_lang)
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton(
-            f"🔁 Reply in {LANGUAGES[speak_lang]}",
-            callback_data=f"lang_{translate_into_lang}"
-        )],
-        [InlineKeyboardButton("🐢 Speed", callback_data="open_speed")],
-        [InlineKeyboardButton("🌍 Choose language", callback_data="choose_language")]
+        [
+            InlineKeyboardButton(
+                f"🔁 Translate to {lang_label}",
+                callback_data=f"lang_{last_detected_lang}"
+            )
+        ],
+        [
+            InlineKeyboardButton("🌍 Choose another language", callback_data="choose_language")
+        ],
+        [
+            InlineKeyboardButton("🐢 Speed", callback_data="open_speed")
+        ],
+        [
+            InlineKeyboardButton("🏠 Home", callback_data="home")
+        ]
     ])
 
+def dictionary_result_keyboard(word):
+    """Keyboard shown after displaying dictionary definition."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("📜 Etymology", callback_data=f"etymology_{word}")
+        ],
+        [
+            InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")
+        ],
+        [
+            InlineKeyboardButton("🏠 Home", callback_data="home")
+        ]
+    ])
 
 def speed_keyboard():
     """0.5x / 1x / 2x submenu with a back arrow."""
@@ -80,8 +97,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("🌍 Choose target language", callback_data="choose_language")],
         [InlineKeyboardButton("📖 Dictionary",             callback_data="open_dictionary")],
-        [InlineKeyboardButton("ℹ️ Help",                   callback_data="help")]
-    ]
+        [InlineKeyboardButton("ℹ️ About", callback_data="about")]
+        ]
     await update.message.reply_text(
         text="What would you like to do?",
         reply_markup=InlineKeyboardMarkup(keyboard)
@@ -123,9 +140,15 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     f"⏳ Generating audio..."
                 )
             else:
-                final_text = f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}"
+                final_text = (
+                    f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}\n"
+                    f"⏳ Generating audio...")
         else:
-            final_text = f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}"
+            final_text = (
+                f"➡️ *{LANGUAGES[target_lang]}*\n"
+                f"{translated_text}\n"
+                f"⏳ Generating audio..."
+                )
 
         await translate_msg.edit_text(final_text, parse_mode="Markdown")
 
@@ -139,6 +162,19 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sf.write(output_path, output_audio, sr)
         context.user_data["last_audio_translated"] = output_path
 
+        # --- After audio is ready, remove "⏳ Generating audio..." but keep Latinisation
+        # We can rebuild the message without the loading text
+        if target_lang in NON_LATIN_LANGS and latin:
+            clean_text = (
+                f"➡️ *{LANGUAGES[target_lang]}*\n"
+                f"{translated_text}\n\n"
+                f"_{latin}_"
+            )
+        else:
+            clean_text = f"➡️ *{LANGUAGES[target_lang]}*\n{translated_text}"
+
+        await translate_msg.edit_text(clean_text, parse_mode="Markdown")
+
         # --- Store state for buttons / speed menu ---
         context.user_data["last_target_lang"] = target_lang          # e.g. "fr"
         context.user_data["last_detected_lang"] = detected_lang_code # e.g. "en"
@@ -147,22 +183,16 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["last_translated_text"] = translated_text
         context.user_data["last_translated_lang"] = target_lang
 
-        # --- Auto-flip: next translation assumes the conversation continues,
-        #     so target becomes what we just detected (the language the user spoke).
-        context.user_data["target_lang"] = detected_lang_code
-
         # --- Send audio + all buttons in one message ---
         # "Reply in X" label = target_lang (old target, e.g. French — what they'll speak next)
         # "Reply in X" callback = detected_lang_code (e.g. English — what to translate INTO)
         await update.message.reply_voice(
             voice=open(output_path, 'rb'),
-            caption=f"Continue in {detected_lang_name} or:",
+            caption="What would you like to do next?",
             reply_markup=post_translate_keyboard(
-                speak_lang=target_lang,              # label: the language they'll speak (fr)
-                translate_into_lang=detected_lang_code  # callback: translate into this (en)
+                last_detected_lang=detected_lang_code
             )
         )
-
 
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.args:
@@ -172,7 +202,6 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Usage: /translate [language_code]")
 
-
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("TEXT HANDLER FIRED")
     print("awaiting_dictionary_word =", context.user_data.get("awaiting_dictionary_word"))
@@ -181,9 +210,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data.get("awaiting_dictionary_word"):
         word = update.message.text.strip().lower()
         context.user_data["awaiting_dictionary_word"] = False
+        context.user_data["last_dictionary_word"] = word  # Store for etymology button
 
         formatted_message = format_for_telegram(word, max_defs_per_pos=5)
-        await update.message.reply_text(formatted_message, parse_mode="Markdown")
+        await update.message.reply_text(
+            formatted_message, 
+            parse_mode="Markdown",
+            reply_markup=dictionary_result_keyboard(word)
+        )
 
 async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -215,13 +249,11 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # --- Speed submenu: back arrow restores the post-translate buttons ---
     elif query.data == "close_speed":
-        speak_lang = context.user_data.get("last_target_lang", "fr")
         translate_into = context.user_data.get("last_detected_lang", "en")
 
         await query.edit_message_reply_markup(
             reply_markup=post_translate_keyboard(
-                speak_lang=speak_lang,
-                translate_into_lang=translate_into
+                last_detected_lang=translate_into
             )
         )
 
@@ -242,10 +274,48 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sf.write(output_path, modified_audio, sr)
         await query.message.reply_voice(open(output_path, "rb"))
 
+    elif query.data == "home":
+        keyboard = [
+            [InlineKeyboardButton("🌍 Choose target language", callback_data="choose_language")],
+            [InlineKeyboardButton("📖 Dictionary", callback_data="open_dictionary")],
+            [InlineKeyboardButton("ℹ️ About", callback_data="about")]
+            ]
+
+        await query.message.reply_text(
+            text="🏡 Home",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
     elif query.data == "open_dictionary":
         # Can't edit a voice message's text — send a new message instead
         await query.message.reply_text("📖 Send me a word to define (text or voice).")
         context.user_data["awaiting_dictionary_word"] = True
+
+    elif query.data.startswith("etymology_"):
+        word = query.data.replace("etymology_", "")
+        etymology_text = format_etymology_for_telegram(word)
+        
+        # Send etymology as a new message
+        await query.message.reply_text(
+            etymology_text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")],
+                [InlineKeyboardButton("🏠 Home", callback_data="home")]
+            ])
+        )
+
+    elif query.data == "about":
+        about_text = (
+            "🤖 *hermes*\n\n"
+            "A multilingual speech-to-speech translation bot powered by state-of-the-art AI models.\n\n"
+            "🌍 Choose your target language and send a voice note or text to translate.\n"
+            "🎧 Receive translated audio with options to adjust speed and more.\n\n"
+            "Developed by Alex Dimmock.\n"
+            "https://github.com/alexdimmock95/hermes/tree/main"
+        )
+
+        await query.message.reply_text(about_text, parse_mode="Markdown")
 
 def main():
     app = Application.builder().token(TOKEN).build()
@@ -293,15 +363,12 @@ def change_speed(audio_path: str, speed_factor: float, sr: int):
 if __name__ == '__main__':
     main()
 
+# TODO: Clean up architecture, eg put buttons in own script etc
 ### TODO: Add in the voice distortion, male female options in forst set of buttons, "voice effects"
 ###### TODO: Add in capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively. ALSO ETYMOLOGY
             ##### Pronunciation: ability to press either link text/button to hear pronunciation of IPA item
 ### TODO/ language aware wiktionary - if detected language is french, wiktionary french version
 ##### TODO: if input speech/text messae is one word, automatically open up dictionary defenition with pronunciation
-#### TODO: load denoiser at the start too
 ### TODO: What other models other than xtts can I use? Ones that are ideally faster, more languages
-### TODO: Add home button in the post translation buttons, to go back to grammar etc
-## TODO: Ensure generating audio text disappears when the VM message appears
-## TODO: change post translation buttons to be 1 "translate to {last_detected_lang}" 2 choose another lang, 3 speed, 4 Home
 
 ## python -m src.telegram_bot ##

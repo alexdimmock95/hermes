@@ -51,7 +51,23 @@ Comprehensive test suite with pytest:
 
 - **[demo.py](demo.py)** — Demo script showcasing end-to-end pipeline usage (file or mic input, output playback)
 
-- **Telegram bot** — Run `python src/telegram_bot.py` to start the interactive bot (ensure `TELEGRAM_BOT_TOKEN` is set in a `.env` file). The bot accepts voice notes, returns translations (WhisperX → Google Translate → XTTS v2), and provides dictionary lookups via Wiktionary.
+### Telegram Bot
+
+A friendly Telegram bot for multilingual speech-to-speech translation and dictionary lookups.
+
+- Core flow: voice note → WhisperX transcription → Google Translate → XTTS v2 voice-cloned synthesis
+- Features:
+  - Language picker and `/translate [lang_code]` command
+  - "Reply in X" button to flip source/target for conversational workflows
+  - Speed presets (0.5x / 1x / 2x) and on-the-fly speed changes from the UI
+  - Dictionary lookups with formatted definitions and etymology (Wiktionary)
+  - Non-Latin languages display a latinised preview for easier reading
+- Run the bot:
+  1. Add `TELEGRAM_BOT_TOKEN=...` to a `.env` file at the project root (or set the env var)
+  2. Start the bot: `python src/telegram_bot.py` or `python -m src.telegram_bot`
+- Notes:
+  - Large models (WhisperX / XTTS) are lazy-loaded; expect initial latency on first use
+  - Ensure a current `TELEGRAM_BOT_TOKEN` and network access for Wiktionary and translation APIs
 
 ### Audio Data (`audio_files/`)
 

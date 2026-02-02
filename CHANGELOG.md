@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Telegram Bot improvements** — Interactive bot with enhanced UX and controls:
+  - Speed presets (🐌 0.5x / 1x / 🐇 2x) with on-the-fly audio speed adjustment
+  - "Reply in" language button, language picker, and `/translate [lang_code]` command
+  - Non-Latin transliteration preview (latinisation) for scripts such as Chinese
+  - Dictionary lookups with etymology via Wiktionary (Telegram-safe formatting)
+- **Tests** — Added/updated tests for Wiktionary client and speech-to-speech flows
+
+### Changed
+- Improved message flow and state handling in the Telegram bot (edit/reply UX)
+- Lazy-loading and better error handling for large ASR/TTS models
+
+### Fixed
+- Wiktionary requests now include a `User-Agent` header to avoid 403 responses
+- Minor bugfixes and stability improvements in bot handlers and speed changes
 
 ---
 

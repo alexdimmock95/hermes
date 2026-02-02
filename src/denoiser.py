@@ -35,7 +35,7 @@ class Denoiser:
         else:
             print("  Post-filter: DISABLED (preserves more audio)")
         
-    def process_frame(self, frame: np.ndarray) -> np.ndarray:
+    def process_audio(self, frame: np.ndarray) -> np.ndarray:
         """
         Process a single audio frame (1D numpy array).
         
