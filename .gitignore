@@ -11,3 +11,4 @@ output/
 audio_files/temp/
 audio_files/output/
 .env
+.zshrc
