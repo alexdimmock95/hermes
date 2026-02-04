@@ -5,6 +5,8 @@
 import requests
 import mwparserfromhell
 import re
+from gtts import gTTS
+import io
 
 WIKTIONARY_API = "https://en.wiktionary.org/w/api.php"
 
@@ -108,20 +110,28 @@ def extract_etymology(wikitext: str, language: str = "English") -> str | None:
     
     etymology_text = match.group(1).strip()
     
-    # Take only the first paragraph or up to 500 characters for brevity
-    lines = etymology_text.split('\n\n')
-    if lines:
-        first_para = lines[0]
-        # Clean up templates and references
-        cleaned = clean_etymology_text(first_para)
+    # Takes up to 3 paragraphs, up to 1200 chars total
+    paragraphs = [p.strip() for p in etymology_text.split('\n\n') if p.strip()]
+
+    result_parts = []
+    total_length = 0
+
+    for para in paragraphs[:3]:  # Max 3 paragraphs
+        if para.startswith('{{') or para.startswith('<'):
+            continue
+            
+        cleaned = clean_etymology_text(para)
         
-        # Truncate if too long
-        if len(cleaned) > 600:
-            cleaned = cleaned[:600] + "..."
+        if len(cleaned) < 20:
+            continue
+            
+        result_parts.append(cleaned)
+        total_length += len(cleaned)
         
-        return cleaned
-    
-    return None
+        if total_length > 1000:
+            break
+        
+    return ' '.join(result_parts) if result_parts else None
 
 
 def clean_etymology_text(text: str) -> str:
@@ -370,6 +380,24 @@ def format_etymology_for_telegram(word: str) -> str:
     )
     
     return f"📜 *Etymology of {word.upper()}*\n\n{safe_etymology}"
+
+
+def generate_pronunciation_audio(word: str, language: str = 'en') -> io.BytesIO:
+    """
+    Generate pronunciation audio using Google TTS.
+    
+    Args:
+        word: The word to pronounce
+        language: Language code (default: 'en' for English)
+    
+    Returns:
+        BytesIO object containing the audio data
+    """
+    tts = gTTS(text=word, lang=language, slow=False)
+    audio_buffer = io.BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+    return audio_buffer
 
 
 if __name__ == "__main__":

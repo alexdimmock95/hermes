@@ -48,6 +48,13 @@ if __name__ == '__main__':
             ##### Pronunciation: ability to press either link text/button to hear pronunciation of IPA item
 ### TODO/ language aware wiktionary - if detected language is french, wiktionary french version
 ### TODO: What other models other than xtts can I use? Ones that are ideally faster, more languages
-### TODO: what are the other functionalities of google translate that i can use
+## TODO: make sure definition given back is all POS, so that it doesnt cut halfway through the second POS
+# TODO: add in credit to google translate, coqui, wiktionary in about section
+
+### TODO: Pronunciation scoring - Build a model that scores user pronunciation accuracy. Translation conversation thread -> button (practice pronunciation) -> user records pronunciation -> model scores it and gives feedback OR dictionary -> word input -> pronunciation practice -> user records pronunciation -> model scores 
+### TODO: Difficulty classifier - Train a model to rate word difficulty (A1-C2 levels);
+### TODO:Word embeddings - Create/use embeddings to find similar words;
+### TODO:Usage analytics and personalized suggestions;
+### TODO:Real-world example sentences from corpora
 
 ## python -m src.telegram_bot ##

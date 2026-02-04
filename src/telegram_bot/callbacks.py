@@ -9,10 +9,10 @@ from src.telegram_bot.keyboards import (
     build_language_keyboard,
     post_translate_keyboard,
     speed_keyboard,
-    home_keyboard
+    home_keyboard, dictionary_result_keyboard
 )
 from src.telegram_bot.utils import change_speed
-from src.dictionary.wiktionary_client import format_etymology_for_telegram
+from src.dictionary.wiktionary_client import format_etymology_for_telegram, generate_pronunciation_audio, format_for_telegram
 
 
 async def handle_choose_language(query, context: ContextTypes.DEFAULT_TYPE):
@@ -167,19 +167,26 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_pronunciation(query, context, word)
 
 async def handle_pronunciation(query, context: ContextTypes.DEFAULT_TYPE, word: str):
-    """Handle pronunciation playback using IPA."""
-    from src.telegram_bot.utils import generate_ipa_audio
+    """Handle pronunciation button - send audio file."""
     
-    ipa = context.user_data.get("last_word_ipa")
-    
-    if not ipa:
-        await query.message.reply_text("⚠️ No pronunciation data available.")
-        return
-    
-    # Generate audio from IPA
-    audio_path = generate_ipa_audio(ipa, language='en')
-    
-    await query.message.reply_voice(
-        voice=open(audio_path, 'rb'),
-        caption=f"🔊 Pronunciation: {ipa}"
-    )
+    try:
+        # Show processing message
+        await query.edit_message_text(f"🔊 Generating pronunciation for *{word}*...")
+        
+        # Generate audio
+        audio_buffer = generate_pronunciation_audio(word)
+        
+        # Send audio file
+        await context.bot.send_voice(
+            chat_id=query.message.chat_id,
+            voice=audio_buffer,
+            caption=f"🔊 Pronunciation: *{word}*"
+        )
+        
+        # Restore original message
+        definition_text = format_for_telegram(word)
+        keyboard = dictionary_result_keyboard(word)
+        await query.edit_message_text(definition_text, reply_markup=keyboard)
+        
+    except Exception as e:
+        await query.edit_message_text(f"❌ Couldn't generate pronunciation: {str(e)}")

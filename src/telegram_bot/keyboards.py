@@ -29,11 +29,9 @@ def post_translate_keyboard(last_detected_lang):
 def dictionary_result_keyboard(word, has_ipa=False):
     """Keyboard shown after displaying dictionary definition."""
     buttons = []
-    
-    if has_ipa:
-        buttons.append([InlineKeyboardButton("🔊 Hear pronunciation", callback_data=f"pronounce_{word}")])
-    
+
     buttons.extend([
+        [InlineKeyboardButton("🔊 Pronunciation", callback_data=f"pronounce_{word}")],
         [InlineKeyboardButton("📜 Etymology", callback_data=f"etymology_{word}")],
         [InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")],
         [InlineKeyboardButton("🏠 Home", callback_data="home")]
