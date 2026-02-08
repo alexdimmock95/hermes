@@ -7,6 +7,7 @@ import mwparserfromhell
 import re
 from gtts import gTTS
 import io
+from src.dictionary.corpus_examples import fetch_corpus_examples
 
 WIKTIONARY_API = "https://en.wiktionary.org/w/api.php"
 
@@ -180,7 +181,13 @@ def extract_definitions(
 ):
     """
     Parse raw wikitext and extract definitions for a given language.
-
+    Looks for the language section bounded by ==Language==
+    
+    Args:
+        wikitext: Raw wikitext from Wiktionary
+        language: Language to extract (e.g., "English", "Spanish", "French")
+        max_defs_per_pos: Maximum definitions per part of speech
+    
     Returns:
         List of dicts:
         [
@@ -188,85 +195,91 @@ def extract_definitions(
             ...
         ]
     """
-    code = mwparserfromhell.parse(wikitext)
-
-    # --- Step 1: isolate language section ---
-    lang_sections = code.get_sections(matches=language, include_lead=False)
-    if not lang_sections:
-        print(f"DEBUG: No '{language}' section found")
+    # Look for the language section using ==Language==
+    language_pattern = f"=={language}=="
+    
+    if language_pattern not in wikitext:
+        print(f"DEBUG: No '{language}' section found (looked for {language_pattern})")
         return []
-
-    language_section = lang_sections[0]
-    section_text = str(language_section)
-    print(f"DEBUG: Found '{language}' section ({len(section_text)} chars)")
+    
+    # Split at the language heading
+    parts = wikitext.split(language_pattern, 1)
+    if len(parts) < 2:
+        return []
+    
+    # Take everything after the language heading
+    after_language = parts[1]
+    
+    # Find the end of this language section (next == heading of same level)
+    # Stop at the next ==SomeOtherLanguage==
+    next_language_match = re.search(r'\n==\w', after_language)
+    if next_language_match:
+        language_section = after_language[:next_language_match.start()]
+    else:
+        language_section = after_language
+    
+    print(f"DEBUG: Found '{language}' section ({len(language_section)} chars)")
 
     entries = []
 
-    # Define allowed POS headings
+    # Define allowed POS headings (level 3: ===POS===)
     allowed_pos = {
         "Noun", "Verb", "Adjective", "Adverb", "Pronoun",
         "Preposition", "Conjunction", "Interjection",
         "Determiner", "Article", "Numeral", "Proper noun"
     }
 
-    # Get all headings
-    headings = list(language_section.filter_headings())
-    print(f"DEBUG: Found {len(headings)} total headings in language section")
+    # Find all POS headings (===POS===)
+    pos_pattern = r'===(' + '|'.join(allowed_pos) + r')==='
+    pos_matches = list(re.finditer(pos_pattern, language_section))
+    
+    print(f"DEBUG: Found {len(pos_matches)} POS headings in {language} section")
 
-    # Process each POS heading
-    for heading in headings:
-        heading_text = heading.title.strip_code().strip()
+    for match in pos_matches:
+        pos_name = match.group(1)
+        pos_start = match.end()
         
-        # Skip the language heading itself and non-POS headings
-        if heading_text == language or heading_text not in allowed_pos:
-            continue
-
-        print(f"DEBUG: Processing POS heading: '{heading_text}' (level {heading.level})")
-
+        # Find where this POS section ends (next === or end of language section)
+        next_section = re.search(r'\n===', language_section[pos_start:])
+        if next_section:
+            pos_end = pos_start + next_section.start()
+        else:
+            pos_end = len(language_section)
+        
+        pos_content = language_section[pos_start:pos_end]
+        
+        print(f"DEBUG: Processing {pos_name} (content length: {len(pos_content)} chars)")
+        
         definitions = []
         
-        # Build the heading pattern based on the actual level
-        # Level 3 = ===, Level 4 = ====, etc.
-        equals = "=" * heading.level
-        heading_pattern = f"{equals}{heading_text}{equals}"
-        
-        print(f"DEBUG: Looking for pattern: '{heading_pattern}'")
-        
-        if heading_pattern in section_text:
-            # Split at this heading and take everything after
-            parts = section_text.split(heading_pattern, 1)
-            if len(parts) > 1:
-                after_heading = parts[1]
-                print(f"DEBUG: Content after heading (first 300 chars):\n{after_heading[:300]}\n")
+        # Extract definition lines (start with #, not ##)
+        lines = pos_content.split('\n')
+        for line in lines:
+            line_stripped = line.lstrip()
+            
+            # Skip if it's a sub-definition (##) or example (starts with #:, #*, etc.)
+            if not line_stripped.startswith('#'):
+                continue
+            if line_stripped.startswith('##') or line_stripped.startswith('#:') or line_stripped.startswith('#*'):
+                continue
                 
-                # Take content until next heading of same or higher level
-                lines = after_heading.split('\n')
-                
-                for line in lines:
-                    # Stop if we hit another heading of equal or higher level
-                    # (fewer or equal number of = signs at the start)
-                    stripped = line.strip()
-                    if stripped.startswith('===') and not stripped.startswith('===='):
-                        print(f"DEBUG: Hit next level 3 section, stopping")
-                        break
-                    
-                    # Look for definition lines (start with #)
-                    line_stripped = line.lstrip()
-                    if line_stripped.startswith('#') and not line_stripped.startswith('##'):
-                        # Remove leading # and clean
-                        clean = clean_definition(line_stripped.lstrip('#:* ').strip())
-                        if clean and len(definitions) < max_defs_per_pos:
-                            definitions.append(clean)
-                            print(f"DEBUG: Found definition: {clean[:80]}...")
-
+            # Skip if it contains example/usage markers
+            if '{{ux' in line_stripped or '{{quote' in line_stripped:
+                continue
+            
+            # Clean the definition
+            clean = clean_definition(line_stripped.lstrip('#:* ').strip())
+            
+            if clean and len(clean) > 10 and len(definitions) < max_defs_per_pos:
+                definitions.append(clean)
+                print(f"DEBUG: Found definition: {clean[:80]}...")
+        
         if definitions:
             entries.append({
-                "pos": heading_text,
+                "pos": pos_name,
                 "definitions": definitions[:max_defs_per_pos],
             })
-            print(f"DEBUG: Added {len(definitions)} definitions for {heading_text}")
-        else:
-            print(f"DEBUG: No definitions found for {heading_text}")
+            print(f"DEBUG: Added {len(definitions)} definitions for {pos_name}")
 
     print(f"DEBUG: Total POS entries found: {len(entries)}")
     return entries
@@ -275,66 +288,113 @@ def clean_definition(text: str) -> str:
     """
     Clean a single definition line while preserving meaning.
     """
-    # Remove templates {{...}}
-    text = re.sub(r"\{\{[^}]+\}\}", "", text)
-
+    # Stop at certain markers that indicate we're leaving the actual definition
+    for marker in ['{{quote', '{{ux', '{{syn', '{{ant', '{{hypo', '{{see']:
+        if marker in text:
+            text = text.split(marker)[0]
+    
+    # Remove ALL templates {{...}} including nested ones
+    while '{{' in text:
+        # Find outermost template
+        start = text.find('{{')
+        if start == -1:
+            break
+        
+        # Find matching closing braces
+        depth = 0
+        end = start
+        for i in range(start, len(text)):
+            if text[i:i+2] == '{{':
+                depth += 1
+                i += 1
+            elif text[i:i+2] == '}}':
+                depth -= 1
+                if depth == 0:
+                    end = i + 2
+                    break
+                i += 1
+        
+        if end > start:
+            text = text[:start] + text[end:]
+        else:
+            break  # Malformed template, just break
+    
+    # Clean up HTML tags
+    text = re.sub(r'<[^>]+>', '', text)
+    
     # Replace wiki links [[dog]] -> dog
     # First handle [[word|display]] -> display
     text = re.sub(r"\[\[([^\]|]+)\|([^\]]+)\]\]", r"\2", text)
     # Then handle [[word]] -> word
     text = re.sub(r"\[\[([^\]]+)\]\]", r"\1", text)
-
+    
+    # Remove reference markers like [1], [2]
+    text = re.sub(r'\[\d+\]', '', text)
+    
+    # Clean up taxonomy formatting
+    text = re.sub(r'\{\{taxfmt\|([^|]+)\|[^}]+\}\}', r'\1', text)
+    
     # Collapse whitespace
     text = re.sub(r"\s+", " ", text)
+    
+    # Remove trailing colons and periods that are artifacts
+    text = text.strip().rstrip(':.')
+    
+    # If definition is too short after cleaning, it's probably junk
+    if len(text) < 10:
+        return ""
 
     return text.strip()
 
-def fetch_definitions(word: str, max_defs_per_pos: int = 5) -> dict:
+def fetch_definitions(word: str, language: str = "English", max_defs_per_pos: int = 5) -> dict:
     """
     High-level dictionary lookup.
+    
+    Args:
+        word: The word to look up
+        language: Target language (e.g., "English", "French", "Spanish")
+        max_defs_per_pos: Max definitions per part of speech
     """
-    empty = {"word": word, "language": "English", "pronunciation": None, "etymology": None, "entries": []}
+    empty = {"word": word, "language": language, "pronunciation": None, "etymology": None, "entries": []}
 
     wikitext = fetch_wikitext(word)
     if not wikitext:
         print("DEBUG fetch_definitions: No wikitext returned")
         return empty
 
-    pronunciation = extract_pronunciation(wikitext)
+    pronunciation = extract_pronunciation(wikitext, language=language)
     print(f"DEBUG fetch_definitions: pronunciation = {pronunciation}")
     
-    etymology = extract_etymology(wikitext)
+    etymology = extract_etymology(wikitext, language=language)
     print(f"DEBUG fetch_definitions: etymology exists = {etymology is not None}")
     
     entries = extract_definitions(
         wikitext,
-        language="English",
+        language=language,  # Pass language through
         max_defs_per_pos=max_defs_per_pos,
     )
     print(f"DEBUG fetch_definitions: entries count = {len(entries)}")
-    print(f"DEBUG fetch_definitions: entries = {entries}")
 
     result = {
         "word": word,
-        "language": "English",
+        "language": language,
         "pronunciation": pronunciation,
         "etymology": etymology,
         "entries": entries,
     }
     
-    print(f"DEBUG fetch_definitions: returning result with {len(result['entries'])} entries")
     return result
 
-def format_for_telegram(word: str, max_defs_per_pos: int = 5) -> str:
+def format_for_telegram(word: str, language: str = "English", max_defs_per_pos: int = 5) -> str:
     """
     Format dictionary output for Telegram Markdown.
     """
-    result = fetch_definitions(word, max_defs_per_pos)
+    result = fetch_definitions(word, language=language, max_defs_per_pos=max_defs_per_pos)
 
     if not result["entries"]:
-        return f"❌ No definition found for '*{word}*'."
+        return f"❌ No {language} definition found for '*{word}*'."
 
-    lines = [f"📖 *{word.upper()}*"]
+    lines = [f"📖 *{word.upper()}* ({language})"]
     
     # Add pronunciation if available
     if result["pronunciation"]:
@@ -346,15 +406,17 @@ def format_for_telegram(word: str, max_defs_per_pos: int = 5) -> str:
         lines.append(f"*{entry['pos']}*")
 
         for i, definition in enumerate(entry["definitions"], 1):
-            safe = (
-                definition.replace("*", "\\*")
-                .replace("_", "\\_")
-                .replace("[", "\\[")
-                .replace("]", "\\]")
-                .replace("`", "\\`")
-            )
+            safe = _escape_telegram_markdown(definition)
             lines.append(f"  {i}. {safe}")
 
+        lines.append("")
+
+    examples = fetch_corpus_examples(word, max_examples=3)
+    if examples:
+        lines.append("📝 *Examples*")
+        for example in examples:
+            safe_example = _escape_telegram_markdown(example)
+            lines.append(f"• {safe_example}")
         lines.append("")
 
     return "\n".join(lines)
@@ -371,15 +433,19 @@ def format_etymology_for_telegram(word: str) -> str:
     
     # Escape markdown special characters
     etymology = result["etymology"]
-    safe_etymology = (
-        etymology.replace("*", "\\*")
+    safe_etymology = _escape_telegram_markdown(etymology)
+    
+    return f"📜 *Etymology of {word.upper()}*\n\n{safe_etymology}"
+
+
+def _escape_telegram_markdown(text: str) -> str:
+    return (
+        text.replace("*", "\\*")
         .replace("_", "\\_")
         .replace("[", "\\[")
         .replace("]", "\\]")
         .replace("`", "\\`")
     )
-    
-    return f"📜 *Etymology of {word.upper()}*\n\n{safe_etymology}"
 
 
 def generate_pronunciation_audio(word: str, language: str = 'en') -> io.BytesIO:

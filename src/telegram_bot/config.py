@@ -20,3 +20,26 @@ LANGUAGES = {
     "ko": "🇰🇷 한국어 (Korean)",
     "hi": "🇮🇳 हिन्दी (Hindi)"
 }
+
+# Map language codes to Wiktionary language section names
+# Wiktionary uses full language names for section headers
+WIKTIONARY_LANGUAGES = {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "pl": "Polish",
+    "tr": "Turkish",
+    "ru": "Russian",
+    "nl": "Dutch",
+    "cs": "Czech",
+    "ar": "Arabic",
+    "zh-CN": "Chinese",  # Wiktionary uses "Chinese" for both
+    "zh-TW": "Chinese",
+    "ja": "Japanese",
+    "hu": "Hungarian",
+    "ko": "Korean",
+    "hi": "Hindi"
+}

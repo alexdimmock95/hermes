@@ -1,192 +1,404 @@
-"""Callback query handlers for the Telegram bot."""
+"""Callback handlers - COMPLETE FIX for voice message buttons"""
 
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-import soundfile as sf
-
-from src.telegram_bot.config import LANGUAGES
-from src.telegram_bot.keyboards import (
-    build_language_keyboard,
-    post_translate_keyboard,
-    speed_keyboard,
-    home_keyboard, dictionary_result_keyboard
+from src.dictionary.wiktionary_client import (
+    format_etymology_for_telegram,
+    generate_pronunciation_audio
 )
-from src.telegram_bot.utils import change_speed
-from src.dictionary.wiktionary_client import format_etymology_for_telegram, generate_pronunciation_audio, format_for_telegram
+from src.telegram_bot.keyboards import (
+    dictionary_result_keyboard,
+    build_language_keyboard,
+    home_keyboard,
+    post_translate_keyboard,
+    speed_keyboard
+)
+from src.telegram_bot.config import LANGUAGES
+from src.ml.pronunciation_score import PronunciationScore
+from src.learning.events import emit_word_event
+
+# Global scorer instance
+PRONUNCIATION_SCORER = None
 
 
-async def handle_choose_language(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle the 'choose_language' callback."""
-    reply_markup = build_language_keyboard(LANGUAGES, buttons_per_row=2)
-    # Can't edit a voice message's text — send a new message instead
-    await query.message.reply_text(
-        text="🌍 Choose your target language:",
-        reply_markup=reply_markup
-    )
+def get_scorer():
+    """Lazy load the pronunciation scorer."""
+    global PRONUNCIATION_SCORER
+    if PRONUNCIATION_SCORER is None:
+        print("Initializing pronunciation scorer for first use...")
+        PRONUNCIATION_SCORER = PronunciationScore()
+    return PRONUNCIATION_SCORER
 
 
-async def handle_language_selection(query, context: ContextTypes.DEFAULT_TYPE, lang_code: str):
-    """Handle when a specific language is selected."""
-    context.user_data["target_lang"] = lang_code
-
-    if query.message.text:
-        # Came from the language picker (text message) — collapse it in place
-        await query.edit_message_text(text=f"Translating to {LANGUAGES[lang_code]}.\nSend a voice note or text.")
-    else:
-        # Came from the voice message caption ("Reply in" button) — can't edit that,
-        # so just send the prompt as a new message
-        await query.message.reply_text(f"Translating to {LANGUAGES[lang_code]}.\nSend a voice note or text.")
-
-
-async def handle_open_speed(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle opening the speed adjustment menu."""
-    await query.edit_message_reply_markup(reply_markup=speed_keyboard())
-
-
-async def handle_close_speed(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle closing the speed adjustment menu (back button)."""
-    translate_into = context.user_data.get("last_detected_lang", "en")
-
-    await query.edit_message_reply_markup(
-        reply_markup=post_translate_keyboard(
-            last_detected_lang=translate_into
+async def safe_message_update(query, text, parse_mode="Markdown", reply_markup=None):
+    """
+    Safely update or send a message, handling both text and non-text messages.
+    
+    If the original message is a voice/photo/video, send a new text message.
+    If it's a text message, edit it.
+    """
+    try:
+        # Try to edit the existing message
+        await query.edit_message_text(
+            text,
+            parse_mode=parse_mode,
+            reply_markup=reply_markup
         )
-    )
-
-
-async def handle_speed_change(query, context: ContextTypes.DEFAULT_TYPE, factor: float):
-    """Handle actual speed change."""
-    prev_audio_path = context.user_data.get("last_audio_translated")
-    sr = 16000
-
-    if prev_audio_path is None:
-        await query.message.reply_text("⚠️ No translated audio available to modify.")
-        return
-
-    modified_audio = change_speed(prev_audio_path, factor, sr)
-
-    output_path = "speed_changed.wav"
-    sf.write(output_path, modified_audio, sr)
-    await query.message.reply_voice(open(output_path, "rb"))
-
-
-async def handle_home(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle returning to the home menu."""
-    await query.message.reply_text(
-        text="🏡 Home",
-        reply_markup=home_keyboard()
-    )
-
-'''
-async def handle_open_dictionary(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle opening the dictionary feature."""
-    # Can't edit a voice message's text — send a new message instead
-    await query.message.reply_text("📖 Send me a word to define (text or voice).")
-    context.user_data["awaiting_dictionary_word"] = True
-'''
-
-async def handle_open_dictionary(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle opening the dictionary feature."""
-    print("DEBUG: handle_open_dictionary called!")
-    print(f"DEBUG: Setting awaiting_dictionary_word to True")
-    context.user_data["awaiting_dictionary_word"] = True
-    print(f"DEBUG: awaiting_dictionary_word is now: {context.user_data.get('awaiting_dictionary_word')}")
-    
-    # Can't edit a voice message's text — send a new message instead
-    await query.message.reply_text("📖 Send me a word to define (text or voice).")
-
-
-async def handle_etymology(query, context: ContextTypes.DEFAULT_TYPE, word: str):
-    """Handle etymology lookup for a word."""
-    from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-    
-    etymology_text = format_etymology_for_telegram(word)
-    
-    # Send etymology as a new message
-    await query.message.reply_text(
-        etymology_text,
-        parse_mode="Markdown",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")],
-            [InlineKeyboardButton("🏠 Home", callback_data="home")]
-        ])
-    )
-
-
-async def handle_about(query, context: ContextTypes.DEFAULT_TYPE):
-    """Handle the about page."""
-    about_text = (
-        "🤖 *hermes*\n\n"
-        "A multilingual speech-to-speech translation bot powered by state-of-the-art AI models.\n\n"
-        "🌍 Choose your target language and send a voice note or text to translate.\n"
-        "🎧 Receive translated audio with options to adjust speed and more.\n\n"
-        "Developed by Alex Dimmock.\n"
-        "https://github.com/alexdimmock95/hermes/tree/main"
-    )
-
-    await query.message.reply_text(about_text, parse_mode="Markdown")
+    except Exception as e:
+        error_str = str(e).lower()
+        if "no text in the message" in error_str or "message can't be edited" in error_str:
+            # Original message is voice/photo/video or can't be edited
+            # Send a new message instead
+            await query.message.reply_text(
+                text,
+                parse_mode=parse_mode,
+                reply_markup=reply_markup
+            )
+        else:
+            # Some other error - re-raise it
+            print(f"Error in safe_message_update: {e}")
+            raise
 
 
 async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Main callback query router that delegates to specific handlers."""
+    """Handle all callback query button presses."""
     query = update.callback_query
     await query.answer()
+    
+    data = query.data
+    
+    # Language selection
+    if data == "choose_language":
+        await handle_choose_language(update, context)
+    elif data.startswith("lang_"):
+        lang_code = data.replace("lang_", "")
+        await handle_set_language(update, context, lang_code)
+    
+    # Dictionary features
+    elif data.startswith("pronounce_"):
+        word = data.replace("pronounce_", "")
+        await handle_pronunciation(update, context, word)
+    elif data.startswith("etymology_"):
+        word = data.replace("etymology_", "")
+        await handle_etymology(update, context, word)
+    elif data.startswith("practice_"):
+        word = data.replace("practice_", "")
+        await handle_practice_mode(update, context, word)
+    elif data.startswith("back_def_"):
+        word = data.replace("back_def_", "")
+        await handle_back_to_definition(update, context, word)
+    elif data == "open_dictionary":
+        await handle_open_dictionary(update, context)
+    
+    # Navigation
+    elif data == "home":
+        await handle_home(update, context)
+    elif data == "about":
+        await handle_about(update, context)
+    elif data == "open_voice_fx":
+        await handle_open_voice_fx(update, context)
+    elif data.startswith("voice_fx_"):
+        await handle_set_voice_fx(update, context, data)
+    
+    # Speed controls
+    elif data == "open_speed":
+        await handle_open_speed(update, context)
+    elif data.startswith("speed_"):
+        speed = data.replace("speed_", "")
+        await handle_set_speed(update, context, speed)
+    elif data == "close_speed":
+        await handle_close_speed(update, context)
+    
+    else:
+        await safe_message_update(query, f"Unknown action: {data}")
 
-    if query.data == "choose_language":
-        await handle_choose_language(query, context)
 
-    elif query.data.startswith("lang_"):
-        lang_code = query.data.replace("lang_", "")
-        await handle_language_selection(query, context, lang_code)
+# ============================================================================
+# LANGUAGE HANDLERS
+# ============================================================================
 
-    elif query.data == "open_speed":
-        await handle_open_speed(query, context)
+async def handle_choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show language selection keyboard."""
+    query = update.callback_query
+    keyboard = build_language_keyboard(LANGUAGES)
+    
+    await safe_message_update(
+        query,
+        "🌍 *Choose your target language:*\n\n"
+        "Select the language you want to translate to.",
+        reply_markup=keyboard
+    )
 
-    elif query.data == "close_speed":
-        await handle_close_speed(query, context)
 
-    elif query.data.startswith("speed_"):
-        factor = float(query.data.split("_")[1])
-        await handle_speed_change(query, context, factor)
+async def handle_set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang_code: str):
+    """Set the target language."""
+    query = update.callback_query
+    
+    context.user_data['target_lang'] = lang_code
+    lang_name = LANGUAGES.get(lang_code, lang_code)
+    
+    await safe_message_update(
+        query,
+        f"✅ *Target language set to: {lang_name}*\n\n"
+        f"Send me a voice message and I'll translate it to {lang_name}!",
+        reply_markup=home_keyboard()
+    )
 
-    elif query.data == "home":
-        await handle_home(query, context)
 
-    elif query.data == "open_dictionary":
-        await handle_open_dictionary(query, context)
+# ============================================================================
+# DICTIONARY HANDLERS
+# ============================================================================
 
-    elif query.data.startswith("etymology_"):
-        word = query.data.replace("etymology_", "")
-        await handle_etymology(query, context, word)
-
-    elif query.data == "about":
-        await handle_about(query, context)
-
-    elif query.data.startswith("pronounce_"):
-        word = query.data.replace("pronounce_", "")
-        await handle_pronunciation(query, context, word)
-
-async def handle_pronunciation(query, context: ContextTypes.DEFAULT_TYPE, word: str):
-    """Handle pronunciation button - send audio file."""
+async def handle_pronunciation(update: Update, context: ContextTypes.DEFAULT_TYPE, word: str):
+    """Send pronunciation audio."""
+    query = update.callback_query
     
     try:
-        # Show processing message
-        await query.edit_message_text(f"🔊 Generating pronunciation for *{word}*...")
+        await safe_message_update(
+            query,
+            f"🔊 Generating pronunciation for *{word}*..."
+        )
         
-        # Generate audio
         audio_buffer = generate_pronunciation_audio(word)
         
-        # Send audio file
         await context.bot.send_voice(
             chat_id=query.message.chat_id,
             voice=audio_buffer,
-            caption=f"🔊 Pronunciation: *{word}*"
+            caption=f"🔊 Pronunciation: *{word}*",
+            parse_mode="Markdown"
         )
         
-        # Restore original message
+        from src.dictionary.wiktionary_client import format_for_telegram
         definition_text = format_for_telegram(word)
         keyboard = dictionary_result_keyboard(word)
-        await query.edit_message_text(definition_text, reply_markup=keyboard)
+        
+        await safe_message_update(query, definition_text, reply_markup=keyboard)
         
     except Exception as e:
-        await query.edit_message_text(f"❌ Couldn't generate pronunciation: {str(e)}")
+        await safe_message_update(
+            query,
+            f"❌ Sorry, I couldn't generate pronunciation for *{word}*.\n\nError: {str(e)}"
+        )
+
+
+async def handle_etymology(update: Update, context: ContextTypes.DEFAULT_TYPE, word: str):
+    """Show etymology information."""
+    query = update.callback_query
+    
+    etymology_text = format_etymology_for_telegram(word)
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("⬅️ Back to Definition", callback_data=f"back_def_{word}")]
+    ])
+    
+    await safe_message_update(query, etymology_text, reply_markup=keyboard)
+
+
+async def handle_practice_mode(update: Update, context: ContextTypes.DEFAULT_TYPE, word: str):
+    """Start pronunciation practice mode."""
+    query = update.callback_query
+    
+    context.user_data['practicing_word'] = word
+    
+    print(f"\n🎤 Practice mode activated for word: '{word}'")
+    
+    await safe_message_update(
+        query,
+        f"🎤 *Practice Mode: '{word}'*\n\n"
+        f"Record yourself saying '*{word}*' and send me the voice message.\n\n"
+        f"I'll analyze your pronunciation using:\n"
+        f"• Audio feature analysis (MFCCs)\n"
+        f"• Speech recognition (Wav2Vec2)\n"
+        f"• Dynamic Time Warping\n\n"
+        f"Ready? Press the microphone button 🎤 and say the word!"
+    )
+
+
+async def handle_back_to_definition(update: Update, context: ContextTypes.DEFAULT_TYPE, word: str):
+    """Return to definition view."""
+    query = update.callback_query
+    
+    from src.dictionary.wiktionary_client import format_for_telegram
+    definition_text = format_for_telegram(word)
+    keyboard = dictionary_result_keyboard(word)
+    
+    await safe_message_update(query, definition_text, reply_markup=keyboard)
+
+
+async def handle_open_dictionary(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Prompt user to enter a word."""
+    query = update.callback_query
+    
+    print("DEBUG: handle_open_dictionary called!")
+    context.user_data["awaiting_dictionary_word"] = True
+    
+    await safe_message_update(
+        query,
+        "📖 *Dictionary Mode*\n\n"
+        "Please type the word you want to look up:"
+    )
+
+
+# ============================================================================
+# NAVIGATION HANDLERS
+# ============================================================================
+
+async def handle_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Return to main menu."""
+    query = update.callback_query
+    
+    # Clear any active modes
+    context.user_data.pop("awaiting_dictionary_word", None)
+    context.user_data.pop("practicing_word", None)
+    
+    current_lang = context.user_data.get('target_lang', 'Not set')
+    lang_name = LANGUAGES.get(current_lang, current_lang)
+    
+    await safe_message_update(
+        query,
+        f"🏠 *Welcome to the Translation & Dictionary Bot*\n\n"
+        f"Current target language: *{lang_name}*\n\n"
+        f"What would you like to do?",
+        reply_markup=home_keyboard()
+    )
+
+
+async def handle_about(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show credits and information."""
+    query = update.callback_query
+    
+    about_text = (
+        "ℹ️ *About This Bot*\n\n"
+        "*Features:*\n"
+        "• Voice-to-voice translation\n"
+        "• Dictionary with pronunciations\n"
+        "• Etymology information\n"
+        "• ML-powered pronunciation scoring\n\n"
+        "*Credits:*\n"
+        "• Translations: Google Translate\n"
+        "• Dictionary: Wiktionary\n"
+        "• TTS: Coqui XTTS & Google TTS\n"
+        "• Speech Recognition: Wav2Vec2 (Meta/Facebook)\n"
+        "• Pronunciation Analysis: Custom ML model\n\n"
+        "*Technology:*\n"
+        "• MFCCs for audio features\n"
+        "• Dynamic Time Warping for alignment\n"
+        "• Transformer models for speech recognition\n\n"
+        "Made with ❤️ for language learners"
+    )
+    
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("⬅️ Back", callback_data="home")]
+    ])
+    
+    await safe_message_update(query, about_text, reply_markup=keyboard)
+
+
+# ============================================================================
+# SPEED HANDLERS
+# ============================================================================
+
+async def handle_open_speed(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Open speed adjustment menu."""
+    query = update.callback_query
+    
+    current_speed = context.user_data.get("speed", 1.0)
+    
+    await safe_message_update(
+        query,
+        f"🐢 *Adjust Playback Speed*\n\n"
+        f"Current speed: *{current_speed}x*\n\n"
+        f"Choose a new speed:",
+        reply_markup=speed_keyboard()
+    )
+
+
+async def handle_set_speed(update: Update, context: ContextTypes.DEFAULT_TYPE, speed: str):
+    """Set playback speed."""
+    query = update.callback_query
+    
+    try:
+        speed_float = float(speed)
+        context.user_data["speed"] = speed_float
+        
+        await safe_message_update(
+            query,
+            f"✅ *Speed set to {speed_float}x*\n\n"
+            f"The next audio playback will use this speed.",
+            reply_markup=home_keyboard()
+        )
+    except ValueError:
+        await safe_message_update(
+            query,
+            f"❌ Invalid speed: {speed}",
+            reply_markup=home_keyboard()
+        )
+
+
+async def handle_close_speed(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Close speed menu."""
+    await handle_home(update, context)
+
+# ============================================================================
+# VOICE FX HANDLERS
+# ============================================================================
+
+async def handle_open_voice_fx(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Open voice effects menu."""
+    query = update.callback_query
+
+    # Set mode
+    context.user_data["mode"] = "voice_fx"
+    context.user_data.pop("voice_fx_preset", None)
+
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("⬆️ Male → Female", callback_data="voice_fx_mtf")],
+        [InlineKeyboardButton("⬇️ Female → Male", callback_data="voice_fx_ftm")],
+        [InlineKeyboardButton("👴 Older", callback_data="voice_fx_older")],
+        [InlineKeyboardButton("🧒 Younger", callback_data="voice_fx_younger")],
+        [InlineKeyboardButton("⬅️ Back", callback_data="home")]
+    ])
+
+    await safe_message_update(
+        query,
+        "🎛 *Voice Effects*\n\n"
+        "Choose how you'd like your voice transformed.\n\n"
+        "After selecting an effect, send me a voice message 🎤",
+        reply_markup=keyboard
+    )
+
+    context.user_data.pop("practicing_word", None)
+    context.user_data.pop("awaiting_dictionary_word", None)
+
+async def handle_set_voice_fx(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    data: str
+):
+    """Set selected voice FX preset."""
+    query = update.callback_query
+
+    preset_map = {
+        "voice_fx_mtf": "male_to_female",
+        "voice_fx_ftm": "female_to_male",
+        "voice_fx_older": "older",
+        "voice_fx_younger": "younger",
+    }
+
+    preset = preset_map.get(data)
+
+    if preset is None:
+        await safe_message_update(query, "❌ Unknown voice effect.")
+        return
+
+    context.user_data["mode"] = "voice_fx"
+    context.user_data["voice_fx_preset"] = preset
+
+    await safe_message_update(
+        query,
+        f"✅ *Voice effect set: {preset.replace('_', ' ').title()}*\n\n"
+        "Now send me a voice message and I’ll transform it 🎤✨",
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("⬅️ Back", callback_data="open_voice_fx")],
+            [InlineKeyboardButton("🏠 Home", callback_data="home")]
+        ])
+    )

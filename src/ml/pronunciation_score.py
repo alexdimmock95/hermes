@@ -1,15 +1,6 @@
 """
-Pronunciation Scoring System using:
-- Mel-frequency cepstral coefficients (MFCCs) for audio features
-- Dynamic Time Warping (DTW) for alignment
-- Wav2Vec2 for phoneme recognition
-- Scoring neural network for final assessment
-
-This is a REAL ML component that demonstrates:
-✓ Audio feature extraction
-✓ Deep learning model usage
-✓ Evaluation metrics
-✓ Practical application
+Pronunciation Scoring System with Full Debugging
+Version: 2.1 - Fixed Jaccard calculation and improved debug output
 """
 
 import torch
@@ -23,71 +14,62 @@ from typing import Tuple, Dict
 import warnings
 warnings.filterwarnings('ignore')
 
+import os
+# Set espeak path for phonemizer
+os.environ['PATH'] = '/opt/homebrew/bin:' + os.environ.get('PATH', '')
 
-class PronunciationScorer:
+
+class PronunciationScore:
     """
-    Scores pronunciation accuracy by comparing user audio to reference.
+    Pronunciation scorer with comprehensive debugging.
     
-    Architecture:
-    1. Feature Extraction: Extract MFCCs from both audios
-    2. Alignment: Use DTW to align sequences of different lengths
-    3. Phoneme Recognition: Use Wav2Vec2 to get phoneme probabilities
-    4. Scoring: Combine DTW distance + phoneme accuracy into final score
+    Set debug=True to see detailed scoring breakdown.
     """
     
-    def __init__(self, model_name: str = "facebook/wav2vec2-base-960h"):
+    def __init__(self, model_name: str = "facebook/wav2vec2-base-960h", debug: bool = False):
         """
-        Initialize the pronunciation scorer.
+        Initialize scorer.
         
         Args:
-            model_name: Pretrained Wav2Vec2 model from HuggingFace
+            model_name: HuggingFace Wav2Vec2 model
+            debug: Enable detailed debugging output
         """
-        print("Loading pronunciation scoring models...")
+        self.debug = debug
         
-        # Load Wav2Vec2 for phoneme recognition
+        if self.debug:
+            print("Initializing pronunciation scorer with DEBUG mode enabled...")
+        else:
+            print("Loading pronunciation scoring models...")
+        
         self.processor = Wav2Vec2Processor.from_pretrained(model_name)
         self.model = Wav2Vec2ForCTC.from_pretrained(model_name)
-        self.model.eval()  # Set to evaluation mode
+        self.model.eval()
         
-        # MFCC parameters (these are standard in speech processing)
-        self.sample_rate = 16000  # Wav2Vec2 expects 16kHz
-        self.n_mfcc = 13          # Number of MFCC coefficients
-        self.n_fft = 400          # FFT window size
-        self.hop_length = 160     # Hop length between frames
+        self.sample_rate = 16000
+        self.n_mfcc = 13
+        self.n_fft = 400
+        self.hop_length = 160
         
         print("✓ Models loaded successfully")
     
     def load_audio(self, audio_data: bytes) -> np.ndarray:
-        """
-        Load audio from bytes and resample to 16kHz.
-        
-        Args:
-            audio_data: Audio file as bytes
-        
-        Returns:
-            Audio array at 16kHz sample rate
-        """
-        # Load audio from bytes
+        """Load and normalize audio."""
         audio_io = io.BytesIO(audio_data)
-        
-        # librosa loads and resamples automatically
         audio, sr = librosa.load(audio_io, sr=self.sample_rate)
+        
+        # Normalize amplitude
+        if len(audio) > 0:
+            max_amp = np.max(np.abs(audio))
+            if max_amp > 0:
+                audio = audio / max_amp
         
         return audio
     
     def extract_mfcc(self, audio: np.ndarray) -> np.ndarray:
-        """
-        Extract Mel-frequency cepstral coefficients (MFCCs).
+        """Extract MFCCs with optional debugging."""
+        # Add tiny noise to prevent numerical issues
+        audio = audio + np.random.normal(0, 1e-6, len(audio))
         
-        MFCCs capture the spectral envelope of speech, which represents
-        the vocal tract shape. They're widely used in speech recognition.
-        
-        Args:
-            audio: Audio array
-        
-        Returns:
-            MFCC features of shape (n_mfcc, time_frames)
-        """
         mfcc = librosa.feature.mfcc(
             y=audio,
             sr=self.sample_rate,
@@ -96,7 +78,7 @@ class PronunciationScorer:
             hop_length=self.hop_length
         )
         
-        # Normalize MFCCs (important for DTW comparison)
+        # Normalize
         mfcc = (mfcc - np.mean(mfcc, axis=1, keepdims=True)) / (
             np.std(mfcc, axis=1, keepdims=True) + 1e-8
         )
@@ -108,59 +90,38 @@ class PronunciationScorer:
         mfcc_user: np.ndarray, 
         mfcc_ref: np.ndarray
     ) -> Tuple[float, np.ndarray]:
-        """
-        Compute Dynamic Time Warping distance between two MFCC sequences.
-        
-        DTW aligns sequences of different lengths by finding the optimal
-        matching between frames. Lower distance = better match.
-        
-        Args:
-            mfcc_user: User's MFCC features (n_mfcc, time_frames)
-            mfcc_ref: Reference MFCC features (n_mfcc, time_frames)
-        
-        Returns:
-            (dtw_distance, path): Distance and alignment path
-        """
-        # Transpose so time is first dimension (required by fastdtw)
-        user_seq = mfcc_user.T  # Shape: (time_frames, n_mfcc)
+        """Compute DTW distance with improved normalization."""
+        user_seq = mfcc_user.T
         ref_seq = mfcc_ref.T
         
-        # Compute DTW with Euclidean distance
         distance, path = fastdtw(user_seq, ref_seq, dist=euclidean)
         
-        # Normalize by sequence length (for fair comparison)
-        normalized_distance = distance / len(path)
+        # Improved normalization
+        normalized_distance = distance / np.sqrt(len(path))
         
         return normalized_distance, np.array(path)
     
     def recognize_phonemes(self, audio: np.ndarray) -> Dict[str, any]:
-        """
-        Use Wav2Vec2 to recognize phonemes/words from audio.
+        """Recognize speech using Wav2Vec2."""
+        # Handle audio length
+        target_length = self.sample_rate * 5
+        if len(audio) > target_length:
+            audio = audio[:target_length]
+        elif len(audio) < self.sample_rate * 0.3:
+            audio = np.pad(audio, (0, int(self.sample_rate * 0.3) - len(audio)))
         
-        Args:
-            audio: Audio array
-        
-        Returns:
-            Dictionary with recognized text and confidence
-        """
-        # Prepare input for Wav2Vec2
         input_values = self.processor(
             audio, 
             sampling_rate=self.sample_rate, 
             return_tensors="pt"
         ).input_values
         
-        # Get model predictions
         with torch.no_grad():
             logits = self.model(input_values).logits
         
-        # Get predicted token IDs
         predicted_ids = torch.argmax(logits, dim=-1)
-        
-        # Decode to text
         transcription = self.processor.batch_decode(predicted_ids)[0]
         
-        # Calculate confidence (average of max probabilities)
         probs = torch.nn.functional.softmax(logits, dim=-1)
         max_probs = torch.max(probs, dim=-1).values
         confidence = torch.mean(max_probs).item()
@@ -177,69 +138,225 @@ class PronunciationScorer:
         target_word: str
     ) -> Dict[str, any]:
         """
-        Main scoring function - compares user pronunciation to reference.
-        
-        Args:
-            user_audio_bytes: User's recording as bytes
-            reference_audio_bytes: Reference pronunciation as bytes
-            target_word: The word being pronounced
-        
-        Returns:
-            Dictionary with:
-            - overall_score: 0-100 pronunciation quality score
-            - dtw_score: Acoustic similarity score
-            - phoneme_score: Speech recognition accuracy
-            - recognized_text: What was actually said
-            - feedback: Human-readable feedback
+        Score pronunciation with detailed debugging.
         """
-        # Load both audio files
+        if self.debug:
+            print("\n" + "="*70)
+            print("PRONUNCIATION SCORING - DEBUG MODE")
+            print("="*70)
+            print(f"Target word: '{target_word}'")
+        
+        # Load audio
         user_audio = self.load_audio(user_audio_bytes)
         ref_audio = self.load_audio(reference_audio_bytes)
         
-        # Extract MFCC features
+        if self.debug:
+            print(f"\n📊 AUDIO STATISTICS")
+            print(f"├─ User audio:")
+            print(f"│  ├─ Length: {len(user_audio)} samples ({len(user_audio)/self.sample_rate:.2f}s)")
+            print(f"│  ├─ Amplitude: min={user_audio.min():.3f}, max={user_audio.max():.3f}")
+            print(f"│  └─ Energy: {np.sum(user_audio**2):.3f}")
+            print(f"└─ Reference audio:")
+            print(f"   ├─ Length: {len(ref_audio)} samples ({len(ref_audio)/self.sample_rate:.2f}s)")
+            print(f"   ├─ Amplitude: min={ref_audio.min():.3f}, max={ref_audio.max():.3f}")
+            print(f"   └─ Energy: {np.sum(ref_audio**2):.3f}")
+        
+        # Extract MFCCs
         user_mfcc = self.extract_mfcc(user_audio)
         ref_mfcc = self.extract_mfcc(ref_audio)
         
-        # Compute DTW distance (acoustic similarity)
+        if self.debug:
+            print(f"\n📈 MFCC FEATURES")
+            print(f"├─ User MFCCs: shape {user_mfcc.shape} ({user_mfcc.shape[1]} frames)")
+            print(f"│  ├─ Mean: {user_mfcc.mean():.4f}")
+            print(f"│  ├─ Std: {user_mfcc.std():.4f}")
+            print(f"│  └─ First 3 coefficients (frame 0): {user_mfcc[:3, 0]}")
+            print(f"└─ Reference MFCCs: shape {ref_mfcc.shape} ({ref_mfcc.shape[1]} frames)")
+            print(f"   ├─ Mean: {ref_mfcc.mean():.4f}")
+            print(f"   ├─ Std: {ref_mfcc.std():.4f}")
+            print(f"   └─ First 3 coefficients (frame 0): {ref_mfcc[:3, 0]}")
+        
+        # Compute DTW
         dtw_distance, alignment_path = self.compute_dtw_distance(user_mfcc, ref_mfcc)
         
-        # Recognize what the user actually said
+        if self.debug:
+            print(f"\n🔄 DYNAMIC TIME WARPING")
+            print(f"├─ Raw DTW distance: {dtw_distance:.4f}")
+            print(f"├─ Alignment path length: {len(alignment_path)}")
+            print(f"├─ Interpretation:")
+            if dtw_distance < 2.0:
+                print(f"│  └─ ⭐ EXCELLENT - Near-perfect acoustic match")
+            elif dtw_distance < 3.5:
+                print(f"│  └─ ✅ VERY GOOD - Strong acoustic similarity")
+            elif dtw_distance < 5.0:
+                print(f"│  └─ 👍 GOOD - Acceptable acoustic match")
+            elif dtw_distance < 6.5:
+                print(f"│  └─ 👌 FAIR - Some acoustic differences")
+            else:
+                print(f"│  └─ ⚠️  POOR - Significant acoustic differences")
+            print(f"└─ Expected ranges:")
+            print(f"   ├─ Perfect (TTS vs TTS): 0.5-1.5")
+            print(f"   ├─ Excellent (native): 1.5-3.0")
+            print(f"   ├─ Good (clear): 3.0-5.0")
+            print(f"   └─ Fair (accent): 5.0-7.0")
+        
+        # Speech recognition
         user_recognition = self.recognize_phonemes(user_audio)
         ref_recognition = self.recognize_phonemes(ref_audio)
         
-        # Calculate phoneme accuracy
         user_text = user_recognition["text"]
         ref_text = ref_recognition["text"]
         target_word_clean = target_word.lower().strip()
         
-        # Check if user said the right word
+        if self.debug:
+            print(f"\n🎤 SPEECH RECOGNITION (Wav2Vec2)")
+            print(f"├─ Target word: '{target_word_clean}'")
+            print(f"├─ Reference TTS recognized as: '{ref_text}'")
+            print(f"│  └─ Confidence: {ref_recognition['confidence']:.3f}")
+            print(f"└─ User audio recognized as: '{user_text}'")
+            print(f"   └─ Confidence: {user_recognition['confidence']:.3f}")
+            
+            if ref_text != target_word_clean:
+                print(f"\n⚠️  WARNING: Reference TTS not perfectly recognized!")
+                print(f"   Expected: '{target_word_clean}'")
+                print(f"   Got:      '{ref_text}'")
+                print(f"   This may affect scoring accuracy.")
+        
+        # Phoneme similarity
         phoneme_match = self._calculate_phoneme_similarity(
             user_text, 
             target_word_clean
         )
         
-        # Convert DTW distance to similarity score (0-100)
-        # Lower distance = higher score
-        # Typical DTW distances range from 0.5 (perfect) to 5.0 (very different)
-        dtw_score = max(0, 100 - (dtw_distance * 20))
+        if self.debug:
+            print(f"\n🔤 PHONEME SIMILARITY ANALYSIS")
+            print(f"├─ Comparing: '{user_text}' vs '{target_word_clean}'")
+            print(f"├─ Overall similarity: {phoneme_match:.3f}")
+            
+            # Character comparison
+            max_len = max(len(user_text), len(target_word_clean))
+            if max_len <= 20:  # Only show for short words
+                print(f"├─ Character-by-character:")
+                user_padded = user_text.ljust(max_len)
+                target_padded = target_word_clean.ljust(max_len)
+                
+                for i, (u, t) in enumerate(zip(user_padded, target_padded)):
+                    match = "✓" if u == t else "✗"
+                    if u == ' ' and t == ' ':
+                        continue
+                    u_display = u if u != ' ' else '_'
+                    t_display = t if t != ' ' else '_'
+                    print(f"│  [{i}] '{u_display}' vs '{t_display}' {match}")
+            
+            # Detailed metrics - FIXED CALCULATION
+            edit_dist = self._levenshtein_distance(user_text, target_word_clean)
+            set_user = set(user_text.replace(" ", ""))
+            set_target = set(target_word_clean.replace(" ", ""))
+            
+            # Calculate Jaccard safely
+            intersection = set_user & set_target
+            union = set_user | set_target
+            jaccard = len(intersection) / len(union) if len(union) > 0 else 0.0
+            
+            # Calculate length ratio safely
+            len_ratio = (
+                min(len(user_text), len(target_word_clean)) / 
+                max(len(user_text), len(target_word_clean), 1)
+            )
+            
+            print(f"├─ Edit (Levenshtein) distance: {edit_dist}")
+            print(f"├─ Jaccard similarity: {jaccard:.3f}")
+            print(f"└─ Length ratio: {len_ratio:.3f}")
         
-        # Phoneme score based on text match
+        # Calculate scores - MORE LENIENT with perfect match bonus
+        # Check for perfect or near-perfect recognition first
+        is_perfect_match = (user_text == target_word_clean)
+        is_near_perfect = (phoneme_match >= 0.95)
+
+        if is_perfect_match or is_near_perfect:
+            # For perfect text matching, be much more lenient with acoustics
+            if dtw_distance < 4.0:
+                dtw_score = 95
+            elif dtw_distance < 6.0:
+                dtw_score = 88
+            elif dtw_distance < 8.0:
+                dtw_score = 80
+            else:
+                dtw_score = 72
+            
+            if self.debug:
+                print(f"\n⭐ PERFECT/NEAR-PERFECT MATCH - Lenient acoustic scoring applied")
+        else:
+            # Original DTW scoring for imperfect matches
+            if dtw_distance < 3.0:
+                dtw_score = 100
+            elif dtw_distance < 5.5:
+                dtw_score = 100 - ((dtw_distance - 3.0) * 10)
+            elif dtw_distance < 8.0:
+                dtw_score = 75 - ((dtw_distance - 5.5) * 12)
+            else:
+                dtw_score = max(40, 45 - ((dtw_distance - 8.0) * 3))
+
+        dtw_score = max(0, min(100, dtw_score))
         phoneme_score = phoneme_match * 100
         
-        # Overall score: weighted average
-        # DTW (acoustic) = 60%, Phoneme (recognition) = 40%
-        overall_score = (dtw_score * 0.6) + (phoneme_score * 0.4)
-        overall_score = max(0, min(100, overall_score))  # Clamp to 0-100
+        # Dynamic weighting
+        if phoneme_match > 0.8:
+            overall_score = (dtw_score * 0.4) + (phoneme_score * 0.6)
+            weights = "40% DTW + 60% Phoneme (high confidence)"
+        else:
+            overall_score = (dtw_score * 0.5) + (phoneme_score * 0.5)
+            weights = "50% DTW + 50% Phoneme (balanced)"
         
+        overall_score = max(0, min(100, overall_score))
+        
+        if self.debug:
+            print(f"\n📊 SCORE CALCULATION")
+            print(f"├─ DTW Score: {dtw_score:.1f}/100")
+            print(f"│  └─ Based on distance {dtw_distance:.3f}")
+            print(f"├─ Phoneme Score: {phoneme_score:.1f}/100")
+            print(f"│  └─ Based on similarity {phoneme_match:.3f}")
+            print(f"├─ Weighting: {weights}")
+            print(f"└─ OVERALL SCORE: {overall_score:.1f}/100")
+            
+            # Grade interpretation
+            if overall_score >= 90:
+                grade = "A (Excellent)"
+            elif overall_score >= 80:
+                grade = "B (Very Good)"
+            elif overall_score >= 70:
+                grade = "C (Good)"
+            elif overall_score >= 60:
+                grade = "D (Fair)"
+            else:
+                grade = "F (Needs Practice)"
+            print(f"   └─ Grade: {grade}")
+            print("="*70 + "\n")
+        
+        # Phoneme-level analysis
+        phoneme_analysis = None
+        try:
+            phoneme_analysis = self._analyze_phoneme_differences(
+                user_text,
+                target_word_clean,
+                user_audio,
+                ref_audio
+            )
+
+            if self.debug and phoneme_analysis:
+                    print(f"\n📝 PHONEME FEEDBACK:")
+                    print(phoneme_analysis['feedback'])
+        except Exception as e:
+            if self.debug:
+                print(f"\n⚠️  Could not perform phoneme analysis: {e}")
+                print(f"   Make sure phonemizer is installed: pip install phonemizer")
+
         # Generate feedback
         feedback = self._generate_feedback(
-            overall_score, 
-            dtw_score, 
-            phoneme_score,
-            user_text,
-            target_word_clean
+            overall_score, dtw_score, phoneme_score,
+            user_text, target_word_clean, dtw_distance
         )
-        
+            
         return {
             "overall_score": round(overall_score, 1),
             "dtw_score": round(dtw_score, 1),
@@ -249,57 +366,70 @@ class PronunciationScorer:
             "reference_text": ref_text,
             "dtw_distance": round(dtw_distance, 3),
             "alignment_quality": len(alignment_path),
-            "feedback": feedback
+            "feedback": feedback,
+            "phoneme_analysis": phoneme_analysis,
+            "debug_info": {
+                "user_confidence": user_recognition["confidence"],
+                "ref_confidence": ref_recognition["confidence"],
+                "phoneme_match": phoneme_match,
+                "weights_used": weights,
+                "user_audio_length": len(user_audio) / self.sample_rate,
+                "ref_audio_length": len(ref_audio) / self.sample_rate
+            } if self.debug else None
         }
     
     def _calculate_phoneme_similarity(self, recognized: str, target: str) -> float:
-        """
-        Calculate similarity between recognized text and target word.
-        Uses a combination of exact match and character overlap.
+        """Calculate phoneme similarity."""
+        recognized = recognized.replace(" ", "").lower()
+        target = target.replace(" ", "").lower()
         
-        Args:
-            recognized: What was recognized
-            target: Target word
-        
-        Returns:
-            Similarity score between 0 and 1
-        """
-        # Exact match
         if recognized == target:
             return 1.0
         
-        # Check if target is in recognized text
         if target in recognized:
-            return 0.9
+            return 0.95
         
-        # Character-level similarity (Jaccard similarity)
+        if recognized in target:
+            return 0.90
+        
+        # Jaccard
         set_recognized = set(recognized)
         set_target = set(target)
         
         intersection = set_recognized & set_target
         union = set_recognized | set_target
         
-        if len(union) == 0:
-            return 0.0
+        if len(union) > 0:
+            jaccard = len(intersection) / len(union)
+        else:
+            jaccard = 0.0
         
-        jaccard = len(intersection) / len(union)
-        
-        # Also consider sequence similarity (edit distance)
+        # Levenshtein
         edit_distance = self._levenshtein_distance(recognized, target)
         max_len = max(len(recognized), len(target))
         
-        if max_len == 0:
-            return 0.0
+        if max_len > 0:
+            levenshtein_similarity = 1 - (edit_distance / max_len)
+        else:
+            levenshtein_similarity = 0.0
         
-        sequence_similarity = 1 - (edit_distance / max_len)
+        # Length ratio
+        if max(len(recognized), len(target)) > 0:
+            len_ratio = min(len(recognized), len(target)) / max(len(recognized), len(target))
+        else:
+            len_ratio = 0.0
         
-        # Average of Jaccard and sequence similarity
-        return (jaccard + sequence_similarity) / 2
+        # Weighted combination
+        similarity = (
+            jaccard * 0.3 +
+            levenshtein_similarity * 0.5 +
+            len_ratio * 0.2
+        )
+        
+        return max(0.0, min(1.0, similarity))
     
     def _levenshtein_distance(self, s1: str, s2: str) -> int:
-        """
-        Calculate Levenshtein (edit) distance between two strings.
-        """
+        """Calculate edit distance."""
         if len(s1) < len(s2):
             return self._levenshtein_distance(s2, s1)
         
@@ -325,72 +455,303 @@ class PronunciationScorer:
         dtw: float, 
         phoneme: float,
         recognized: str,
-        target: str
+        target: str,
+        dtw_distance: float
     ) -> str:
-        """
-        Generate human-readable feedback based on scores.
-        """
+        """Generate encouraging feedback."""
         feedback_parts = []
         
         # Overall assessment
         if overall >= 90:
             feedback_parts.append("🌟 Excellent pronunciation!")
-        elif overall >= 75:
-            feedback_parts.append("✅ Good pronunciation!")
+        elif overall >= 80:
+            feedback_parts.append("✅ Very good pronunciation!")
+        elif overall >= 70:
+            feedback_parts.append("👍 Good pronunciation!")
         elif overall >= 60:
-            feedback_parts.append("👍 Decent pronunciation, but could be better.")
-        elif overall >= 40:
-            feedback_parts.append("⚠️ Needs improvement.")
+            feedback_parts.append("👌 Decent - keep practicing!")
+        elif overall >= 50:
+            feedback_parts.append("⚠️ Fair - room for improvement.")
         else:
-            feedback_parts.append("❌ Pronunciation needs significant work.")
+            feedback_parts.append("💪 Keep practicing!")
         
         # Recognition feedback
-        if recognized != target:
+        recognized_clean = recognized.replace(" ", "")
+        target_clean = target.replace(" ", "")
+        
+        if recognized_clean != target_clean and phoneme < 80:
             if recognized:
-                feedback_parts.append(f"I heard: '{recognized}' (expected: '{target}')")
+                feedback_parts.append(f"Heard: '{recognized}' (expected: '{target}')")
             else:
-                feedback_parts.append("I couldn't recognize what you said clearly.")
+                feedback_parts.append("Try speaking more clearly.")
         
         # Specific guidance
-        if dtw < 60 and phoneme < 60:
-            feedback_parts.append("Focus on both the sounds and rhythm of the word.")
-        elif dtw < 60:
-            feedback_parts.append("Try to match the natural rhythm and stress pattern.")
-        elif phoneme < 60:
-            feedback_parts.append("Pay attention to individual sounds (phonemes).")
+        if dtw < 70 and phoneme < 70:
+            feedback_parts.append("Focus on clarity and rhythm.")
+        elif dtw < 70:
+            feedback_parts.append("Work on timing and rhythm.")
+        elif phoneme < 70:
+            feedback_parts.append("Focus on pronouncing each sound.")
+        
+        if dtw_distance > 6.0:
+            feedback_parts.append("Try speaking at a natural pace.")
         
         return " ".join(feedback_parts)
 
 
-# Utility function for easy integration
+    def _analyze_phoneme_differences(
+    self, 
+    user_text: str, 
+    target_text: str,
+    user_audio: np.ndarray,
+    ref_audio: np.ndarray
+) -> Dict[str, any]:
+        """
+        Analyze which specific phonemes were mispronounced.
+        """
+        try:
+            if self.debug:
+                print("\n🔍 ATTEMPTING PHONEME ANALYSIS...")
+                print(f"   User text: '{user_text}'")
+                print(f"   Target text: '{target_text}'")
+            
+            import subprocess
+            import shlex
+            
+            espeak_path = '/opt/homebrew/bin/espeak-ng'
+            
+            # Verify espeak-ng exists
+            if not os.path.exists(espeak_path):
+                if self.debug:
+                    print(f"   ⚠️  espeak-ng not found at {espeak_path}")
+                return None
+            
+            if self.debug:
+                print(f"   ✓ Found espeak-ng at {espeak_path}")
+            
+            # Call espeak-ng directly via subprocess
+            def get_ipa(text):
+                cmd = f'{espeak_path} -q --ipa -v en-us "{text}"'
+                result = subprocess.run(
+                    shlex.split(cmd),
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                return result.stdout.strip()
+            
+            # Get IPA for both texts
+            user_phonemes = get_ipa(user_text)
+            target_phonemes = get_ipa(target_text)
+            
+            if self.debug:
+                print(f"   ✓ User IPA: /{user_phonemes}/")
+                print(f"   ✓ Target IPA: /{target_phonemes}/")
+                print(f"\n🔤 PHONEME ANALYSIS (IPA)")
+                print(f"├─ Target IPA: /{target_phonemes}/")
+                print(f"└─ User IPA:   /{user_phonemes}/")
+            
+            # Align phonemes
+            mismatches = self._find_phoneme_mismatches(user_phonemes, target_phonemes)
+            
+            if self.debug:
+                print(f"   ✓ Found {len(mismatches)} mismatches")
+            
+            # Generate feedback
+            feedback = self._generate_phoneme_feedback(mismatches)
+            
+            if self.debug:
+                print(f"   ✓ Feedback generated")
+            
+            return {
+                "user_ipa": user_phonemes,
+                "target_ipa": target_phonemes,
+                "mismatches": mismatches,
+                "feedback": feedback
+            }
+
+        except subprocess.CalledProcessError as e:
+            if self.debug:
+                print(f"\n⚠️  espeak-ng subprocess error: {e}")
+                print(f"   stdout: {e.stdout}")
+                print(f"   stderr: {e.stderr}")
+            return None
+        except Exception as e:
+            if self.debug:
+                print(f"\n⚠️  Phoneme analysis error: {type(e).__name__}: {e}")
+
+        
+    def _find_phoneme_mismatches(
+        self, 
+        user_ipa: str, 
+        target_ipa: str
+    ) -> list:
+        """
+        Find which phonemes don't match using alignment.
+        
+        Returns list of (position, expected_phoneme, actual_phoneme, issue_type)
+        """
+        mismatches = []
+        
+        # Simple character-level alignment for IPA
+        # (You could make this more sophisticated with DTW on phoneme level)
+        user_phones = list(user_ipa.replace(" ", ""))
+        target_phones = list(target_ipa.replace(" ", ""))
+        
+        # Use dynamic programming to align
+        m, n = len(user_phones), len(target_phones)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        
+        # Fill DP table
+        for i in range(m + 1):
+            dp[i][0] = i
+        for j in range(n + 1):
+            dp[0][j] = j
+        
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if user_phones[i-1] == target_phones[j-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    dp[i][j] = 1 + min(
+                        dp[i-1][j],    # deletion
+                        dp[i][j-1],    # insertion
+                        dp[i-1][j-1]   # substitution
+                    )
+        
+        # Backtrack to find mismatches
+        i, j = m, n
+        while i > 0 or j > 0:
+            if i > 0 and j > 0 and user_phones[i-1] == target_phones[j-1]:
+                i -= 1
+                j -= 1
+            elif i > 0 and j > 0 and dp[i][j] == dp[i-1][j-1] + 1:
+                # Substitution (mispronunciation)
+                mismatches.append({
+                    "position": j,
+                    "expected": target_phones[j-1],
+                    "actual": user_phones[i-1],
+                    "type": "substitution"
+                })
+                i -= 1
+                j -= 1
+            elif j > 0 and dp[i][j] == dp[i][j-1] + 1:
+                # Insertion (missing sound)
+                mismatches.append({
+                    "position": j,
+                    "expected": target_phones[j-1],
+                    "actual": None,
+                    "type": "omission"
+                })
+                j -= 1
+            else:
+                # Deletion (extra sound)
+                mismatches.append({
+                    "position": i,
+                    "expected": None,
+                    "actual": user_phones[i-1],
+                    "type": "insertion"
+                })
+                i -= 1
+        
+        return list(reversed(mismatches))
+
+    def _generate_phoneme_feedback(self, mismatches: list) -> str:
+        """
+        Generate human-readable feedback about phoneme errors.
+        
+        Includes specific articulation tips for common issues.
+        """
+        if not mismatches:
+            return "All sounds pronounced correctly! 🎉"
+        
+        # Phoneme articulation tips
+        ARTICULATION_TIPS = {
+            'θ': "TH (voiceless): Place tongue between teeth, blow air (think, bath)",
+            'ð': "TH (voiced): Place tongue between teeth, vibrate vocal cords (this, mother)",
+            't': "T: Touch tongue tip to alveolar ridge (roof of mouth behind teeth), not behind teeth like Spanish 't'",
+            'd': "D: Touch tongue tip to alveolar ridge with voice, not dental like Spanish 'd'",
+            'r': "R: Curl tongue back slightly, don't trill or tap like Spanish 'r'",
+            'v': "V: Upper teeth touch lower lip, vibrate vocal cords (not 'b')",
+            'w': "W: Round lips, don't use 'v' sound like some Spanish speakers",
+            'h': "H: Breathe out from throat, like Spanish 'j' but softer",
+            'ʃ': "SH: Lips forward, tongue near roof of mouth (ship, wish)",
+            'ʒ': "ZH: Like SH but with voice (measure, vision)",
+            'tʃ': "CH: Combine T + SH quickly (church, watch)",
+            'dʒ': "J: Combine D + ZH quickly (judge, age)",
+            'ŋ': "NG: Back of tongue to soft palate (sing, running)",
+        }
+        
+        feedback_parts = []
+        
+        # Group mismatches by type
+        substitutions = [m for m in mismatches if m["type"] == "substitution"]
+        omissions = [m for m in mismatches if m["type"] == "omission"]
+        insertions = [m for m in mismatches if m["type"] == "insertion"]
+        
+        if substitutions:
+            feedback_parts.append(f"**{len(substitutions)} sound(s) need adjustment:**")
+            for mismatch in substitutions[:3]:  # Show max 3
+                expected = mismatch["expected"]
+                actual = mismatch["actual"]
+                tip = ARTICULATION_TIPS.get(expected, "")
+                
+                if tip:
+                    feedback_parts.append(f"  • /{expected}/ (you said /{actual}/): {tip}")
+                else:
+                    feedback_parts.append(f"  • Expected /{expected}/, heard /{actual}/")
+        
+        if omissions:
+            feedback_parts.append(f"**{len(omissions)} sound(s) were skipped:**")
+            for mismatch in omissions[:2]:
+                expected = mismatch["expected"]
+                tip = ARTICULATION_TIPS.get(expected, "")
+                if tip:
+                    feedback_parts.append(f"  • Missing /{expected}/: {tip}")
+                else:
+                    feedback_parts.append(f"  • Don't forget the /{expected}/ sound")
+        
+        if insertions:
+            feedback_parts.append(f"**{len(insertions)} extra sound(s) added:**")
+            for mismatch in insertions[:2]:
+                actual = mismatch["actual"]
+                feedback_parts.append(f"  • Remove the extra /{actual}/ sound")
+        
+        return "\n".join(feedback_parts)    
+
+
 def score_user_pronunciation(
     user_recording: bytes,
     target_word: str,
-    scorer: PronunciationScorer = None
+    scorer: PronunciationScore = None,
+    debug: bool = True
 ) -> Dict[str, any]:
     """
-    Convenience function to score pronunciation against Google TTS reference.
+    Score pronunciation with optional debug mode.
     
     Args:
-        user_recording: User's audio recording as bytes
-        target_word: The word to score
-        scorer: Optional existing PronunciationScorer instance
-    
-    Returns:
-        Scoring results dictionary
+        user_recording: User's audio as bytes
+        target_word: Word to pronounce
+        scorer: Existing scorer (optional)
+        debug: Enable debugging output
     """
     if scorer is None:
-        scorer = PronunciationScorer()
+        scorer = PronunciationScore(debug=debug)
+    elif debug and not scorer.debug:
+        scorer.debug = True
     
-    # Generate reference audio using gTTS
+    # Generate reference
     from gtts import gTTS
+    
+    if debug:
+        print(f"\n🔊 Generating reference audio for '{target_word}' using Google TTS...")
     
     tts = gTTS(text=target_word, lang='en', slow=False)
     ref_audio_buffer = io.BytesIO()
     tts.write_to_fp(ref_audio_buffer)
     ref_audio_bytes = ref_audio_buffer.getvalue()
     
-    # Score pronunciation
+    # Score
     result = scorer.score_pronunciation(
         user_recording,
         ref_audio_bytes,
@@ -401,46 +762,17 @@ def score_user_pronunciation(
 
 
 if __name__ == "__main__":
-    """
-    Test the pronunciation scorer with sample audio.
-    """
     print("=" * 70)
-    print("PRONUNCIATION SCORER TEST")
+    print("PRONUNCIATION SCORER v2.1 - FIXED VERSION")
     print("=" * 70)
     
-    # Create scorer instance
-    scorer = PronunciationScorer()
+    # Test with debug enabled
+    scorer = PronunciationScore(debug=True)
     
-    print("\n✓ Scorer initialized successfully")
-    print("\nTo test with real audio:")
-    print("1. Record yourself saying a word (save as .wav or .ogg)")
-    print("2. Load the file as bytes")
-    print("3. Call scorer.score_pronunciation()")
-    
-    # Example usage (with dummy data)
-    print("\n" + "=" * 70)
-    print("Example Usage:")
-    print("=" * 70)
-    
-    code_example = """
-    # Record user saying "hello"
-    with open("user_hello.wav", "rb") as f:
-        user_audio = f.read()
-    
-    # Score against reference
-    result = score_user_pronunciation(user_audio, "hello")
-    
-    print(f"Score: {result['overall_score']}/100")
-    print(f"Feedback: {result['feedback']}")
-    print(f"You said: {result['recognized_text']}")
-    """
-    
-    print(code_example)
-    
-    print("\n" + "=" * 70)
-    print("Model Details:")
-    print("=" * 70)
-    print(f"Wav2Vec2 Model: {scorer.model.config._name_or_path}")
-    print(f"Sample Rate: {scorer.sample_rate} Hz")
-    print(f"MFCC Coefficients: {scorer.n_mfcc}")
-    print(f"Features: MFCCs + DTW + Wav2Vec2")
+    print("\n✓ Scorer initialized")
+    print("\nChanges in v2.1:")
+    print("  • Fixed Jaccard similarity calculation")
+    print("  • Fixed division by zero errors")
+    print("  • Improved debug output formatting")
+    print("\nTo use debug mode in your bot:")
+    print("  result = score_user_pronunciation(audio, word, debug=True)")

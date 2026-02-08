@@ -26,19 +26,34 @@ def post_translate_keyboard(last_detected_lang):
     ])
 
 
-def dictionary_result_keyboard(word, has_ipa=False):
-    """Keyboard shown after displaying dictionary definition."""
-    buttons = []
-
-    buttons.extend([
-        [InlineKeyboardButton("🔊 Pronunciation", callback_data=f"pronounce_{word}")],
-        [InlineKeyboardButton("📜 Etymology", callback_data=f"etymology_{word}")],
-        [InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")],
-        [InlineKeyboardButton("🏠 Home", callback_data="home")]
-    ])
+def dictionary_result_keyboard(word: str) -> InlineKeyboardMarkup:
+    """
+    Keyboard shown after displaying dictionary definition.
     
-    return InlineKeyboardMarkup(buttons)
-
+    Now includes:
+    - Pronunciation audio playback
+    - Etymology information
+    - Practice pronunciation with ML scoring
+    - Look up another word
+    - Return home
+    """
+    keyboard = [
+        [
+            InlineKeyboardButton("🔊 Pronunciation", callback_data=f"pronounce_{word}"),
+            InlineKeyboardButton("📜 Etymology", callback_data=f"etymology_{word}")
+        ],
+        [
+            InlineKeyboardButton("🎤 Practice Pronunciation", callback_data=f"practice_{word}")
+        ],
+        [
+            InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")
+        ],
+        [
+            InlineKeyboardButton("🏠 Home", callback_data="home")
+        ]
+    ]
+    
+    return InlineKeyboardMarkup(keyboard)
 
 def speed_keyboard():
     """Speed adjustment submenu (0.5x / 1x / 2x) with a back arrow."""
@@ -55,6 +70,7 @@ def home_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🌍 Choose target language", callback_data="choose_language")],
         [InlineKeyboardButton("📖 Dictionary", callback_data="open_dictionary")],
+        [InlineKeyboardButton("🎛 Voice Effects", callback_data="voice_effects")],
         [InlineKeyboardButton("ℹ️ About", callback_data="about")]
     ])
 
