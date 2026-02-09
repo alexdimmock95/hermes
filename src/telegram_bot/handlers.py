@@ -4,6 +4,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 import tempfile
 import soundfile as sf
+import librosa
 
 from src.telegram_bot.config import LANGUAGES
 from src.telegram_bot.keyboards import (
@@ -15,9 +16,11 @@ from src.telegram_bot.keyboards import (
 from src.telegram_bot.config import LANGUAGES, WIKTIONARY_LANGUAGES  # ← Add WIKTIONARY_LANGUAGES
 from src.telegram_bot.utils import change_speed
 from src.speech_to_speech import SpeechToSpeechTranslator
+from src.voice_transformer import VoiceTransformer
 from src.dictionary.wiktionary_client import format_for_telegram, format_etymology_for_telegram
 from src.latiniser import latinise, NON_LATIN_LANGS
 from src.ml.pronunciation_score import score_user_pronunciation
+from src.learning.events import emit_word_event
 
 
 # Initialize translator
@@ -44,7 +47,7 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Main voice handler - routes to practice mode or translation based on context.
+    Main voice handler - routes to practice mode, voice effects, or translation based on context.
     """
     # Check if user is practicing a word
     practicing_word = context.user_data.get('practicing_word')
@@ -52,9 +55,90 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if practicing_word:
         # They're in practice mode - score their pronunciation!
         await handle_pronunciation_scoring(update, context, practicing_word)
+    elif context.user_data.get('mode') == 'voice_fx':
+        # Voice effects mode - apply transformation
+        await handle_voice_effects(update, context)
     else:
         # Normal voice message handling (translation)
         await handle_voice_translation(update, context)
+
+
+async def handle_voice_effects(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Apply voice effects transformation to user's audio."""
+    preset = context.user_data.get('voice_fx_preset')
+    
+    if not preset:
+        await update.message.reply_text(
+            "❌ No voice effect selected. Please choose one from the menu.",
+            reply_markup=home_keyboard()
+        )
+        return
+    
+    # Download voice message
+    voice_file = await update.message.voice.get_file()
+    
+    with tempfile.NamedTemporaryFile(suffix='.ogg', delete=False) as tmp:
+        await voice_file.download_to_drive(tmp.name)
+        
+        # Send processing message
+        status_msg = await update.message.reply_text(
+            f"🎛 Applying *{preset.replace('_', ' ').title()}* effect...",
+            parse_mode="Markdown"
+        )
+        
+        try:
+            # Load audio
+            audio, sr = librosa.load(tmp.name, sr=None)
+            
+            # Initialize transformer and apply preset
+            transformer = VoiceTransformer()
+            
+            if preset == "male_to_female":
+                output_audio = transformer.preset_male_to_female(audio, sr)
+                effect_name = "⬆️ Male → Female"
+            elif preset == "female_to_male":
+                output_audio = transformer.preset_female_to_male(audio, sr)
+                effect_name = "⬇️ Female → Male"
+            elif preset == "older":
+                output_audio = transformer.preset_older(audio, sr)
+                effect_name = "👴 Older"
+            elif preset == "younger":
+                output_audio = transformer.preset_younger(audio, sr)
+                effect_name = "🧒 Younger"
+            else:
+                raise ValueError(f"Unknown preset: {preset}")
+            
+            # Save output
+            output_path = "voice_fx_output.wav"
+            sf.write(output_path, output_audio, sr)
+            
+            # Update status
+            await status_msg.edit_text(
+                f"✨ Transformation complete!\n\n*Effect:* {effect_name}",
+                parse_mode="Markdown"
+            )
+            
+            # Send transformed audio
+            await update.message.reply_voice(
+                voice=open(output_path, 'rb'),
+                caption="🎤 Your transformed voice",
+                reply_markup=home_keyboard()
+            )
+            
+            # Clear voice effects mode
+            context.user_data.pop("mode", None)
+            context.user_data.pop("voice_fx_preset", None)
+            
+        except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
+            print(f"ERROR in voice effects: {error_details}")
+            
+            await status_msg.edit_text(
+                f"❌ Error applying voice effect: {str(e)}\n\n"
+                f"Please try again or choose a different effect.",
+                reply_markup=home_keyboard()
+            )
 
 
 async def handle_voice_translation(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -260,6 +344,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         # Map to Wiktionary language name
         language = WIKTIONARY_LANGUAGES.get(target_lang, 'English')
+
+        # Log the word search event
+        user_id = update.effective_user.id
+        emit_word_event(user_id, word, "dictionary")
 
         formatted_message = format_for_telegram(
             word, 

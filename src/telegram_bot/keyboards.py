@@ -30,10 +30,11 @@ def dictionary_result_keyboard(word: str) -> InlineKeyboardMarkup:
     """
     Keyboard shown after displaying dictionary definition.
     
-    Now includes:
+    Includes:
     - Pronunciation audio playback
     - Etymology information
     - Practice pronunciation with ML scoring
+    - Word statistics
     - Look up another word
     - Return home
     """
@@ -47,6 +48,9 @@ def dictionary_result_keyboard(word: str) -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton("🔍 Look up another word", callback_data="open_dictionary")
+        ],
+        [
+            InlineKeyboardButton("📊 My Stats", callback_data="word_stats")
         ],
         [
             InlineKeyboardButton("🏠 Home", callback_data="home")
@@ -70,7 +74,7 @@ def home_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🌍 Choose target language", callback_data="choose_language")],
         [InlineKeyboardButton("📖 Dictionary", callback_data="open_dictionary")],
-        [InlineKeyboardButton("🎛 Voice Effects", callback_data="voice_effects")],
+        [InlineKeyboardButton("🎛 Voice Effects", callback_data="open_voice_fx")],
         [InlineKeyboardButton("ℹ️ About", callback_data="about")]
     ])
 

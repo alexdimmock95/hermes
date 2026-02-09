@@ -20,11 +20,12 @@ def get_connection():
     """
     Create (or reuse) a SQLite connection.
     """
-    # TODO:
-    # - ensure parent directory exists
-    # - connect to DB_PATH
-    # - return connection
-    pass
+    # Ensure parent directory exists
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Connect to database
+    conn = sqlite3.connect(str(DB_PATH))
+    return conn
 
 def initialise_db():
     """

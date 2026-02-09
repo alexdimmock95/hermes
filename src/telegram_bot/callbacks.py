@@ -16,6 +16,7 @@ from src.telegram_bot.keyboards import (
 from src.telegram_bot.config import LANGUAGES
 from src.ml.pronunciation_score import PronunciationScore
 from src.learning.events import emit_word_event
+from src.learning.aggregations import get_top_words, get_total_words_searched, get_total_searches
 
 # Global scorer instance
 PRONUNCIATION_SCORER = None
@@ -89,6 +90,8 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_back_to_definition(update, context, word)
     elif data == "open_dictionary":
         await handle_open_dictionary(update, context)
+    elif data == "word_stats":
+        await handle_word_stats(update, context)
     
     # Navigation
     elif data == "home":
@@ -236,6 +239,63 @@ async def handle_open_dictionary(update: Update, context: ContextTypes.DEFAULT_T
         "📖 *Dictionary Mode*\n\n"
         "Please type the word you want to look up:"
     )
+
+
+async def handle_word_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Display word statistics and learning progress."""
+    query = update.callback_query
+    user_id = update.effective_user.id
+    
+    try:
+        # Get statistics
+        total_unique = get_total_words_searched(user_id)
+        total_searches = get_total_searches(user_id)
+        top_words = get_top_words(user_id, limit=5)
+        
+        # Build statistics message
+        stats_msg = (
+            "📊 *Your Learning Statistics*\n\n"
+            f"*Total Unique Words:* {total_unique}\n"
+            f"*Total Searches:* {total_searches}\n"
+        )
+        
+        if total_unique > 0:
+            avg_searches = total_searches / total_unique
+            stats_msg += f"*Avg. Searches per Word:* {avg_searches:.1f}\n\n"
+        
+        if top_words:
+            stats_msg += "*🔥 Top 5 Most Searched Words:*\n"
+            for i, word_data in enumerate(top_words, 1):
+                word = word_data["word"]
+                count = word_data["count"]
+                # Add emoji based on rank
+                emoji = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"][i - 1]
+                stats_msg += f"{emoji} _{word}_ - {count}x\n"
+        else:
+            stats_msg += "*No words searched yet. Start learning!* 📚"
+        
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("⬅️ Back", callback_data="open_dictionary")],
+            [InlineKeyboardButton("🏠 Home", callback_data="home")]
+        ])
+        
+        await safe_message_update(query, stats_msg, reply_markup=keyboard)
+        
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"ERROR in word_stats: {error_details}")
+        
+        error_msg = (
+            f"❌ Error loading statistics: {str(e)}\n\n"
+            f"This might happen if no words have been searched yet."
+        )
+        
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🏠 Home", callback_data="home")]
+        ])
+        
+        await safe_message_update(query, error_msg, reply_markup=keyboard)
 
 
 # ============================================================================
