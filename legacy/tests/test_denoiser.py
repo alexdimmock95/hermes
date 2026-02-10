@@ -8,7 +8,7 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))  # add project root
-from src.denoiser import Denoiser
+from legacy.src.denoiser import Denoiser
 
 def main():
     print("DeepFilterNet Denoiser Test")

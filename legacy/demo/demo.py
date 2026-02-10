@@ -34,8 +34,8 @@ from pathlib import Path
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
-from src.denoiser import Denoiser
-from src.asr import PhonemeAligner
+from legacy.src.denoiser import Denoiser
+from legacy.src.asr import PhonemeAligner
 from src.voice_transformer import FormantShifter, VoiceTransformer
 from src.speech_to_speech import SpeechToSpeechTranslator
 

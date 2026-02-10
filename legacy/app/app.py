@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 # Import modules
-from src.denoiser import Denoiser
+from legacy.src.denoiser import Denoiser
 from src.voice_transformer import VoiceTransformer
 from src.speech_to_speech import SpeechToSpeechTranslator
 

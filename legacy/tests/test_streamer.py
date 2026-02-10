@@ -3,7 +3,7 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))  # add project root
-from src.input_streamer import FileStreamer
+from legacy.src.input_streamer import FileStreamer
 
 def test_chunk_sizes(tmp_path):
     # generate fake audio
