@@ -1,24 +1,59 @@
 """Configuration constants for the Telegram bot."""
 
+# Languages organized by family with dividers for the UI
+LANGUAGES_BY_FAMILY = {
+    "Romance": {
+        "es": "🇪🇸 Español",
+        "fr": "🇫🇷 Français",
+        "it": "🇮🇹 Italiano",
+        "pt": "🇵🇹 Português",
+    },
+    "Germanic": {
+        "de": "🇩🇪 Deutsch",
+        "en": "🇬🇧 English",
+        "nl": "🇳🇱 Nederlands",
+    },
+    "Slavic": {
+        "cs": "🇨🇿 Čeština",
+        "pl": "🇵🇱 Polski",
+        "ru": "🇷🇺 Русский",
+    },
+    "Uralic": {
+        "hu": "🇭🇺 Magyar",
+    },
+    "Semitic and Turkic": {
+        "ar": "🇸🇦 العربية (al-ʿArabiyyah)",
+        "tr": "🇹🇷 Türkçe",
+    },
+    "Asian": {
+        "hi": "🇮🇳 हिन्दी (Hindi)",
+        "ja": "🇯🇵 日本語 (Nihongo)",
+        "ko": "🇰🇷 한국어 (Hangugeo)",
+        "zh-CN": "🇨🇳 简体中文 (Jiǎntǐ Zhōngwén)",
+        "zh-TW": "🇨🇳 中文 (Fántǐ Zhōngwén)",
+    },
+}
+
+# Flat mapping for quick lookups by language code
 LANGUAGES = {
-    "en": "🇬🇧 English (English)",
-    "es": "🇪🇸 Español (Spanish)",
-    "fr": "🇫🇷 Français (French)",
-    "de": "🇩🇪 Deutsch (German)",
-    "it": "🇮🇹 Italiano (Italian)",
-    "pt": "🇵🇹 Português (Portuguese)",
-    "pl": "🇵🇱 Polski (Polish)",
-    "tr": "🇹🇷 Türkçe (Turkish)",
-    "ru": "🇷🇺 Русский (Russian)",
-    "nl": "🇳🇱 Nederlands (Dutch)",
-    "cs": "🇨🇿 Čeština (Czech)",
-    "ar": "🇸🇦 العربية (Arabic)",
-    "zh-CN": "🇨🇳 简体中文 (Chinese Simplified)",
-    "zh-TW": "🇨🇳 中文 (Chinese)",
-    "ja": "🇯🇵 日本語 (Japanese)",
-    "hu": "🇭🇺 Magyar (Hungarian)",
-    "ko": "🇰🇷 한국어 (Korean)",
-    "hi": "🇮🇳 हिन्दी (Hindi)"
+    "en": "🇬🇧 English",
+    "es": "🇪🇸 Español",
+    "fr": "🇫🇷 Français",
+    "it": "🇮🇹 Italiano",
+    "pt": "🇵🇹 Português",
+    "de": "🇩🇪 Deutsch",
+    "nl": "🇳🇱 Nederlands",
+    "cs": "🇨🇿 Čeština",
+    "pl": "🇵🇱 Polski",
+    "ru": "🇷🇺 Русский",
+    "hu": "🇭🇺 Magyar",
+    "ar": "🇸🇦 العربية (al-ʿArabiyyah)",
+    "tr": "🇹🇷 Türkçe",
+    "hi": "🇮🇳 हिन्दी (Hindi)",
+    "ja": "🇯🇵 日本語 (Nihongo)",
+    "ko": "🇰🇷 한국어 (Hangugeo)",
+    "zh-CN": "🇨🇳 简体中文 (Jiǎntǐ Zhōngwén)",
+    "zh-TW": "🇨🇳 中文 (Fántǐ Zhōngwén)",
 }
 
 # Map language codes to Wiktionary language section names

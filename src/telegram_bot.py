@@ -63,3 +63,5 @@ if __name__ == '__main__':
 # TODO: flesh out language capability - explain that for translation there are x, within dictionary there are y, there are always different offerings
 #### TODO: when user searches a word in dictionary, have button to (if verb) conjugations, (if noun) other variations of the lemma, (if adjective) comparative/superlative forms, etc.
 ### TODO: ensure response messages from the dictionary or translator stay in the message thread. so that new ones come in on new messages, then stay there
+### TODO: add text message input for translator area
+####TODO: see why embeddings are downloaded each time and not being cached. is there a way to temporarily disable it so that i can keep moving quickly

@@ -1,7 +1,7 @@
 """Keyboard builders for the Telegram bot."""
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from src.telegram_bot.config import LANGUAGES
+from src.telegram_bot.config import LANGUAGES, LANGUAGES_BY_FAMILY
 
 def home_keyboard():
     """Main menu keyboard shown at the start and when returning home."""
@@ -12,22 +12,34 @@ def home_keyboard():
         [InlineKeyboardButton("ℹ️ About", callback_data="about")]
     ])
 
-def build_language_keyboard(lang_map, buttons_per_row=3):
-    """Build a keyboard with language selection buttons."""
+def build_language_keyboard(buttons_per_row=2):
+    """
+    Build a keyboard with all languages organized by family, with family labels.
+    Each family is preceded by a label button, and buttons are arranged 2 per row.
+    """
     keyboard = []
     row = []
-
-    for code, label in lang_map.items():
-        row.append(
-            InlineKeyboardButton(label, callback_data=f"lang_{code}")
-        )
-        if len(row) == buttons_per_row:
+    
+    for family_name, languages in LANGUAGES_BY_FAMILY.items():
+        # Add family label as a non-clickable button
+        keyboard.append([
+            InlineKeyboardButton(f"📍 {family_name}", callback_data="noop")
+        ])
+        
+        # Add languages from this family
+        for code, label in languages.items():
+            row.append(
+                InlineKeyboardButton(label, callback_data=f"lang_{code}")
+            )
+            if len(row) == buttons_per_row:
+                keyboard.append(row)
+                row = []
+        
+        # Append any remaining buttons for this family
+        if row:
             keyboard.append(row)
             row = []
-
-    if row:
-        keyboard.append(row)
-
+    
     return InlineKeyboardMarkup(keyboard)
 
 def post_translate_keyboard(last_detected_lang):

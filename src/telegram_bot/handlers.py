@@ -30,7 +30,8 @@ translator = SpeechToSpeechTranslator(device="cpu", model_size="base")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle the /start command."""
     await update.message.reply_text(
-        text="What would you like to do?",
+        text="*hermes 🪽*",
+        parse_mode="Markdown",
         reply_markup=home_keyboard()
     )
 

@@ -14,7 +14,7 @@ from src.telegram_bot.keyboards import (
     post_translate_keyboard,
     speed_keyboard
 )
-from src.telegram_bot.config import LANGUAGES
+from src.telegram_bot.config import LANGUAGES, LANGUAGES_BY_FAMILY
 from src.ml.pronunciation_score import PronunciationScore
 from src.learning.events import emit_word_event
 from src.learning.aggregations import get_top_words, get_total_words_searched, get_total_searches
@@ -84,6 +84,11 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     data = query.data
     
+    # No-op for dividers (language family labels)
+    if data == "noop":
+        await query.answer()
+        return
+    
     # Language selection
     if data == "choose_language":
         await handle_choose_language(update, context)
@@ -142,12 +147,11 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_choose_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show language selection keyboard."""
     query = update.callback_query
-    keyboard = build_language_keyboard(LANGUAGES)
+    keyboard = build_language_keyboard()
     
     await safe_message_update(
         query,
-        "🌍 *Choose your target language:*\n\n"
-        "Select the language you want to translate to.",
+        "🌍 *Choose your target language:*\n\n",
         reply_markup=keyboard
     )
 
@@ -162,7 +166,7 @@ async def handle_set_language(update: Update, context: ContextTypes.DEFAULT_TYPE
     await safe_message_update(
         query,
         f"✅ *Target language set to: {lang_name}*\n\n"
-        f"Send me a voice message and I'll translate it to {lang_name}!",
+        f"Send a voice message or type a message to translate into {lang_name}.",
         reply_markup=home_keyboard()
     )
 
@@ -255,8 +259,8 @@ async def handle_open_dictionary(update: Update, context: ContextTypes.DEFAULT_T
     
     await safe_message_update(
         query,
-        "📖 *Dictionary Mode*\n\n"
-        "Please type the word you want to look up:"
+        "📖 *Dictionary*\n\n"
+        "Type the word you want to look up:"
     )
 
 
@@ -332,7 +336,7 @@ async def handle_synonyms(update: Update, context: ContextTypes.DEFAULT_TYPE, wo
     # (embedding lookup can take a second)
     await safe_message_update(
         query,
-        f"🔍 Analysing difficulty for *{word}*..."
+        f"🔍 Analysing difficulty of *{word}*..."
     )
 
     try:
@@ -361,7 +365,7 @@ async def handle_synonyms(update: Update, context: ContextTypes.DEFAULT_TYPE, wo
 
         await safe_message_update(
             query,
-            f"❌ Sorry, couldn't analyse difficulty for *{word}*.\n\n"
+            f"❌ Couldn't analyse difficulty for *{word}*.\n\n"
             f"Error: {str(e)}",
             reply_markup=difficulty_result_keyboard(word)
         )
@@ -384,10 +388,10 @@ async def handle_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await safe_message_update(
         query,
-        f"🏠 *Welcome to the Translation & Dictionary Bot*\n\n"
-        f"Current target language: *{lang_name}*\n\n"
-        f"What would you like to do?",
-        reply_markup=home_keyboard()
+        f"*hermes 🪽*\n\n"
+        f"Current target language: *{lang_name}*\n\n",
+        reply_markup=home_keyboard(),
+        parse_mode="Markdown"
     )
 
 
@@ -396,7 +400,7 @@ async def handle_about(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     
     about_text = (
-        "ℹ️ *About This Bot*\n\n"
+        "ℹ️ *About hermes*\n\n"
         "*Features:*\n"
         "• Voice-to-voice translation\n"
         "• Dictionary with pronunciations\n"
@@ -412,7 +416,7 @@ async def handle_about(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• MFCCs for audio features\n"
         "• Dynamic Time Warping for alignment\n"
         "• Transformer models for speech recognition\n\n"
-        "Made with ❤️ for language learners"
+        "Made for language speakers and language learners"
     )
     
     keyboard = InlineKeyboardMarkup([
@@ -525,7 +529,7 @@ async def handle_set_voice_fx(
     await safe_message_update(
         query,
         f"✅ *Voice effect set: {preset.replace('_', ' ').title()}*\n\n"
-        "Now send me a voice message and I’ll transform it 🎤✨",
+        "Send a voice message to transform.",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("⬅️ Back", callback_data="open_voice_fx")],
             [InlineKeyboardButton("🏠 Home", callback_data="home")]
