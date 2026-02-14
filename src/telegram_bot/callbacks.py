@@ -18,9 +18,66 @@ from src.telegram_bot.config import LANGUAGES, LANGUAGES_BY_FAMILY
 from src.ml.pronunciation_score import PronunciationScore
 from src.learning.events import emit_word_event
 from src.learning.aggregations import get_top_words, get_total_words_searched, get_total_searches
+from src.dictionary.word_forms_extractor import get_word_forms, format_word_forms_for_telegram
+
 
 # Global scorer instance
 PRONUNCIATION_SCORER = None
+
+
+async def handle_word_forms_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Handle callback when user clicks a word forms button.
+    
+    The callback_data format is: "forms|word|POS|language_code"
+    For example: "forms|run|Verb|en"
+    
+    This function:
+    1. Parses the callback data to extract the word, POS, and language
+    2. Gets the word forms using the word_forms_extractor module
+    3. Formats and sends the results back to the user
+    """
+    query = update.callback_query
+    await query.answer()  # Acknowledge the button click
+    
+    # Parse the callback data
+    # Format: "forms|word|POS|language_code"
+    callback_data = query.data
+    parts = callback_data.split('|')
+    
+    if len(parts) != 4:
+        await query.edit_message_text("❌ Error: Invalid button data.")
+        return
+    
+    action, word, pos, language_code = parts
+    
+    # Get the word forms
+    print(f"DEBUG: Getting forms for word='{word}', pos='{pos}', language='{language_code}'")
+    forms = get_word_forms(word, pos, language_code)
+    
+    if not forms:
+        # No forms found - send a friendly message
+        await query.edit_message_text(
+            f"❌ No {pos.lower()} forms found for '*{word}*'.\n\n"
+            f"This might mean:\n"
+            f"• The word doesn't have irregular forms\n"
+            f"• Forms for this language aren't available yet\n"
+            f"• The conjugation library needs to be installed",
+            parse_mode='Markdown'
+        )
+        return
+    
+    # Format the forms for display
+    formatted_forms = format_word_forms_for_telegram(forms, pos)
+    
+    # Send the formatted forms
+    # We'll edit the original message to show the forms
+    message_text = f"📖 *{word.upper()}*\n\n{formatted_forms}"
+    
+    await query.edit_message_text(
+        message_text,
+        parse_mode='Markdown'
+    )
 
 
 def get_scorer():
@@ -119,6 +176,10 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await handle_open_dictionary(update, context)
     elif data == "word_stats":
         await handle_word_stats(update, context)
+
+    # Route to word forms handler if the callback starts with "forms|"
+    elif callback_data.startswith("forms|"):
+        await handle_word_forms_callback(update, context)
     
     # Navigation
     elif data == "home":

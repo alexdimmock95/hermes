@@ -17,7 +17,7 @@ from src.telegram_bot.config import LANGUAGES, WIKTIONARY_LANGUAGES  # ← Add W
 from src.telegram_bot.utils import change_speed
 from src.speech_to_speech import SpeechToSpeechTranslator
 from src.voice_transformer import VoiceTransformer
-from src.dictionary.wiktionary_client import format_for_telegram, format_etymology_for_telegram
+from src.dictionary.wiktionary_client import format_for_telegram_with_buttons, format_etymology_for_telegram
 from src.latiniser import latinise, NON_LATIN_LANGS
 from src.ml.pronunciation_score import score_user_pronunciation
 from src.learning.events import emit_word_event
@@ -227,7 +227,6 @@ async def handle_voice_translation(update: Update, context: ContextTypes.DEFAULT
         # "Reply in X" callback = detected_lang_code (e.g. English — what to translate INTO)
         await update.message.reply_voice(
             voice=open(output_path, 'rb'),
-            caption="What would you like to do next?",
             reply_markup=post_translate_keyboard(
                 last_detected_lang=detected_lang_code
             )
@@ -351,7 +350,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
         emit_word_event(user_id, word, "dictionary")
 
-        formatted_message = format_for_telegram(
+        formatted_message = format_for_telegram_with_buttons(
             word, 
             language=language,
             language_code=target_lang,
@@ -456,7 +455,6 @@ async def handle_text_translation(update: Update, context: ContextTypes.DEFAULT_
         # --- Send audio + all buttons in one message ---
         await update.message.reply_voice(
             voice=open(output_path, 'rb'),
-            caption="What would you like to do next?",
             reply_markup=post_translate_keyboard(
                 last_detected_lang=detected_lang_code
             )

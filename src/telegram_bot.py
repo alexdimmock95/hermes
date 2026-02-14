@@ -48,14 +48,6 @@ if __name__ == '__main__':
     main()
 
 
-###### TODO: Add in capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively.
-### TODO/ language aware wiktionary - if detected language is french, wiktionary french version
-### TODO: What other models other than xtts can I use? Ones that are ideally faster, more languages
- ## TODO: is there a way to do proper formant shifting to change accent using DTW modification? 
-## TODO: dictionary mode > look up word (english) > translate to target language > show definition in target language, with option to show english definition as well. Dictionary in multiple languages not picking words even in their correct spelling and language. 
-# TODO: flesh out language capability - explain that for translation there are x, within dictionary there are y, there are always different offerings
-#### TODO: when user searches a word in dictionary, have button to (if verb) conjugations, (if noun) other variations of the lemma, (if adjective) comparative/superlative forms, etc.
-### TODO: ensure response messages from the dictionary or translator stay in the message thread. so that new ones come in on new messages, then stay there
-### TODO: add text message input for translator area
-####TODO: see why embeddings are downloaded each time and not being cached. is there a way to temporarily disable it so that i can keep moving quickly
-### TODO: no module named langdetect
+    #TODO: text input in translate not working, saying no langdetect
+    #TODO: dictionary result not parsing correctly or formatting
+    #TODO: forms button not showing up after a word has been input into dictionary function

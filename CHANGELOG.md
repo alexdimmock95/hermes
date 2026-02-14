@@ -218,3 +218,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Energy normalization and loudness matching
 - [ ] CI/CD pipeline setup (GitHub Actions)
 - [ ] Audio quality benchmarks and comparisons
+- [ ] Add in capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively.
+- [ ] language aware wiktionary - if detected language is french, wiktionary french version
+- [ ] What other models other than xtts can I use? Ones that are ideally faster, more languages
+- [ ] is there a way to do proper formant shifting to change accent using DTW modification? 
+- [ ] dictionary mode > look up word (english) > translate to target language > show definition in target language, with option to show english definition as well. Dictionary in multiple languages not picking words even in their correct spelling and language. 
+- [ ] if the text/voice translate input is one word, show the {target lang}.wiktionary definition of that word
+- [ ] flesh out language capability - explain that for translation there are x, within dictionary there are y, there are always different offerings
+- [ ] when user searches a word in dictionary, have button to (if verb) conjugations, (if noun) other variations of the lemma, (if adjective) comparative/superlative forms, etc.
+- [ ] ensure response messages from the dictionary or translator stay in the message thread. so that new ones come in on new messages, then stay there
+- [ ] no module named langdetect

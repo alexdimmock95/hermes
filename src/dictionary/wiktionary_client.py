@@ -32,6 +32,57 @@ HEADERS = {
 }
 
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+def create_word_forms_keyboard(word: str, entries: list, language_code: str = "en") -> InlineKeyboardMarkup:
+    """
+    Create inline keyboard with buttons for word forms.
+    
+    This function looks at the parts of speech in the dictionary results
+    and creates appropriate buttons (conjugate for verbs, plural for nouns, etc.)
+    
+    Args:
+        word: The word being looked up
+        entries: List of dict entries from fetch_definitions (contains POS info)
+        language_code: Language code for conjugation
+    
+    Returns:
+        InlineKeyboardMarkup with buttons, or None if no forms available
+    """
+    buttons = []
+    
+    # Track which POS we've seen to avoid duplicate buttons
+    seen_pos_types = set()
+    
+    for entry in entries:
+        pos = entry.get('pos', '').lower()
+        
+        # Check for verbs
+        if 'verb' in pos and 'verb' not in seen_pos_types:
+            # Create a callback data string that includes: action|word|pos|language
+            callback_data = f"forms|{word}|Verb|{language_code}"
+            buttons.append([InlineKeyboardButton("🔄 Conjugations", callback_data=callback_data)])
+            seen_pos_types.add('verb')
+        
+        # Check for nouns
+        elif 'noun' in pos and 'noun' not in seen_pos_types:
+            callback_data = f"forms|{word}|Noun|{language_code}"
+            buttons.append([InlineKeyboardButton("📦 Plural form", callback_data=callback_data)])
+            seen_pos_types.add('noun')
+        
+        # Check for adjectives
+        elif 'adjective' in pos and 'adjective' not in seen_pos_types:
+            callback_data = f"forms|{word}|Adjective|{language_code}"
+            buttons.append([InlineKeyboardButton("📊 Comparative forms", callback_data=callback_data)])
+            seen_pos_types.add('adjective')
+    
+    # Return None if no buttons were created
+    if not buttons:
+        return None
+    
+    return InlineKeyboardMarkup(buttons)
+
+
 def fetch_wikitext(word: str, language_code: str = "en") -> str | None:
     """
     Fetch raw Wiktionary wikitext for a given word using MediaWiki API.
@@ -433,20 +484,26 @@ def fetch_definitions(word: str, language: str = "English", language_code: str =
     
     return result
 
-def format_for_telegram(word: str, language: str = "English", language_code: str = "en", max_defs_per_pos: int = 5) -> str:
+
+def format_for_telegram_with_buttons(word: str, language: str = "English", language_code: str = "en", max_defs_per_pos: int = 5):
     """
-    Format dictionary output for Telegram Markdown.
+    Format dictionary output for Telegram Markdown AND return keyboard.
+    
+    This is a modified version that returns both the formatted text AND the keyboard.
     
     Args:
         word: The word to look up
-        language: Target language name (e.g., "English", "French")
-        language_code: Language code for Wiktionary lookup (e.g., "en", "fr")
+        language: Target language name
+        language_code: Language code for Wiktionary and conjugation
         max_defs_per_pos: Max definitions per part of speech
+    
+    Returns:
+        Tuple of (formatted_text: str, keyboard: InlineKeyboardMarkup or None)
     """
     result = fetch_definitions(word, language=language, language_code=language_code, max_defs_per_pos=max_defs_per_pos)
 
     if not result["entries"]:
-        return f"❌ No {language} definition found for '*{word}*'."
+        return (f"❌ No {language} definition found for '*{word}*'.", None)
 
     lines = [f"📖 *{word.upper()}* ({language})"]
     
@@ -473,7 +530,13 @@ def format_for_telegram(word: str, language: str = "English", language_code: str
             lines.append(f"• {safe_example}")
         lines.append("")
 
-    return "\n".join(lines)
+    formatted_text = "\n".join(lines)
+    
+    # Create the keyboard with word form buttons
+    keyboard = create_word_forms_keyboard(word, result["entries"], language_code)
+    
+    return (formatted_text, keyboard)
+
 
 
 def format_etymology_for_telegram(word: str) -> str:
