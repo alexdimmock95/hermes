@@ -260,15 +260,19 @@ async def handle_pronunciation_scoring(
         voice_file = await update.message.voice.get_file()
         voice_bytes = await voice_file.download_as_bytearray()
         
-        # Score pronunciation using ML model
+        # Get target language for proper pronunciation model
+        target_lang = context.user_data.get('target_lang', 'en')
+        
+        # Score pronunciation using ML model WITH CORRECT LANGUAGE
         from src.telegram_bot.callbacks import get_scorer
-        scorer = get_scorer()
+        scorer = get_scorer(language=target_lang)  # Pass language here
         
         result = score_user_pronunciation(
             bytes(voice_bytes),
             word,
+            language=target_lang,  # Add language parameter
             scorer=scorer,
-            debug=True  # Set to True to include detailed debug info in the result (like DTW scores, recognized phonemes, etc.
+            debug=True
         )
         
         # Format results
@@ -338,7 +342,6 @@ async def handle_pronunciation_scoring(
             f"Please try again or contact support if this persists."
         )
         context.user_data.pop('practicing_word', None)
-
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle text messages - for dictionary lookups or text translation."""

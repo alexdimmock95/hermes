@@ -21,25 +21,67 @@ os.environ['PATH'] = '/opt/homebrew/bin:' + os.environ.get('PATH', '')
 
 class PronunciationScore:
     """
-    Pronunciation scorer with comprehensive debugging.
+    Multi-language pronunciation scorer with comprehensive debugging.
     
     Set debug=True to see detailed scoring breakdown.
     """
     
-    def __init__(self, model_name: str = "facebook/wav2vec2-base-960h", debug: bool = False):
+    # Language-specific models
+    LANGUAGE_MODELS = {
+        'en': "facebook/wav2vec2-base-960h",
+        'fr': "facebook/wav2vec2-large-xlsr-53-french",
+        'es': "facebook/wav2vec2-large-xlsr-53-spanish",
+        'de': "facebook/wav2vec2-large-xlsr-53-german",
+        'it': "facebook/wav2vec2-large-xlsr-53-italian",
+        'pt': "facebook/wav2vec2-large-xlsr-53-portuguese",
+        'ru': "facebook/wav2vec2-large-xlsr-53-russian",
+        'pl': "facebook/wav2vec2-large-xlsr-53-polish",
+        'ja': "facebook/wav2vec2-large-xlsr-53-japanese",
+        'zh-CN': "facebook/wav2vec2-large-xlsr-53-chinese-zh-cn",
+        'ar': "facebook/wav2vec2-large-xlsr-53-arabic",
+        'tr': "facebook/wav2vec2-large-xlsr-53-turkish",
+        'nl': "facebook/wav2vec2-large-xlsr-53-dutch",
+    }
+    
+    # Espeak language codes
+    ESPEAK_LANGUAGES = {
+        'en': 'en-us',
+        'fr': 'fr-fr',
+        'es': 'es',
+        'de': 'de',
+        'it': 'it',
+        'pt': 'pt',
+        'ru': 'ru',
+        'pl': 'pl',
+        'ja': 'ja',
+        'zh-CN': 'zh',
+        'ar': 'ar',
+        'tr': 'tr',
+        'nl': 'nl',
+    }
+    
+    def __init__(self, language: str = "en", debug: bool = False):
         """
-        Initialize scorer.
+        Initialize scorer for a specific language.
         
         Args:
-            model_name: HuggingFace Wav2Vec2 model
+            language: Language code (e.g., 'en', 'fr', 'es')
             debug: Enable detailed debugging output
         """
         self.debug = debug
+        self.language = language
         
         if self.debug:
-            print("Initializing pronunciation scorer with DEBUG mode enabled...")
+            print(f"Initializing pronunciation scorer for {language.upper()} with DEBUG mode enabled...")
         else:
-            print("Loading pronunciation scoring models...")
+            print(f"Loading pronunciation scoring models for {language.upper()}...")
+        
+        # Get language-specific model or fallback to English
+        model_name = self.LANGUAGE_MODELS.get(language, self.LANGUAGE_MODELS['en'])
+        
+        if language not in self.LANGUAGE_MODELS:
+            print(f"⚠️  No specific model for '{language}', using multilingual fallback")
+            model_name = "facebook/wav2vec2-large-xlsr-53-multilingual"
         
         self.processor = Wav2Vec2Processor.from_pretrained(model_name)
         self.model = Wav2Vec2ForCTC.from_pretrained(model_name)
@@ -50,7 +92,7 @@ class PronunciationScore:
         self.n_fft = 400
         self.hop_length = 160
         
-        print("✓ Models loaded successfully")
+        print(f"✓ Models loaded successfully for {language.upper()}")
     
     def load_audio(self, audio_data: bytes) -> np.ndarray:
         """Load and normalize audio."""
@@ -350,6 +392,7 @@ class PronunciationScore:
             if self.debug:
                 print(f"\n⚠️  Could not perform phoneme analysis: {e}")
                 print(f"   Make sure phonemizer is installed: pip install phonemizer")
+                return None
 
         # Generate feedback
         feedback = self._generate_feedback(
@@ -500,38 +543,41 @@ class PronunciationScore:
 
 
     def _analyze_phoneme_differences(
-    self, 
-    user_text: str, 
-    target_text: str,
-    user_audio: np.ndarray,
-    ref_audio: np.ndarray
-) -> Dict[str, any]:
+        self, 
+        user_text: str, 
+        target_text: str,
+        user_audio: np.ndarray,
+        ref_audio: np.ndarray
+    ) -> Dict[str, any]:
         """
-        Analyze which specific phonemes were mispronounced.
+        Analyze which specific phonemes were mispronounced using the target language.
         """
         try:
             if self.debug:
-                print("\n🔍 ATTEMPTING PHONEME ANALYSIS...")
+                print(f"\n🔍 ATTEMPTING PHONEME ANALYSIS FOR {self.language.upper()}...")
                 print(f"   User text: '{user_text}'")
                 print(f"   Target text: '{target_text}'")
-            
+
             import subprocess
             import shlex
-            
+
             espeak_path = '/opt/homebrew/bin/espeak-ng'
-            
-            # Verify espeak-ng exists
+
             if not os.path.exists(espeak_path):
                 if self.debug:
                     print(f"   ⚠️  espeak-ng not found at {espeak_path}")
                 return None
-            
+
             if self.debug:
                 print(f"   ✓ Found espeak-ng at {espeak_path}")
-            
-            # Call espeak-ng directly via subprocess
-            def get_ipa(text):
-                cmd = f'{espeak_path} -q --ipa -v en-us "{text}"'
+
+            espeak_lang = self.ESPEAK_LANGUAGES.get(self.language, 'en-us')
+
+            if self.debug:
+                print(f"   ✓ Using espeak voice: {espeak_lang}")
+
+            def get_ipa(text: str) -> str:
+                cmd = f'{espeak_path} -q --ipa -v {espeak_lang} "{text}"'
                 result = subprocess.run(
                     shlex.split(cmd),
                     capture_output=True,
@@ -539,30 +585,21 @@ class PronunciationScore:
                     check=True
                 )
                 return result.stdout.strip()
-            
-            # Get IPA for both texts
+
             user_phonemes = get_ipa(user_text)
             target_phonemes = get_ipa(target_text)
-            
+
             if self.debug:
                 print(f"   ✓ User IPA: /{user_phonemes}/")
                 print(f"   ✓ Target IPA: /{target_phonemes}/")
-                print(f"\n🔤 PHONEME ANALYSIS (IPA)")
-                print(f"├─ Target IPA: /{target_phonemes}/")
-                print(f"└─ User IPA:   /{user_phonemes}/")
-            
-            # Align phonemes
-            mismatches = self._find_phoneme_mismatches(user_phonemes, target_phonemes)
-            
-            if self.debug:
-                print(f"   ✓ Found {len(mismatches)} mismatches")
-            
-            # Generate feedback
+
+            mismatches = self._find_phoneme_mismatches(
+                user_phonemes,
+                target_phonemes
+            )
+
             feedback = self._generate_phoneme_feedback(mismatches)
-            
-            if self.debug:
-                print(f"   ✓ Feedback generated")
-            
+
             return {
                 "user_ipa": user_phonemes,
                 "target_ipa": target_phonemes,
@@ -576,11 +613,13 @@ class PronunciationScore:
                 print(f"   stdout: {e.stdout}")
                 print(f"   stderr: {e.stderr}")
             return None
+
         except Exception as e:
             if self.debug:
                 print(f"\n⚠️  Phoneme analysis error: {type(e).__name__}: {e}")
+            return None
 
-        
+                
     def _find_phoneme_mismatches(
         self, 
         user_ipa: str, 
@@ -723,30 +762,33 @@ class PronunciationScore:
 def score_user_pronunciation(
     user_recording: bytes,
     target_word: str,
+    language: str = 'en',
     scorer: PronunciationScore = None,
     debug: bool = True
 ) -> Dict[str, any]:
     """
-    Score pronunciation with optional debug mode.
+    Score pronunciation with language-specific models.
     
     Args:
         user_recording: User's audio as bytes
         target_word: Word to pronounce
-        scorer: Existing scorer (optional)
+        language: Target language code (e.g., 'en', 'fr', 'es')
+        scorer: Existing scorer (optional, must match language)
         debug: Enable debugging output
     """
-    if scorer is None:
-        scorer = PronunciationScore(debug=debug)
+    # Create new scorer if none provided or language mismatch
+    if scorer is None or scorer.language != language:
+        scorer = PronunciationScore(language=language, debug=debug)
     elif debug and not scorer.debug:
         scorer.debug = True
     
-    # Generate reference
+    # Generate reference with correct language
     from gtts import gTTS
     
     if debug:
-        print(f"\n🔊 Generating reference audio for '{target_word}' using Google TTS...")
+        print(f"\n🔊 Generating reference audio for '{target_word}' in {language.upper()} using Google TTS...")
     
-    tts = gTTS(text=target_word, lang='en', slow=False)
+    tts = gTTS(text=target_word, lang=language, slow=False)
     ref_audio_buffer = io.BytesIO()
     tts.write_to_fp(ref_audio_buffer)
     ref_audio_bytes = ref_audio_buffer.getvalue()
@@ -759,7 +801,6 @@ def score_user_pronunciation(
     )
     
     return result
-
 
 if __name__ == "__main__":
     print("=" * 70)

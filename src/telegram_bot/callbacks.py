@@ -82,14 +82,13 @@ async def handle_word_forms_callback(update: Update, context: ContextTypes.DEFAU
     )
 
 
-def get_scorer():
-    """Lazy load the pronunciation scorer."""
+def get_scorer(language: str = "en"):
+    """Lazy load the pronunciation scorer for specific language."""
     global PRONUNCIATION_SCORER
-    if PRONUNCIATION_SCORER is None:
-        print("Initializing pronunciation scorer for first use...")
-        PRONUNCIATION_SCORER = PronunciationScore()
+    if PRONUNCIATION_SCORER is None or PRONUNCIATION_SCORER.language != language:
+        print(f"Initializing pronunciation scorer for {language}...")
+        PRONUNCIATION_SCORER = PronunciationScore(language=language)
     return PRONUNCIATION_SCORER
-
 
 # Global difficulty classifier instance
 # Loaded once on first use, reused for every button press after that
