@@ -110,10 +110,11 @@ class SpeechToSpeechTranslator:
         self.target_language = target_language
 
         return translator.translate(text)
-    
+
+
     def detect_language(self, text):
         """
-        Detect the language of the input text using Google Translate's detection API.
+        Detect the language of the input text.
         
         Args:
             text: Text to detect language for
@@ -125,24 +126,14 @@ class SpeechToSpeechTranslator:
             return None
         
         try:
-            from googletrans import Translator
-            translator = Translator()
-            detected = translator.detect(text)
-            lang_code = detected.lang.lower()
-            
-            # Map Google Translate codes to our language codes
-            if lang_code == 'zh-cn':
-                lang_code = 'zh-CN'
-            elif lang_code == 'zh-tw':
-                lang_code = 'zh-TW'
-            
+            from langdetect import detect
+            lang_code = detect(text)
             return lang_code
         except Exception as e:
-            print(f"DEBUG: Google Translate language detection error: {e}")
-            import traceback
-            traceback.print_exc()
+            print(f"Language detection error: {e}")
             return None
-    
+
+
     def get_source_language(self):
         """
         Get the detected source language from the last transcription.
@@ -247,5 +238,3 @@ class SpeechToSpeechTranslator:
             str: Source language code
         """
         return self.source_language
-    
-## TODO: Should this be whisperx not whisper? 

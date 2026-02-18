@@ -106,12 +106,13 @@ def get_classifier(language: str = "en"):
     return DIFFICULTY_CLASSIFIER
 
 
-async def safe_message_update(query, text, parse_mode="Markdown", reply_markup=None, thread_id=None):
+async def safe_message_update(query, text, parse_mode="Markdown", reply_markup=None, thread_id=None, keep_history=False):
     """
     Safely update or send a message, handling both text and non-text messages.
     
+    If keep_history=True, always sends a new message instead of editing.
     If the original message is a voice/photo/video, send a new text message.
-    If it's a text message, edit it.
+    If it's a text message, edit it (unless keep_history=True).
     
     Args:
         query: The callback query
@@ -119,7 +120,17 @@ async def safe_message_update(query, text, parse_mode="Markdown", reply_markup=N
         parse_mode: Markdown or HTML
         reply_markup: Keyboard markup
         thread_id: Message ID to thread replies to (for keeping conversations in thread)
+        keep_history: If True, always send a new message instead of editing
     """
+    if keep_history:
+        # Always send a new message to preserve history
+        await query.message.reply_text(
+            text,
+            parse_mode=parse_mode,
+            reply_markup=reply_markup
+        )
+        return
+    
     try:
         # Try to edit the existing message
         await query.edit_message_text(
@@ -226,7 +237,8 @@ async def handle_choose_language(update: Update, context: ContextTypes.DEFAULT_T
     await safe_message_update(
         query,
         "🌍 *Choose your target language:*\n\n",
-        reply_markup=keyboard
+        reply_markup=keyboard,
+        keep_history=True
     )
 
 
@@ -262,7 +274,8 @@ async def handle_pronunciation(update: Update, context: ContextTypes.DEFAULT_TYP
             thread_id=thread_id
         )
         
-        audio_buffer = generate_pronunciation_audio(word)
+        target_lang = context.user_data.get('target_lang', 'en')
+        audio_buffer = generate_pronunciation_audio(word, language=target_lang)
         
         await context.bot.send_voice(
             chat_id=query.message.chat_id,
@@ -505,6 +518,7 @@ async def handle_synonyms(update: Update, context: ContextTypes.DEFAULT_TYPE, wo
 # NAVIGATION HANDLERS
 # ============================================================================
 
+
 async def handle_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Return to main menu."""
     query = update.callback_query
@@ -521,7 +535,8 @@ async def handle_home(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"*hermes 🪽*\n\n"
         f"Current target language: *{lang_name}*\n\n",
         reply_markup=home_keyboard(),
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        keep_history=True
     )
 
 

@@ -20,6 +20,7 @@ from src.speech_to_speech import SpeechToSpeechTranslator
 from src.voice_transformer import VoiceTransformer
 from src.dictionary.wiktionary_client import (
     format_for_telegram_with_buttons,
+    format_bilingual_for_telegram,
     format_etymology_for_telegram,
     _escape_telegram_markdown,
 )
@@ -359,7 +360,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
         emit_word_event(user_id, word, "dictionary")
 
-        formatted_text, _ = format_for_telegram_with_buttons(
+        formatted_text, _ = format_bilingual_for_telegram(
             word, 
             language=language,
             language_code=language_code,

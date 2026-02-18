@@ -34,6 +34,8 @@ def build_language_keyboard(buttons_per_row=2):
     if row:
         keyboard.append(row)
     
+    keyboard.append([InlineKeyboardButton("🏠 Home", callback_data="home")])
+
     return InlineKeyboardMarkup(keyboard)
 
 def post_translate_keyboard(last_detected_lang, translated_word=None, target_lang=None):
@@ -95,9 +97,9 @@ def speed_keyboard():
     """Speed adjustment submenu (0.5x / 1x / 2x) with a back arrow."""
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🐌 0.5x", callback_data="speed_0.5"),
-         InlineKeyboardButton("1x",      callback_data="speed_1.0"),
+         InlineKeyboardButton("🚶‍♂️1x",      callback_data="speed_1.0"),
          InlineKeyboardButton("🐇 2x",   callback_data="speed_2.0")],
-        [InlineKeyboardButton("← Back",  callback_data="close_speed")]
+        [InlineKeyboardButton("🏠 Home",  callback_data="home")]
     ])
 
 def dictionary_result_keyboard(word: str, language_code: str = None) -> InlineKeyboardMarkup:

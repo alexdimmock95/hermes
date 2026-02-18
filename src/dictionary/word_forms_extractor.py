@@ -231,8 +231,9 @@ def _extract_spanish_verb_forms(conjugation, verb: str) -> Dict[str, str]:
     
     return forms if len(forms) > 1 else None
 
+
 def _extract_french_verb_forms(conjugation, verb: str) -> Dict[str, str]:
-    """Extract ALL French verb forms with correct person matching."""
+    """Extract ALL French verb forms with complete person conjugations per tense."""
     forms = {'infinitive': verb}
 
     try:
@@ -244,77 +245,102 @@ def _extract_french_verb_forms(conjugation, verb: str) -> Dict[str, str]:
             else:
                 continue
             
+            if not conj_form:  # Skip None values
+                continue
+            
             m = (mood or '').lower()
             t = (tense or '').lower()
-            p = (person or '').lower()  # Keep lowercase
+            p = (person or '').lower()
             
-            # Present
+            # Present (Présent)
             if 'indicatif' in m and 'présent' in t:
                 if p == 'je':
                     forms['present_je'] = conj_form
                 elif p == 'tu':
                     forms['present_tu'] = conj_form
-                elif 'il (' in p or p == 'il':  # Matches "il (elle, on)" but NOT "ils"
-                    forms['present_il/elle'] = conj_form
+                elif 'il (' in p or p == 'il':
+                    forms['present_il'] = conj_form
                 elif p == 'nous':
                     forms['present_nous'] = conj_form
                 elif p == 'vous':
                     forms['present_vous'] = conj_form
-                elif 'ils (' in p or p == 'ils':  # Matches "ils (elles)"
-                    forms['present_ils/elles'] = conj_form
+                elif 'ils (' in p or p == 'ils':
+                    forms['present_ils'] = conj_form
             
-            # Imperfect
+            # Imperfect (Imparfait)
             elif 'indicatif' in m and 'imparfait' in t:
                 if p == 'je':
                     forms['imperfect_je'] = conj_form
                 elif p == 'tu':
                     forms['imperfect_tu'] = conj_form
                 elif 'il (' in p or p == 'il':
-                    forms['imperfect_il/elle'] = conj_form
+                    forms['imperfect_il'] = conj_form
                 elif p == 'nous':
                     forms['imperfect_nous'] = conj_form
                 elif p == 'vous':
                     forms['imperfect_vous'] = conj_form
                 elif 'ils (' in p or p == 'ils':
-                    forms['imperfect_ils/elles'] = conj_form
+                    forms['imperfect_ils'] = conj_form
             
-            # Future
+            # Future (Futur)
             elif 'indicatif' in m and 'futur' in t:
                 if p == 'je':
                     forms['future_je'] = conj_form
                 elif p == 'tu':
                     forms['future_tu'] = conj_form
                 elif 'il (' in p or p == 'il':
-                    forms['future_il/elle'] = conj_form
+                    forms['future_il'] = conj_form
                 elif p == 'nous':
                     forms['future_nous'] = conj_form
                 elif p == 'vous':
                     forms['future_vous'] = conj_form
                 elif 'ils (' in p or p == 'ils':
-                    forms['future_ils/elles'] = conj_form
+                    forms['future_ils'] = conj_form
             
             # Passé simple
             elif 'indicatif' in m and 'passé simple' in t:
                 if p == 'je':
                     forms['passe_simple_je'] = conj_form
+                elif p == 'tu':
+                    forms['passe_simple_tu'] = conj_form
                 elif 'il (' in p or p == 'il':
-                    forms['passe_simple_il/elle'] = conj_form
+                    forms['passe_simple_il'] = conj_form
+                elif p == 'nous':
+                    forms['passe_simple_nous'] = conj_form
+                elif p == 'vous':
+                    forms['passe_simple_vous'] = conj_form
                 elif 'ils (' in p or p == 'ils':
-                    forms['passe_simple_ils/elles'] = conj_form
+                    forms['passe_simple_ils'] = conj_form
             
-            # Conditional
-            elif 'conditionnel' in m:
+            # Conditional (Conditionnel)
+            elif 'conditionnel' in m and 'présent' in t:
                 if p == 'je':
                     forms['conditional_je'] = conj_form
+                elif p == 'tu':
+                    forms['conditional_tu'] = conj_form
                 elif 'il (' in p or p == 'il':
-                    forms['conditional_il/elle'] = conj_form
+                    forms['conditional_il'] = conj_form
+                elif p == 'nous':
+                    forms['conditional_nous'] = conj_form
+                elif p == 'vous':
+                    forms['conditional_vous'] = conj_form
+                elif 'ils (' in p or p == 'ils':
+                    forms['conditional_ils'] = conj_form
             
-            # Subjunctive
+            # Subjunctive (Subjonctif présent)
             elif 'subjonctif' in m and 'présent' in t:
                 if p == 'je':
                     forms['subjunctive_je'] = conj_form
+                elif p == 'tu':
+                    forms['subjunctive_tu'] = conj_form
                 elif 'il (' in p or p == 'il':
-                    forms['subjunctive_il/elle'] = conj_form
+                    forms['subjunctive_il'] = conj_form
+                elif p == 'nous':
+                    forms['subjunctive_nous'] = conj_form
+                elif p == 'vous':
+                    forms['subjunctive_vous'] = conj_form
+                elif 'ils (' in p or p == 'ils':
+                    forms['subjunctive_ils'] = conj_form
             
             # Participles
             elif 'participe' in t:
@@ -329,6 +355,7 @@ def _extract_french_verb_forms(conjugation, verb: str) -> Dict[str, str]:
         traceback.print_exc()
     
     return forms if len(forms) > 1 else None
+
 
 def _extract_italian_verb_forms(conjugation, verb: str) -> Dict[str, str]:
     """Extract ALL Italian verb forms."""
@@ -725,111 +752,62 @@ def _escape_telegram_markdown(text: str) -> str:
 
 def format_word_forms_for_telegram(forms: Dict[str, str], pos: str) -> str:
     """
-    Format word forms for display in Telegram - grouped by tense with proper headers.
+    Format word forms for display in Telegram - clean table format like Google.
     
     Args:
         forms: Dictionary of word forms
         pos: Part of speech
     
     Returns:
-        Formatted string for Telegram with proper markdown escaping
+        Formatted string for Telegram
     """
     if not forms:
         return "No forms available."
     
-    lines = [f"📝 *{pos} Forms*\n"]
+    lines = []
     
-    # Show infinitive first
-    if 'infinitive' in forms:
-        lines.append(f"*Infinitive:* {_escape_telegram_markdown(forms['infinitive'])}\n")
+    # Helper function to format a tense section
+    def add_tense_section(title: str, prefix: str, persons: list):
+        """Add a tense section with all persons."""
+        tense_forms = [(p, forms.get(f'{prefix}_{p}')) for p in persons]
+        # Only show section if we have at least one form
+        if any(v for _, v in tense_forms):
+            lines.append(f"*{title}*")
+            for person, value in tense_forms:
+                if value:
+                    lines.append(f"{person} {_escape_telegram_markdown(value)}")
+            lines.append("")  # Blank line after section
     
-    # Group present tense forms
-    present_forms = [(k, v) for k, v in forms.items() if k.startswith('present_')]
-    if present_forms:
-        lines.append("*Present Tense:*")
-        for key, value in sorted(present_forms):
-            person = key.replace('present_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
+    # Present
+    add_tense_section("Présent", "present", ["je", "tu", "il", "nous", "vous", "ils"])
     
-    # Group past/preterite forms
-    past_forms = [(k, v) for k, v in forms.items() if k.startswith('past_') and k != 'past_participle']
-    preterite_forms = [(k, v) for k, v in forms.items() if k.startswith('preterite_')]
-    if past_forms or preterite_forms:
-        lines.append("*Past Tense:*")
-        for key, value in sorted(past_forms + preterite_forms):
-            person = key.replace('past_', '').replace('preterite_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
-    
-    # Group imperfect forms
-    imperfect_forms = [(k, v) for k, v in forms.items() if k.startswith('imperfect_')]
-    if imperfect_forms:
-        lines.append("*Imperfect:*")
-        for key, value in sorted(imperfect_forms):
-            person = key.replace('imperfect_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
-    
-    # Group future forms
-    future_forms = [(k, v) for k, v in forms.items() if k.startswith('future_')]
-    if future_forms:
-        lines.append("*Future:*")
-        for key, value in sorted(future_forms):
-            person = key.replace('future_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
+    # Future
+    add_tense_section("Futur", "future", ["je", "tu", "il", "nous", "vous", "ils"])
     
     # Passé simple
-    passe_simple_forms = [(k, v) for k, v in forms.items() if k.startswith('passe_simple_')]
-    if passe_simple_forms:
-        lines.append("*Passé Simple:*")
-        for key, value in passe_simple_forms:
-            person = key.replace('passe_simple_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
+    add_tense_section("Passé simple", "passe_simple", ["je", "tu", "il", "nous", "vous", "ils"])
+    
+    # Imperfect
+    add_tense_section("Imparfait", "imperfect", ["je", "tu", "il", "nous", "vous", "ils"])
     
     # Conditional
-    conditional_forms = [(k, v) for k, v in forms.items() if k.startswith('conditional_')]
-    if conditional_forms:
-        lines.append("*Conditional:*")
-        for key, value in conditional_forms:
-            person = key.replace('conditional_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
+    add_tense_section("Conditionnel", "conditional", ["je", "tu", "il", "nous", "vous", "ils"])
     
     # Subjunctive
-    subjunctive_forms = [(k, v) for k, v in forms.items() if k.startswith('subjunctive_')]
-    if subjunctive_forms:
-        lines.append("*Subjunctive:*")
-        for key, value in subjunctive_forms:
-            person = key.replace('subjunctive_', '').replace('_', ' ').title()
-            lines.append(f"  • {person}: {_escape_telegram_markdown(value)}")
-        lines.append("")
+    add_tense_section("Subjonctif", "subjunctive", ["je", "tu", "il", "nous", "vous", "ils"])
     
-    # Participles and gerunds
-    special_forms = []
+    # Participles
+    participles = []
     if 'present_participle' in forms:
-        special_forms.append(f"*Present Participle:* {_escape_telegram_markdown(forms['present_participle'])}")
+        participles.append(f"*Participe présent:* {_escape_telegram_markdown(forms['present_participle'])}")
     if 'past_participle' in forms:
-        special_forms.append(f"*Past Participle:* {_escape_telegram_markdown(forms['past_participle'])}")
-    if 'gerund' in forms:
-        special_forms.append(f"*Gerund:* {_escape_telegram_markdown(forms['gerund'])}")
+        participles.append(f"*Participe passé:* {_escape_telegram_markdown(forms['past_participle'])}")
     
-    if special_forms:
-        lines.append('\n'.join(special_forms))
+    if participles:
+        lines.extend(participles)
     
-    # Noun plurals
-    if 'plural' in forms:
-        lines.append(f"\n*Plural:* {_escape_telegram_markdown(forms['plural'])}")
-    
-    # Adjective forms
-    if 'comparative' in forms:
-        lines.append(f"\n*Comparative:* {_escape_telegram_markdown(forms['comparative'])}")
-    if 'superlative' in forms:
-        lines.append(f"*Superlative:* {_escape_telegram_markdown(forms['superlative'])}")
-    
-    return '\n'.join(lines)
+    return '\n'.join(lines) if lines else "No conjugations found."
+
 
 
 def _escape_telegram_markdown(text: str) -> str:

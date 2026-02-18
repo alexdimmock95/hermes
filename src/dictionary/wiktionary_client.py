@@ -1,6 +1,5 @@
 # src/dictionary/wiktionary_client.py
 # Wiktionary client using raw wikitext + mwparserfromhell
-# FIXED VERSION - Better section handling - supports multiple language Wiktionaries
 
 import requests
 import mwparserfromhell
@@ -375,7 +374,7 @@ def extract_definitions(
         pos_content = language_section[pos_start:pos_end]
         
         print(f"DEBUG: Processing {pos_name} (content length: {len(pos_content)} chars)")
-        
+
         definitions = []
         
         # Extract definition lines (start with #, not ##)
@@ -396,10 +395,9 @@ def extract_definitions(
             # Clean the definition
             clean = clean_definition(line_stripped.lstrip('#:* ').strip())
             
-            if clean and len(clean) > 10 and len(definitions) < max_defs_per_pos:
+            if clean and len(clean) > 0 and len(definitions) < max_defs_per_pos:
                 definitions.append(clean)
-                print(f"DEBUG: Found definition: {clean[:80]}...")
-        
+
         if definitions:
             entries.append({
                 "pos": pos_name,
@@ -419,6 +417,17 @@ def clean_definition(text: str) -> str:
         if marker in text:
             text = text.split(marker)[0]
     
+    # Extract text from labels before removing them
+    text = re.sub(r'\{\{lb\|[^}]+\}\}\s*', '', text)
+
+    # Extract text from inflection of before removing them
+    inflection_match = re.search(r'\{\{inflection of\|[^|]+\|([^|}\s]+)', text)
+    if inflection_match:
+        base_word = inflection_match.group(1)
+        text = f"inflection of {base_word}"
+        # If it's just an inflection, we can return early (no need to clean further)
+        return text
+
     # Remove ALL templates {{...}} including nested ones
     while '{{' in text:
         # Find outermost template
@@ -447,7 +456,7 @@ def clean_definition(text: str) -> str:
     
     # Clean up HTML tags
     text = re.sub(r'<[^>]+>', '', text)
-    
+
     # Replace wiki links [[dog]] -> dog
     # First handle [[word|display]] -> display
     text = re.sub(r"\[\[([^\]|]+)\|([^\]]+)\]\]", r"\2", text)
@@ -467,7 +476,7 @@ def clean_definition(text: str) -> str:
     text = text.strip().rstrip(':.')
     
     # If definition is too short after cleaning, it's probably junk
-    if len(text) < 10:
+    if len(text) < 3:
         return ""
 
     return text.strip()
@@ -579,6 +588,150 @@ def format_for_telegram(word: str, language: str = "English", language_code: str
         word, language=language, language_code=language_code, max_defs_per_pos=max_defs_per_pos
     )
     return text
+
+
+def fetch_bilingual_definitions(word: str, language: str = "English", language_code: str = "en", max_defs_per_pos: int = 3) -> dict:
+    """
+    Fetch definitions in BOTH English and the target language.
+    
+    Args:
+        word: The word to look up
+        language: Target language name in English (e.g., "Italian", "French")
+        language_code: Language code (e.g., "it", "fr")
+        max_defs_per_pos: Max definitions per part of speech
+    
+    Returns:
+        {
+            "english": {...},  # English Wiktionary definitions
+            "native": {...}    # Native language definitions (or None)
+        }
+    """
+    # Get English definitions (current behavior)
+    english_result = fetch_definitions(word, language=language, language_code=language_code, max_defs_per_pos=max_defs_per_pos)
+    
+    # Try to get native language definitions
+    native_result = None
+    if language_code != "en" and language_code in WIKTIONARY_DOMAINS:
+        # Fetch from native Wiktionary (e.g., it.wiktionary.org for Italian)
+        wikitext, source = fetch_wikitext(word, language_code=language_code, try_english_first=False)
+        if wikitext:
+            # Native Wiktionary uses native language names for sections
+            # e.g., on it.wiktionary.org, Italian words are under "Italiano" not "Italian"
+            native_lang_names = {
+                "it": "Italiano",
+                "fr": "Français", 
+                "es": "Español",
+                "de": "Deutsch",
+                "pt": "Português",
+                "ru": "Русский",
+                "pl": "Polski",
+                "nl": "Nederlands",
+                "tr": "Türkçe",
+                "ja": "日本語",
+                "zh-CN": "中文",
+                "zh-TW": "中文",
+                "ko": "한국어",
+                "ar": "العربية",
+                "hi": "हिन्दी",
+            }
+            native_lang = native_lang_names.get(language_code, language)
+            
+            entries = extract_definitions(
+                wikitext,
+                language=native_lang,
+                language_code=language_code,
+                max_defs_per_pos=max_defs_per_pos
+            )
+            
+            if entries:
+                # Also try to get pronunciation from native Wiktionary
+                pronunciation = extract_pronunciation(wikitext, language=native_lang, language_code=language_code)
+                
+                native_result = {
+                    "word": word,
+                    "language": native_lang,
+                    "pronunciation": pronunciation,
+                    "entries": entries
+                }
+    
+    return {
+        "english": english_result,
+        "native": native_result
+    }
+
+
+def format_bilingual_for_telegram(word: str, language: str = "English", language_code: str = "en", max_defs_per_pos: int = 3):
+    """
+    Format bilingual dictionary output (English + native language definitions).
+    
+    Returns:
+        Tuple of (formatted_text: str, keyboard: InlineKeyboardMarkup or None)
+    """
+    bilingual = fetch_bilingual_definitions(word, language=language, language_code=language_code, max_defs_per_pos=max_defs_per_pos)
+    
+    english_result = bilingual["english"]
+    native_result = bilingual["native"]
+    
+    # If neither has entries, return error
+    if not english_result["entries"] and (not native_result or not native_result.get("entries")):
+        return (f"❌ No definition found for '*{word}*'.", None)
+    
+    lines = [f"📖 *{word.upper()}*"]
+    
+    # Add pronunciation if available (prefer native, fall back to English)
+    pronunciation = None
+    if native_result and native_result.get("pronunciation"):
+        pronunciation = native_result["pronunciation"]
+    elif english_result.get("pronunciation"):
+        pronunciation = english_result["pronunciation"]
+    
+    if pronunciation:
+        lines.append(f"🔊 {pronunciation}")
+    
+    lines.append("")
+    
+    # --- English definitions ---
+    if english_result["entries"]:
+        lines.append(f"🇬🇧 *English Definition*")
+        for entry in english_result["entries"]:
+            lines.append(f"*{entry['pos']}*")
+            for i, definition in enumerate(entry["definitions"], 1):
+                safe = _escape_telegram_markdown(definition)
+                lines.append(f"  {i}. {safe}")
+            lines.append("")
+    
+    # --- Native language definitions ---
+    if native_result and native_result.get("entries"):
+        # Use flag emoji based on language
+        flag_emoji = {
+            "it": "🇮🇹", "fr": "🇫🇷", "es": "🇪🇸", "de": "🇩🇪",
+            "pt": "🇵🇹", "ru": "🇷🇺", "pl": "🇵🇱", "ja": "🇯🇵",
+            "zh-CN": "🇨🇳", "zh-TW": "🇹🇼", "ko": "🇰🇷",
+        }.get(language_code, "🌍")
+        
+        lines.append(f"{flag_emoji} *{native_result['language']} Definition*")
+        for entry in native_result["entries"]:
+            lines.append(f"*{entry['pos']}*")
+            for i, definition in enumerate(entry["definitions"], 1):
+                safe = _escape_telegram_markdown(definition)
+                lines.append(f"  {i}. {safe}")
+            lines.append("")
+    
+    # Add examples (from English corpus)
+    examples = fetch_corpus_examples(word, max_examples=2)
+    if examples:
+        lines.append("📝 *Examples*")
+        for example in examples:
+            safe_example = _escape_telegram_markdown(example)
+            lines.append(f"• {safe_example}")
+        lines.append("")
+    
+    formatted_text = "\n".join(lines)
+    
+    # Create keyboard (use English entries for word forms since those are more reliable)
+    keyboard = create_word_forms_keyboard(word, english_result["entries"], language_code)
+    
+    return (formatted_text, keyboard)
 
 
 def format_etymology_for_telegram(word: str) -> str:

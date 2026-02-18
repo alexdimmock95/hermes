@@ -217,8 +217,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Enhanced metrics tracking and latency profiling
 - [ ] CI/CD pipeline setup (GitHub Actions)
 - [ ] Add in capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively.
-- [ ] Language-aware Wiktionary (e.g. French Wiktionary when target is French)
-- [ ] Dictionary: look up word → translate to target language → show definition in target language, with option to show English definition
-- [ ] When text/voice translate input is one word, show target-language Wiktionary definition
 - [ ] Flesh out language capability (translation vs dictionary language sets)
 - [ ] Ensure dictionary/translator replies stay in message thread
