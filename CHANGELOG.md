@@ -10,8 +10,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Comprehensive performance metrics and latency tracking across all major modules
+- Multi-language pronunciation scoring with language-specific models
+- Bilingual dictionary definitions (English + native language)
+- Complete verb conjugation tables with all tenses and persons
+- Enhanced debug output with timing breakdowns
+
+### Changed
+- Ongoing refinements and optimization of dictionary parsing
+- Improved message history preservation in bot navigation
+- Enhanced keyboard layouts with universal Home button
+
+---
+
+## [0.6.0] — 2026-02-19
+
+### Added
+- **Performance Metrics & Latency Tracking** — Comprehensive timing instrumentation:
+  - `PronunciationScore` class: Stage-by-stage timing (audio loading, MFCC extraction, DTW, speech recognition, phoneme analysis)
+  - `SpeechToSpeechTranslator` class: Pipeline metrics (transcription, translation, synthesis breakdown)
+  - Context managers for timing code blocks with millisecond precision
+  - Debug mode toggle for detailed performance output
+  - Time allocation percentages and bottleneck identification
+  - Metrics accessible via API return values or `.get_last_metrics()`
+
+- **Multi-language Pronunciation Scoring** — Language-specific speech recognition and phoneme analysis:
+  - Language-specific Wav2Vec2 models for 13+ languages (English, French, Spanish, German, Italian, Portuguese, Russian, Polish, Japanese, Chinese, Arabic, Turkish, Dutch)
+  - Dynamic model loading based on target language (e.g., `facebook/wav2vec2-large-xlsr-53-french` for French)
+  - Language-specific IPA phoneme extraction using espeak-ng with correct language voices
+  - Fixes critical bug where all pronunciations were scored against English phonemes
+  - Scorer caching with automatic language switching (`get_scorer(language="fr")`)
+  - Proper TTS reference generation in target language for accurate comparison
+
+- **Bilingual Dictionary Definitions** — Native language definitions alongside English:
+  - `fetch_bilingual_definitions()` function to query both English and native Wiktionaries
+  - `format_bilingual_for_telegram()` for side-by-side display with flag emojis
+  - Support for native Wiktionary section names (e.g., "Italiano" on it.wiktionary.org)
+  - Fallback to English-only if native definitions unavailable
+
+- **Enhanced Verb Conjugation Display** — Complete conjugation tables like Google Translate:
+  - Full person conjugations for all tenses (je/tu/il/nous/vous/ils for French)
+  - Support for all major tenses: Present, Future, Imperfect, Passé Simple, Conditional, Subjunctive
+  - Clean table format grouped by tense with proper headers
+  - Language-specific person labels (je/tu for French, yo/tú for Spanish, etc.)
+  - Extraction functions updated for French, Spanish, Italian, Portuguese, Romanian
+
+### Changed
+- **Dictionary Definition Parsing** — Improved wikitext cleaning and extraction:
+  - Better handling of template removal (inflection templates, label templates)
+  - Shorter minimum definition length (3 chars instead of 10) to capture brief definitions
+  - Enhanced extraction of definitions from `{{lb}}` and `{{inflection of}}` templates
+  - Fixed Jaccard similarity calculation and phoneme comparison logic
+
+- **Bot Navigation & UX** — Improved message history and keyboard consistency:
+  - Added `keep_history` parameter to `safe_message_update()` for preserving dictionary definitions
+  - Home button added to language selection screen and speed menu
+  - Dictionary definitions remain visible in chat history when navigating
+  - Updated all navigation handlers to optionally preserve message history
+
+- **Pronunciation Scoring Display** — Enhanced user feedback:
+  - Better formatting of conjugation tables in Telegram
+  - Markdown escaping for all displayed text
+  - Clearer section headers and person labels
+
+### Fixed
+- Critical bug: Pronunciation scoring now uses correct language models (French words scored with French phonemes, not English)
+- Dictionary parsing for short definitions and vulgar terms
+- Template cleaning in definition extraction
+- Pronunciation audio generation using wrong language for TTS
+- Division by zero errors in similarity calculations
+
+---
+
+## [0.5.5] — 2026-02-14
+
+### Added
 - Word form buttons after dictionary lookup (Conjugations / Plural form / Comparative forms) shown with definition
-- Ongoing refinements and optimization
 
 ### Changed
 - README focused on Telegram bot, dictionary, and learning; removed obsolete real-time pipeline emphasis
@@ -178,7 +252,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Week 2** — Denoiser integration (Denoiser module, SNR tests) [COMPLETE]
 - **Week 3** — ASR alignment (ASRWrapper with phoneme timestamps) [COMPLETE]
 - **Week 4** — Accent softening (FormantShifter DSP module) [COMPLETE]
-- **Week 5** — Recombiner + metrics (Enhanced overlap-add, latency tracking) [IN PROGRESS]
+- **Week 5** — Recombiner + metrics (Enhanced overlap-add, latency tracking) [COMPLETE]
 - **Week 6** — Tests + CI + documentation (Full test suite, README, CI setup) [IN PROGRESS]
 
 ---
@@ -187,6 +261,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Focus | Status |
 |---------|------|-------|--------|
+| 0.6.0 | Feb 19, 2026 | Latency Metrics & Multi-language Pronunciation | Complete |
+| 0.5.5 | Feb 14, 2026 | Dictionary Elements | Complete |
 | 0.5.0 | Feb 9, 2026 | Learning Analytics & Pronunciation Scoring Enhancements | Complete |
 | 0.4.0 | Feb 1, 2026 | Telegram Bot & Speech-to-Speech Translation | Complete |
 | 0.3.0 | Jan 29, 2026 | Voice Transformation & WORLD Vocoder Integration | Complete |
@@ -208,13 +284,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Jan 29, 2026** — Voice transformation and speech-to-speech classes added  
 **Feb 1, 2026** — Telegram bot v1 release with speech-to-speech translation  
 **Feb 2-4, 2026** — Dictionary functionality enhancements and bot UX improvements  
-**Feb 8-9, 2026** — Word statistics, learning progress tracking, and pronunciation scoring integration
+**Feb 8-9, 2026** — Word statistics, learning progress tracking, and pronunciation scoring integration  
+**Feb 14, 2026** — Added functionality within dictionary for word forms: verb conjugations, plural and superlative forms of lemmas  
+**Feb 18-19, 2026** — Multi-language pronunciation scoring, bilingual dictionary definitions, complete verb conjugation tables, comprehensive performance metrics and latency tracking
 
 ---
 
 ## Next Steps
 
-- [ ] Enhanced metrics tracking and latency profiling
 - [ ] CI/CD pipeline setup (GitHub Actions)
-- [ ] Add in capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively.
+- [ ] Add capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively
 - [ ] Flesh out language capability (translation vs dictionary language sets)
+- [ ] Performance optimization based on latency metrics (consider smaller models for faster response)
+- [ ] Expand language support for pronunciation scoring and dictionary definitions

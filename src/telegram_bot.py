@@ -48,4 +48,3 @@ if __name__ == '__main__':
     main()
 
 #TODO: see word form extractor for english conjugations. being parsed weirdly. 
-#TODO: pronunciation scorer needs to be measuring likeness to target language phonemes, not the english interpretation of a foreign word

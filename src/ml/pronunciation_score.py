@@ -13,10 +13,22 @@ import io
 from typing import Tuple, Dict
 import warnings
 warnings.filterwarnings('ignore')
+import time
+from contextlib import contextmanager
 
 import os
 # Set espeak path for phonemizer
 os.environ['PATH'] = '/opt/homebrew/bin:' + os.environ.get('PATH', '')
+
+
+@contextmanager
+def timer(description: str, debug: bool = False):
+    """Context manager for timing code blocks."""
+    start = time.time()
+    yield
+    elapsed = time.time() - start
+    if debug:
+        print(f"⏱️  {description}: {elapsed:.3f}s ({elapsed*1000:.1f}ms)")
 
 
 class PronunciationScore:
@@ -73,6 +85,7 @@ class PronunciationScore:
         
         if self.debug:
             print(f"Initializing pronunciation scorer for {language.upper()} with DEBUG mode enabled...")
+            start_time = time.time()
         else:
             print(f"Loading pronunciation scoring models for {language.upper()}...")
         
@@ -83,16 +96,23 @@ class PronunciationScore:
             print(f"⚠️  No specific model for '{language}', using multilingual fallback")
             model_name = "facebook/wav2vec2-large-xlsr-53-multilingual"
         
-        self.processor = Wav2Vec2Processor.from_pretrained(model_name)
-        self.model = Wav2Vec2ForCTC.from_pretrained(model_name)
-        self.model.eval()
+        with timer(f"Loading processor for {model_name}", self.debug):
+            self.processor = Wav2Vec2Processor.from_pretrained(model_name)
+        
+        with timer(f"Loading model for {model_name}", self.debug):
+            self.model = Wav2Vec2ForCTC.from_pretrained(model_name)
+            self.model.eval()
         
         self.sample_rate = 16000
         self.n_mfcc = 13
         self.n_fft = 400
         self.hop_length = 160
         
-        print(f"✓ Models loaded successfully for {language.upper()}")
+        if self.debug:
+            total_time = time.time() - start_time
+            print(f"✓ Models loaded successfully for {language.upper()} in {total_time:.2f}s")
+        else:
+            print(f"✓ Models loaded successfully for {language.upper()}")
     
     def load_audio(self, audio_data: bytes) -> np.ndarray:
         """Load and normalize audio."""
@@ -173,24 +193,36 @@ class PronunciationScore:
             "confidence": confidence
         }
     
-    def score_pronunciation(
-        self, 
-        user_audio_bytes: bytes, 
-        reference_audio_bytes: bytes,
-        target_word: str
-    ) -> Dict[str, any]:
+
+    def score_pronunciation(self, user_audio_bytes: bytes, reference_audio_bytes: bytes, target_word: str) -> Dict[str, any]:
         """
-        Score pronunciation with detailed debugging.
+        Score pronunciation with detailed debugging and performance metrics.
         """
+        # Initialize metrics dictionary
+        metrics = {
+            "total_time": 0,
+            "audio_loading_time": 0,
+            "mfcc_extraction_time": 0,
+            "dtw_computation_time": 0,
+            "speech_recognition_time": 0,
+            "phoneme_analysis_time": 0,
+        }
+        
+        overall_start = time.time()
+        
         if self.debug:
             print("\n" + "="*70)
             print("PRONUNCIATION SCORING - DEBUG MODE")
             print("="*70)
             print(f"Target word: '{target_word}'")
+            print(f"Language: {self.language.upper()}")
         
         # Load audio
-        user_audio = self.load_audio(user_audio_bytes)
-        ref_audio = self.load_audio(reference_audio_bytes)
+        with timer("Audio loading", self.debug):
+            load_start = time.time()
+            user_audio = self.load_audio(user_audio_bytes)
+            ref_audio = self.load_audio(reference_audio_bytes)
+            metrics["audio_loading_time"] = time.time() - load_start
         
         if self.debug:
             print(f"\n📊 AUDIO STATISTICS")
@@ -204,8 +236,11 @@ class PronunciationScore:
             print(f"   └─ Energy: {np.sum(ref_audio**2):.3f}")
         
         # Extract MFCCs
-        user_mfcc = self.extract_mfcc(user_audio)
-        ref_mfcc = self.extract_mfcc(ref_audio)
+        with timer("MFCC extraction", self.debug):
+            mfcc_start = time.time()
+            user_mfcc = self.extract_mfcc(user_audio)
+            ref_mfcc = self.extract_mfcc(ref_audio)
+            metrics["mfcc_extraction_time"] = time.time() - mfcc_start
         
         if self.debug:
             print(f"\n📈 MFCC FEATURES")
@@ -219,7 +254,10 @@ class PronunciationScore:
             print(f"   └─ First 3 coefficients (frame 0): {ref_mfcc[:3, 0]}")
         
         # Compute DTW
-        dtw_distance, alignment_path = self.compute_dtw_distance(user_mfcc, ref_mfcc)
+        with timer("DTW computation", self.debug):
+            dtw_start = time.time()
+            dtw_distance, alignment_path = self.compute_dtw_distance(user_mfcc, ref_mfcc)
+            metrics["dtw_computation_time"] = time.time() - dtw_start
         
         if self.debug:
             print(f"\n🔄 DYNAMIC TIME WARPING")
@@ -243,8 +281,11 @@ class PronunciationScore:
             print(f"   └─ Fair (accent): 5.0-7.0")
         
         # Speech recognition
-        user_recognition = self.recognize_phonemes(user_audio)
-        ref_recognition = self.recognize_phonemes(ref_audio)
+        with timer("Speech recognition (Wav2Vec2)", self.debug):
+            recog_start = time.time()
+            user_recognition = self.recognize_phonemes(user_audio)
+            ref_recognition = self.recognize_phonemes(ref_audio)
+            metrics["speech_recognition_time"] = time.time() - recog_start
         
         user_text = user_recognition["text"]
         ref_text = ref_recognition["text"]
@@ -290,17 +331,15 @@ class PronunciationScore:
                     t_display = t if t != ' ' else '_'
                     print(f"│  [{i}] '{u_display}' vs '{t_display}' {match}")
             
-            # Detailed metrics - FIXED CALCULATION
+            # Detailed metrics
             edit_dist = self._levenshtein_distance(user_text, target_word_clean)
             set_user = set(user_text.replace(" ", ""))
             set_target = set(target_word_clean.replace(" ", ""))
             
-            # Calculate Jaccard safely
             intersection = set_user & set_target
             union = set_user | set_target
             jaccard = len(intersection) / len(union) if len(union) > 0 else 0.0
             
-            # Calculate length ratio safely
             len_ratio = (
                 min(len(user_text), len(target_word_clean)) / 
                 max(len(user_text), len(target_word_clean), 1)
@@ -310,13 +349,11 @@ class PronunciationScore:
             print(f"├─ Jaccard similarity: {jaccard:.3f}")
             print(f"└─ Length ratio: {len_ratio:.3f}")
         
-        # Calculate scores - MORE LENIENT with perfect match bonus
-        # Check for perfect or near-perfect recognition first
+        # Calculate scores
         is_perfect_match = (user_text == target_word_clean)
         is_near_perfect = (phoneme_match >= 0.95)
 
         if is_perfect_match or is_near_perfect:
-            # For perfect text matching, be much more lenient with acoustics
             if dtw_distance < 4.0:
                 dtw_score = 95
             elif dtw_distance < 6.0:
@@ -329,7 +366,6 @@ class PronunciationScore:
             if self.debug:
                 print(f"\n⭐ PERFECT/NEAR-PERFECT MATCH - Lenient acoustic scoring applied")
         else:
-            # Original DTW scoring for imperfect matches
             if dtw_distance < 3.0:
                 dtw_score = 100
             elif dtw_distance < 5.5:
@@ -373,32 +409,56 @@ class PronunciationScore:
             else:
                 grade = "F (Needs Practice)"
             print(f"   └─ Grade: {grade}")
-            print("="*70 + "\n")
         
         # Phoneme-level analysis
         phoneme_analysis = None
         try:
-            phoneme_analysis = self._analyze_phoneme_differences(
-                user_text,
-                target_word_clean,
-                user_audio,
-                ref_audio
-            )
+            with timer("Phoneme analysis (IPA extraction)", self.debug):
+                phoneme_start = time.time()
+                phoneme_analysis = self._analyze_phoneme_differences(
+                    user_text,
+                    target_word_clean,
+                    user_audio,
+                    ref_audio
+                )
+                metrics["phoneme_analysis_time"] = time.time() - phoneme_start
 
             if self.debug and phoneme_analysis:
-                    print(f"\n📝 PHONEME FEEDBACK:")
-                    print(phoneme_analysis['feedback'])
+                print(f"\n📝 PHONEME FEEDBACK:")
+                print(phoneme_analysis['feedback'])
         except Exception as e:
             if self.debug:
                 print(f"\n⚠️  Could not perform phoneme analysis: {e}")
                 print(f"   Make sure phonemizer is installed: pip install phonemizer")
-                return None
 
         # Generate feedback
         feedback = self._generate_feedback(
             overall_score, dtw_score, phoneme_score,
             user_text, target_word_clean, dtw_distance
         )
+        
+        # Calculate total time
+        metrics["total_time"] = time.time() - overall_start
+        
+        if self.debug:
+            print(f"\n⏱️  PERFORMANCE METRICS")
+            print(f"├─ Audio loading: {metrics['audio_loading_time']*1000:.1f}ms")
+            print(f"├─ MFCC extraction: {metrics['mfcc_extraction_time']*1000:.1f}ms")
+            print(f"├─ DTW computation: {metrics['dtw_computation_time']*1000:.1f}ms")
+            print(f"├─ Speech recognition: {metrics['speech_recognition_time']*1000:.1f}ms")
+            print(f"├─ Phoneme analysis: {metrics['phoneme_analysis_time']*1000:.1f}ms")
+            print(f"└─ TOTAL TIME: {metrics['total_time']:.3f}s")
+            
+            # Calculate percentages
+            if metrics["total_time"] > 0:
+                print(f"\n📊 TIME BREAKDOWN")
+                for key, value in metrics.items():
+                    if key != "total_time" and value > 0:
+                        percentage = (value / metrics["total_time"]) * 100
+                        label = key.replace("_", " ").title()
+                        print(f"   {label}: {percentage:.1f}%")
+            
+            print("="*70 + "\n")
             
         return {
             "overall_score": round(overall_score, 1),
@@ -411,6 +471,7 @@ class PronunciationScore:
             "alignment_quality": len(alignment_path),
             "feedback": feedback,
             "phoneme_analysis": phoneme_analysis,
+            "metrics": metrics if self.debug else None,  # Include metrics in response
             "debug_info": {
                 "user_confidence": user_recognition["confidence"],
                 "ref_confidence": ref_recognition["confidence"],
@@ -420,7 +481,8 @@ class PronunciationScore:
                 "ref_audio_length": len(ref_audio) / self.sample_rate
             } if self.debug else None
         }
-    
+
+
     def _calculate_phoneme_similarity(self, recognized: str, target: str) -> float:
         """Calculate phoneme similarity."""
         recognized = recognized.replace(" ", "").lower()
