@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **CI/CD Pipeline with GitHub Actions** — Automated testing and quality checks on every commit:
+  - Automated test execution with pytest on every push and pull request
+  - System dependency installation (espeak-ng, ffmpeg, portaudio)
+  - Python package caching for faster subsequent runs
+  - Import smoke tests to verify critical modules load correctly
+  - Code quality checks with flake8 (syntax errors, undefined names, complexity)
+  - Test results visible on GitHub Actions tab with pass/fail status
+  - Status badge support for README display
 - Comprehensive performance metrics and latency tracking across all major modules
 - Multi-language pronunciation scoring with language-specific models
 - Bilingual dictionary definitions (English + native language)
@@ -261,6 +269,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Focus | Status |
 |---------|------|-------|--------|
+| 0.6.1 | Feb 19, 2026 | CI/CD Pipeline Integration | Complete |
 | 0.6.0 | Feb 19, 2026 | Latency Metrics & Multi-language Pronunciation | Complete |
 | 0.5.5 | Feb 14, 2026 | Dictionary Elements | Complete |
 | 0.5.0 | Feb 9, 2026 | Learning Analytics & Pronunciation Scoring Enhancements | Complete |
@@ -286,7 +295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Feb 2-4, 2026** — Dictionary functionality enhancements and bot UX improvements  
 **Feb 8-9, 2026** — Word statistics, learning progress tracking, and pronunciation scoring integration  
 **Feb 14, 2026** — Added functionality within dictionary for word forms: verb conjugations, plural and superlative forms of lemmas  
-**Feb 18-19, 2026** — Multi-language pronunciation scoring, bilingual dictionary definitions, complete verb conjugation tables, comprehensive performance metrics and latency tracking
+**Feb 18-19, 2026** — Multi-language pronunciation scoring, bilingual dictionary definitions, complete verb conjugation tables, comprehensive performance metrics and latency tracking, CI/CD pipeline with GitHub Actions
 
 ---
 

@@ -85,6 +85,46 @@ pytest suite for ASR, denoiser, formant shifting, phonemize, streamer, voice_tra
 
 Notes: WhisperX and XTTS are lazy-loaded (first use may be slower). Language-specific Wav2Vec2 models download on first use per language. You need network access for Wiktionary and translation APIs.
 
+## Development & CI/CD
+
+### Continuous Integration
+
+The project uses **GitHub Actions** for automated testing and quality assurance. On every push and pull request:
+
+- ✅ All tests run automatically with pytest
+- ✅ Code quality checks with flake8
+- ✅ Import smoke tests verify modules load
+- ✅ Results visible on GitHub Actions tab
+
+**Status:** ![Tests](https://github.com/YOUR_GITHUB_USERNAME/hermes/workflows/Tests/badge.svg)
+
+The CI pipeline:
+1. Sets up Python 3.11 environment
+2. Installs system dependencies (espeak-ng, ffmpeg)
+3. Caches pip packages for faster runs (4min → 2min)
+4. Runs full test suite with pytest
+5. Performs code quality checks
+6. Reports pass/fail status on commits
+
+**View test results:** Go to the "Actions" tab on GitHub after pushing code.
+
+### Running Tests Locally
+
+Before pushing, you can run tests locally:
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=src --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_pronunciation_score.py -v
+
+# Check code quality
+pip install flake8
+flake8 src/ --max-line-length=120
+```
 ## Getting Started (development)
 
 1. **Install dependencies**
@@ -105,15 +145,28 @@ Notes: WhisperX and XTTS are lazy-loaded (first use may be slower). Language-spe
 ```bash
    pytest tests/
 ```
+   
+   Tests run automatically on GitHub via CI/CD pipeline on every push.
 
 4. **Run the demo** (optional, if present)
 ```bash
    python legacy/demo/demo.py
 ```
 
+5. **Push code** - Tests run automatically via GitHub Actions
+```bash
+   git add .
+   git commit -m "Your changes"
+   git push origin main
+```
+   
+   Check the "Actions" tab on GitHub to see test results.
+
 ## Dependencies
 
 Key packages: **python-telegram-bot**, **python-dotenv**, **whisperx**, **TTS** (XTTS), **deep_translator**, **mwparserfromhell**, **gtts**, **soundfile**, **librosa**, **torch**, **transformers** (Wav2Vec2), **fastdtw**, **langdetect**, **mlconjug3** (conjugations), **inflect** (plurals). See [requirements.txt](requirements.txt).
+
+**CI/CD**: GitHub Actions runs tests automatically on every push using pytest and flake8.
 
 ## Features
 
@@ -244,14 +297,16 @@ print(f"Synthesis took: {metrics['synthesis']['synthesis_time']:.2f}s")
 - **Caching**: Scorer and model instances cached with automatic language switching
 - **Message history preservation**: Dictionary definitions remain visible while navigating
 - **Universal navigation**: Home button accessible from all major screens
+- **CI/CD pipeline**: Automated testing with GitHub Actions on every commit ensures code quality
 
-## Recent Improvements (v0.6.0)
+## Recent Improvements (v0.6.1)
 
-1. **Multi-language pronunciation scoring** - Fixed critical bug where all languages were scored against English phonemes
-2. **Bilingual dictionary** - Native + English definitions side-by-side
-3. **Complete conjugations** - Full verb tables with all tenses and persons
-4. **Performance metrics** - Comprehensive latency tracking and bottleneck identification
-5. **Improved parsing** - Better handling of short definitions, templates, and special characters
-6. **Enhanced UX** - Message history preservation, universal Home button, better keyboard layouts
+1. **CI/CD Pipeline** - Automated testing and quality checks with GitHub Actions
+2. **Multi-language pronunciation scoring** - Fixed critical bug where all languages were scored against English phonemes
+3. **Bilingual dictionary** - Native + English definitions side-by-side
+4. **Complete conjugations** - Full verb tables with all tenses and persons
+5. **Performance metrics** - Comprehensive latency tracking and bottleneck identification
+6. **Improved parsing** - Better handling of short definitions, templates, and special characters
+7. **Enhanced UX** - Message history preservation, universal Home button, better keyboard layouts
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.
