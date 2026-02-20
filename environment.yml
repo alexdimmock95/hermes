@@ -4,6 +4,35 @@ channels:
 dependencies:
   - python=3.11
   - librosa
-  - numpy[version='>=1.26,<2.0']
+  - numpy>=1.26,<2.0
   - pyworld
-prefix: /Users/Alex/miniforge3/envs/accent-soft
+  - pip
+  - pip:
+      - pytest
+      - whisperx==3.6.0
+      - faster-whisper==1.2.1
+      - ctranslate2==4.6.2
+      - av==15.1.0
+      - gradio==4.15.0
+      - gradio-client==0.8.1
+      - torch==2.5.1
+      - torchaudio==2.5.1
+      - transformers==4.38.2
+      - pyannote-audio==3.4.0
+      - speechbrain==1.0.3
+      - TTS==0.22.0
+      - deepfilternet==0.5.6
+      - python-dotenv==1.2.1
+      - fastapi==0.128.0
+      - uvicorn==0.40.0
+      - deep-translator
+      - gtts
+      - fastdtw
+      - inflect
+      - mwparserfromhell
+      - sentence-transformers
+      - soundfile
+      - python-telegram-bot==20.7
+      - scipy
+      - matplotlib
+      - requests
