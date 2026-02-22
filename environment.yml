@@ -8,6 +8,8 @@ dependencies:
   - pyworld
   - pip
   - pip:
+      - pytest-asyncio
+      - anyio[trio]
       - pytest
       - ctranslate2==4.6.2
       - gradio==4.15.0
