@@ -10,19 +10,34 @@ The bot is the main interface. It provides:
 
 - **Dictionary** — Bilingual Wiktionary lookups with definitions in both English and native language (e.g., French + English for French words), etymology, examples, and **word-form buttons** (complete conjugation tables for verbs with all tenses and persons, plural for nouns, comparative/superlative for adjectives). Pronunciation audio, etymology, practice pronunciation with language-specific models, and Smart Synonyms (CEFR) where supported.
 
-- **Learning** — Event storage, word stats, multi-language pronunciation scoring (Wav2Vec2 + DTW with language-specific models), and `/stats` for progress. Pronunciation scoring uses correct phoneme models per language (French words scored with French phonemes, not English).
+- **Learning** — Event storage, word stats, multi-language pronunciation scoring (Wav2Vec2 + DTW with language-specific models), and `/stats` for progress. Pronunciation scoring uses correct phoneme models per language (French words scored with French phonemes, not English). Pronunciation feedback includes pair-based articulation tips — e.g. if you say 'B' instead of 'V', you get specific guidance on that exact substitution.
 
 - **Performance** — Comprehensive latency tracking and metrics available in debug mode across all major components (transcription, translation, synthesis, pronunciation scoring). Identifies bottlenecks and timing breakdowns.
 
-Under the hood it uses: **speech_to_speech** (WhisperX, Google Translate, XTTS with latency metrics), **voice_transformer** (speed/age/gender presets), **wiktionary_client** (mwparserfromhell, bilingual lookups, Telegram-safe formatting), **learning** (SQLite, aggregations), **ml/pronunciation_score** (multi-language Wav2Vec2 models, language-specific IPA extraction).
+Under the hood it uses: **speech_to_speech** (WhisperX, Google Translate, XTTS with latency metrics), **voice_transformer** (speed/age/gender presets), **wiktionary_client** (mwparserfromhell, bilingual lookups, Telegram-safe formatting), **learning** (SQLite, aggregations), **ml/pronunciation_score** (multi-language Wav2Vec2 models, language-specific IPA extraction, pair-based phoneme correction tips).
+
+## Language Support
+
+Language support varies by feature depending on the underlying services and models used.
+
+| Feature | Languages |
+|---------|-----------|
+| 💬 Text translation | Any language (Google Translate) |
+| 🎙 Voice-to-voice translation | Spanish, French, Italian, Portuguese, German, English, Dutch, Czech, Polish, Russian, Hungarian, Arabic, Turkish, Hindi, Japanese, Korean, Mandarin (Simplified & Traditional) |
+| 🎤 Pronunciation scoring | English, French, Spanish, German, Italian, Portuguese, Russian, Polish, Japanese, Mandarin, Arabic, Turkish, Dutch |
+| 📊 Smart Synonyms (CEFR) | English, German, French, Spanish, Italian, Portuguese, Dutch, Russian, Mandarin, Japanese, Korean, Arabic |
+| 🎛 Voice effects | Any language |
+| 📖 Dictionary & Etymology | Best coverage for European languages (Wiktionary) |
 
 ## Project Structure
 
 ### Root
 
 - **[README.md](README.md)** — This file
-- **[requirements.txt](requirements.txt)** — Python dependencies
 - **[CHANGELOG.md](CHANGELOG.md)** — Version history and changes
+- **[Dockerfile](Dockerfile)** — Docker image for CI/CD
+- **[environment.yml](environment.yml)** — Conda environment spec (used by Docker)
+- **[pytest.ini](pytest.ini)** — Pytest configuration (asyncio mode)
 
 ### Source (`src/`)
 
@@ -54,11 +69,11 @@ Under the hood it uses: **speech_to_speech** (WhisperX, Google Translate, XTTS w
 
 #### ML (`src/ml/`)
 
-- **[pronunciation_score.py](src/ml/pronunciation_score.py)** — Multi-language Wav2Vec2-based pronunciation scoring with language-specific models, IPA extraction, comprehensive performance metrics
+- **[pronunciation_score.py](src/ml/pronunciation_score.py)** — Multi-language Wav2Vec2-based pronunciation scoring with language-specific models, IPA extraction, pair-based phoneme correction tips, comprehensive performance metrics
 
 ### Tests (`tests/`)
 
-pytest suite for ASR, denoiser, formant shifting, phonemize, streamer, voice_transformer, speech_to_speech.
+22-test pytest suite covering: Levenshtein distance, phoneme similarity, feedback generation, Telegram handlers (start, set language), database initialisation, and module imports.
 
 ### Demo
 
@@ -69,18 +84,17 @@ pytest suite for ASR, denoiser, formant shifting, phonemize, streamer, voice_tra
 1. Add `TELEGRAM_BOT_TOKEN=...` to a `.env` file at the project root (or set the env var).
 2. Start the bot:
 ```bash
-   python src/telegram_bot.py
+python src/telegram_bot.py
 ```
-   or
+or
 ```bash
-   python -m src.telegram_bot
+python -m src.telegram_bot
 ```
 
 3. **Enable Debug Mode** (optional) for detailed performance metrics:
 ```python
-   # In your code
-   translator = SpeechToSpeechTranslator(debug=True)
-   scorer = PronunciationScore(language="fr", debug=True)
+translator = SpeechToSpeechTranslator(debug=True)
+scorer = PronunciationScore(language="fr", debug=True)
 ```
 
 Notes: WhisperX and XTTS are lazy-loaded (first use may be slower). Language-specific Wav2Vec2 models download on first use per language. You need network access for Wiktionary and translation APIs.
@@ -89,28 +103,22 @@ Notes: WhisperX and XTTS are lazy-loaded (first use may be slower). Language-spe
 
 ### Continuous Integration
 
-The project uses **GitHub Actions** for automated testing and quality assurance. On every push and pull request:
-
-- ✅ All tests run automatically with pytest
-- ✅ Code quality checks with flake8
-- ✅ Import smoke tests verify modules load
-- ✅ Results visible on GitHub Actions tab
+The project uses **GitHub Actions** for automated testing on every push and pull request. Tests run inside a Docker container that mirrors the local conda environment, avoiding platform-specific dependency issues.
 
 **Status:** ![Tests](https://github.com/YOUR_GITHUB_USERNAME/hermes/workflows/Tests/badge.svg)
 
 The CI pipeline:
-1. Sets up Python 3.11 environment
-2. Installs system dependencies (espeak-ng, ffmpeg)
-3. Caches pip packages for faster runs (4min → 2min)
-4. Runs full test suite with pytest
-5. Performs code quality checks
-6. Reports pass/fail status on commits
+1. Restores cached Docker layers (keyed on `environment.yml` — only rebuilds when dependencies change)
+2. Builds Docker image with full conda environment if cache miss
+3. Runs 22-test pytest suite
+4. Reports pass/fail status per commit
+
+First run after a dependency change takes ~10 minutes to rebuild. All other pushes complete in ~30 seconds thanks to layer caching.
 
 **View test results:** Go to the "Actions" tab on GitHub after pushing code.
 
 ### Running Tests Locally
 
-Before pushing, you can run tests locally:
 ```bash
 # Run all tests
 pytest tests/ -v
@@ -119,75 +127,70 @@ pytest tests/ -v
 pytest tests/ --cov=src --cov-report=term-missing
 
 # Run specific test file
-pytest tests/test_pronunciation_score.py -v
-
-# Check code quality
-pip install flake8
-flake8 src/ --max-line-length=120
+pytest tests/test_bot.py -v
 ```
+
 ## Getting Started (development)
 
 1. **Install dependencies**
 ```bash
-   pip install -r requirements.txt
+conda env create -f environment.yml
+conda activate accent-soft
 ```
 
 2. **Install espeak-ng** (required for IPA phoneme extraction):
 ```bash
-   # macOS
-   brew install espeak-ng
-   
-   # Linux
-   sudo apt-get install espeak-ng
+# macOS
+brew install espeak-ng
+
+# Linux
+sudo apt-get install espeak-ng
 ```
 
 3. **Run tests**
 ```bash
-   pytest tests/
+pytest tests/
 ```
-   
-   Tests run automatically on GitHub via CI/CD pipeline on every push.
 
 4. **Run the demo** (optional, if present)
 ```bash
-   python legacy/demo/demo.py
+python legacy/demo/demo.py
 ```
 
-5. **Push code** - Tests run automatically via GitHub Actions
+5. **Push code** — Tests run automatically via GitHub Actions
 ```bash
-   git add .
-   git commit -m "Your changes"
-   git push origin main
+git add .
+git commit -m "Your changes"
+git push origin main
 ```
-   
-   Check the "Actions" tab on GitHub to see test results.
+
+Check the "Actions" tab on GitHub to see test results.
 
 ## Dependencies
 
-Key packages: **python-telegram-bot**, **python-dotenv**, **whisperx**, **TTS** (XTTS), **deep_translator**, **mwparserfromhell**, **gtts**, **soundfile**, **librosa**, **torch**, **transformers** (Wav2Vec2), **fastdtw**, **langdetect**, **mlconjug3** (conjugations), **inflect** (plurals). See [requirements.txt](requirements.txt).
+Key packages: **python-telegram-bot**, **python-dotenv**, **whisperx**, **TTS** (XTTS), **deep_translator**, **mwparserfromhell**, **gtts**, **soundfile**, **librosa**, **torch**, **transformers** (Wav2Vec2), **fastdtw**, **inflect**. See [environment.yml](environment.yml).
 
-**CI/CD**: GitHub Actions runs tests automatically on every push using pytest and flake8.
+Note: whisperx is excluded from the CI Docker environment due to irresolvable numpy version conflicts with other ML packages. It is used and tested locally.
 
 ## Features
 
 ### Multi-language Pronunciation Scoring
 
-The pronunciation scorer now uses **language-specific models** to ensure accurate scoring:
+The pronunciation scorer uses **language-specific models** and **pair-based correction tips**:
 
 - **Language-specific Wav2Vec2 models**: French words scored with French phoneme recognition, Spanish with Spanish, etc.
 - **13+ languages supported**: English, French, Spanish, German, Italian, Portuguese, Russian, Polish, Japanese, Chinese, Arabic, Turkish, Dutch
+- **Pair-based articulation tips**: feedback is specific to what was heard vs. what was expected — e.g. "You said 'B' but the target is V — your upper teeth should lightly touch your lower lip"
 - **Language-specific IPA extraction**: Uses espeak-ng with correct language voices
-- **Proper TTS reference**: Generates reference audio in target language for fair comparison
 
 Example:
 ```python
 from src.ml.pronunciation_score import score_user_pronunciation
 
-# Score French pronunciation
 result = score_user_pronunciation(
-    user_audio_bytes, 
+    user_audio_bytes,
     "bonjour",
-    language="fr",  # Uses French models!
+    language="fr",
     debug=True
 )
 print(result['overall_score'], result['feedback'])
@@ -195,7 +198,7 @@ print(result['overall_score'], result['feedback'])
 
 ### Bilingual Dictionary
 
-Dictionary lookups now show definitions in **both English and the native language**:
+Dictionary lookups show definitions in **both English and the native language**:
 
 - English Wiktionary definitions (reliable, comprehensive)
 - Native language definitions (e.g., French definitions from fr.wiktionary.org)
@@ -204,12 +207,11 @@ Dictionary lookups now show definitions in **both English and the native languag
 
 ### Complete Verb Conjugations
 
-Word form buttons now display **complete conjugation tables** like Google Translate:
+Word form buttons display **complete conjugation tables** like Google Translate:
 
 - All persons: je/tu/il/nous/vous/ils (French), yo/tú/él/nosotros/vosotros/ellos (Spanish), etc.
 - All major tenses: Present, Future, Imperfect, Passé Simple, Conditional, Subjunctive
-- Clean table format grouped by tense
-- Supports French, Spanish, Italian, Portuguese, Romanian conjugations
+- Supports French, Spanish, Italian, Portuguese, Romanian
 
 ### Performance Metrics
 
@@ -241,72 +243,21 @@ Both translation and pronunciation scoring include **comprehensive latency track
 └─ TOTAL TIME: 2.341s
 ```
 
-Access metrics programmatically:
-```python
-# Translation metrics
-(audio, sr), metrics = translator.translate_speech(
-    audio_path, 
-    target_language="fr",
-    return_metrics=True
-)
-
-# Or access last metrics
-metrics = translator.get_last_metrics()
-print(f"Synthesis took: {metrics['synthesis']['synthesis_time']:.2f}s")
-```
-
 ## Learning Analytics
 
-- Events stored in `data/learning_events.db`.
-- Aggregations: words learned/reviewed, pronunciation scores, streaks, trends.
-- `/stats`: dashboard, difficult words, weekly/monthly progress.
-- Multi-language pronunciation scoring with language-specific models ensures accurate feedback.
-
-## ML Pronunciation Scorer
-
-- **Language-specific Wav2Vec2 models** for accurate phoneme recognition per language
-- **DTW** (Dynamic Time Warping) for temporal alignment
-- **MFCC** acoustic features for audio comparison
-- **Language-specific IPA extraction** using espeak-ng with correct voices
-- **Comprehensive performance metrics** in debug mode
-- Used by the "Practice Pronunciation" flow in the bot
-- Example:
-```python
-  from src.ml.pronunciation_score import score_user_pronunciation
-  
-  # Score French pronunciation (uses French models!)
-  result = score_user_pronunciation(
-      user_audio_bytes, 
-      "courais",
-      language="fr",
-      debug=True
-  )
-  print(result['overall_score'], result['feedback'])
-  
-  # Access performance metrics
-  if result.get('metrics'):
-      print(f"Speech recognition: {result['metrics']['speech_recognition_time']:.2f}s")
-```
+- Events stored in `data/learning_events.db`
+- Aggregations: words learned/reviewed, pronunciation scores, streaks, trends
+- `/stats`: dashboard, difficult words, weekly/monthly progress
 
 ## Architecture Highlights
 
-- **Lazy loading**: Models load on first use to minimize startup time
+- **Lazy loading**: Models load on first use to minimise startup time
 - **Language-specific models**: Pronunciation scoring automatically selects correct Wav2Vec2 model per language
 - **Bilingual dictionary**: Queries both English and native Wiktionaries for comprehensive definitions
 - **Performance instrumentation**: Context managers and timing decorators throughout codebase
 - **Caching**: Scorer and model instances cached with automatic language switching
 - **Message history preservation**: Dictionary definitions remain visible while navigating
 - **Universal navigation**: Home button accessible from all major screens
-- **CI/CD pipeline**: Automated testing with GitHub Actions on every commit ensures code quality
-
-## Recent Improvements (v0.6.1)
-
-1. **CI/CD Pipeline** - Automated testing and quality checks with GitHub Actions
-2. **Multi-language pronunciation scoring** - Fixed critical bug where all languages were scored against English phonemes
-3. **Bilingual dictionary** - Native + English definitions side-by-side
-4. **Complete conjugations** - Full verb tables with all tenses and persons
-5. **Performance metrics** - Comprehensive latency tracking and bottleneck identification
-6. **Improved parsing** - Better handling of short definitions, templates, and special characters
-7. **Enhanced UX** - Message history preservation, universal Home button, better keyboard layouts
+- **Docker-based CI**: Exact conda environment reproduced in CI — no platform-specific dependency issues
 
 See [CHANGELOG.md](CHANGELOG.md) for complete version history.

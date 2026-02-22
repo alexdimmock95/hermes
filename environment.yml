@@ -8,6 +8,7 @@ dependencies:
   - pyworld
   - pip
   - pip:
+      - flake8
       - pytest-asyncio
       - anyio[trio]
       - pytest

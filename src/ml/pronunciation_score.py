@@ -766,21 +766,82 @@ class PronunciationScore:
         if not mismatches:
             return "All sounds pronounced correctly! 🎉"
         
-        # Phoneme articulation tips
+        # Maps (heard_phoneme, target_phoneme) -> feedback
+        # So if we hear 't' dental (Spanish style) when target is English 't', we give specific guidance
+        PHONEME_CORRECTION_TIPS = {
+            # TH sounds - hardest for most learners
+            ('t', 'θ'): "You said 'T' but the target is TH (voiceless) — place your tongue between your teeth and blow air, like in 'think'",
+            ('d', 'θ'): "You said 'D' but the target is TH (voiceless) — tongue between teeth, no voice, like 'think'",
+            ('s', 'θ'): "You said 'S' but the target is TH (voiceless) — your tongue needs to come forward between your teeth",
+            ('d', 'ð'): "You said 'D' but the target is TH (voiced) — same as 'D' but push your tongue between your teeth, like 'this'",
+            ('z', 'ð'): "You said 'Z' but the target is TH (voiced) — tongue forward between teeth with voice, like 'mother'",
+            ('v', 'ð'): "You said 'V' but the target is TH (voiced) — move your tongue forward to between your teeth, like 'the'",
+
+            # R sounds
+            ('r', 'ɾ'): "You used an English R but the target is a tap — touch your tongue briefly to the roof of your mouth, like Spanish 'pero'",
+            ('r', 'r'): "You used an English R but the target is a trill — vibrate your tongue tip rapidly against the roof of your mouth, like Spanish 'perro'",
+            ('ɾ', 'r'): "You tapped the R but the target needs a full trill — hold the vibration longer against the roof of your mouth",
+            ('l', 'r'): "You said 'L' but the target is R — curl your tongue back slightly without touching the roof of your mouth",
+            ('r', 'l'): "You said 'R' but the target is L — touch your tongue tip to the ridge just behind your upper teeth",
+            ('w', 'r'): "You said 'W' but the target is R — don't round your lips, instead curl your tongue back slightly",
+
+            # V vs B (common for Spanish speakers)
+            ('b', 'v'): "You said 'B' but the target is V — your upper teeth should lightly touch your lower lip as you voice the sound",
+            ('v', 'b'): "You said 'V' but the target is B — press both lips together fully instead of using your teeth",
+
+            # W vs V (common for German/French speakers)  
+            ('v', 'w'): "You said 'V' but the target is W — round your lips fully without letting your teeth touch your lip",
+            ('w', 'v'): "You said 'W' but the target is V — let your upper teeth lightly touch your lower lip",
+
+            # SH vs S
+            ('s', 'ʃ'): "You said 'S' but the target is SH — push your lips slightly forward and move your tongue back from your teeth",
+            ('ʃ', 's'): "You said 'SH' but the target is S — pull your lips back and bring your tongue closer to your teeth",
+
+            # ZH
+            ('z', 'ʒ'): "You said 'Z' but the target is ZH — like the 's' in 'measure', push lips forward slightly",
+            ('ʃ', 'ʒ'): "You said 'SH' but the target is ZH — same position but add your voice",
+
+            # CH vs SH
+            ('ʃ', 'tʃ'): "You said 'SH' but the target is CH — add a brief 'T' before the SH sound, like 'church'",
+            ('s', 'tʃ'): "You said 'S' but the target is CH — combine a T and SH quickly together",
+
+            # J (dʒ)
+            ('ʒ', 'dʒ'): "You said ZH but the target is J — add a brief 'D' before the ZH sound, like 'judge'",
+            ('j', 'dʒ'): "You used a Y sound but the target is J — start with a 'D' then quickly move to ZH",
+            ('y', 'dʒ'): "You used a Y sound but the target is J — start with a 'D' then quickly move to ZH",
+
+            # H sound
+            ('x', 'h'): "You used a harsh back-of-throat sound but English H is softer — just breathe out gently from your throat",
+            ('h', 'x'): "You used a soft H but the target needs more friction — push more air through the back of your throat",
+
+            # NG
+            ('n', 'ŋ'): "You said 'N' but the target is NG — the back of your tongue should touch your soft palate, not the front touching behind your teeth",
+
+            # Vowel length (common in Japanese)
+            ('ɪ', 'iː'): "You used a short 'I' but the target is a long 'EE' — hold the sound longer, like 'sheep' not 'ship'",
+            ('iː', 'ɪ'): "You used a long 'EE' but the target is a short 'I' — keep it brief, like 'ship' not 'sheep'",
+            ('ʊ', 'uː'): "You used a short 'U' but the target is a long 'OO' — hold it longer and round your lips more",
+
+            # Schwa (very common mistake for all learners)
+            ('e', 'ə'): "You used a clear 'E' but unstressed syllables in English use a lazy 'uh' sound — relax your mouth completely",
+            ('a', 'ə'): "You used a clear 'A' but this syllable should be a lazy 'uh' — unstressed syllables are very short and relaxed in English",
+        }
+
+        # Generic single-phoneme tips as fallback when we don't have a specific pair
         ARTICULATION_TIPS = {
-            'θ': "TH (voiceless): Place tongue between teeth, blow air (think, bath)",
-            'ð': "TH (voiced): Place tongue between teeth, vibrate vocal cords (this, mother)",
-            't': "T: Touch tongue tip to alveolar ridge (roof of mouth behind teeth), not behind teeth like Spanish 't'",
-            'd': "D: Touch tongue tip to alveolar ridge with voice, not dental like Spanish 'd'",
-            'r': "R: Curl tongue back slightly, don't trill or tap like Spanish 'r'",
-            'v': "V: Upper teeth touch lower lip, vibrate vocal cords (not 'b')",
-            'w': "W: Round lips, don't use 'v' sound like some Spanish speakers",
-            'h': "H: Breathe out from throat, like Spanish 'j' but softer",
-            'ʃ': "SH: Lips forward, tongue near roof of mouth (ship, wish)",
-            'ʒ': "ZH: Like SH but with voice (measure, vision)",
-            'tʃ': "CH: Combine T + SH quickly (church, watch)",
-            'dʒ': "J: Combine D + ZH quickly (judge, age)",
-            'ŋ': "NG: Back of tongue to soft palate (sing, running)",
+            'θ': "TH (voiceless): Tongue between teeth, blow air — think, bath, think",
+            'ð': "TH (voiced): Tongue between teeth with voice — this, mother, breathe",
+            'ɾ': "Tap R: Briefly touch tongue tip to roof of mouth — like Spanish 'pero'",
+            'r': "Trill R: Vibrate tongue tip rapidly — like Spanish 'perro'",
+            'v': "V: Upper teeth on lower lip with voice — not 'B'",
+            'w': "W: Round lips fully — don't use teeth like V",
+            'h': "H: Soft breath from throat — softer than Spanish 'j'",
+            'ʃ': "SH: Lips forward, tongue back — ship, wish",
+            'ʒ': "ZH: Like SH but voiced — measure, vision",
+            'tʃ': "CH: T + SH combined — church, watch",
+            'dʒ': "J: D + ZH combined — judge, age",
+            'ŋ': "NG: Back of tongue to soft palate — sing, running",
+            'ə': "Schwa: Completely relaxed 'uh' — the most common sound in English",
         }
         
         feedback_parts = []
@@ -791,17 +852,22 @@ class PronunciationScore:
         insertions = [m for m in mismatches if m["type"] == "insertion"]
         
         if substitutions:
-            feedback_parts.append(f"**{len(substitutions)} sound(s) need adjustment:**")
-            for mismatch in substitutions[:3]:  # Show max 3
+            feedback_parts.append(f"*{len(substitutions)} sound(s) need adjustment:*")
+            for mismatch in substitutions[:3]:
                 expected = mismatch["expected"]
                 actual = mismatch["actual"]
-                tip = ARTICULATION_TIPS.get(expected, "")
                 
-                if tip:
-                    feedback_parts.append(f"  • /{expected}/ (you said /{actual}/): {tip}")
+                # Try specific pair tip first, then generic, then bare phoneme names
+                pair_tip = PHONEME_CORRECTION_TIPS.get((actual, expected))
+                generic_tip = ARTICULATION_TIPS.get(expected)
+                
+                if pair_tip:
+                    feedback_parts.append(f"  • {pair_tip}")
+                elif generic_tip:
+                    feedback_parts.append(f"  • /{expected}/: {generic_tip}")
                 else:
                     feedback_parts.append(f"  • Expected /{expected}/, heard /{actual}/")
-        
+                
         if omissions:
             feedback_parts.append(f"**{len(omissions)} sound(s) were skipped:**")
             for mismatch in omissions[:2]:

@@ -10,24 +10,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **CI/CD Pipeline with GitHub Actions** — Automated testing and quality checks on every commit:
-  - Automated test execution with pytest on every push and pull request
-  - System dependency installation (espeak-ng, ffmpeg, portaudio)
-  - Python package caching for faster subsequent runs
-  - Import smoke tests to verify critical modules load correctly
-  - Code quality checks with flake8 (syntax errors, undefined names, complexity)
-  - Test results visible on GitHub Actions tab with pass/fail status
-  - Status badge support for README display
-- Comprehensive performance metrics and latency tracking across all major modules
-- Multi-language pronunciation scoring with language-specific models
-- Bilingual dictionary definitions (English + native language)
-- Complete verb conjugation tables with all tenses and persons
-- Enhanced debug output with timing breakdowns
+- **Phoneme Correction Tips** — Pair-based articulation feedback in pronunciation scoring:
+  - `PHONEME_CORRECTION_TIPS` dictionary mapping `(heard_phoneme, target_phoneme)` pairs to specific guidance
+  - Tips are language-aware: a Spanish speaker saying 'B' instead of 'V' gets different guidance than a German speaker making the same mistake
+  - Covers TH sounds, R variants (trill/tap/English), V vs B, W vs V, SH/ZH/CH/J, NG, vowel length, and schwa
+  - Falls back to generic `ARTICULATION_TIPS` when no specific pair match found
+  - Falls back to bare phoneme names when neither dictionary has an entry
+
+---
+
+## [0.6.1] — 2026-02-22
+
+### Added
+- **CI/CD Pipeline with GitHub Actions** — Automated testing on every push and pull request:
+  - Docker-based test environment using `continuumio/miniconda3` to replicate local conda environment exactly
+  - `environment.yml` generated via `conda env export --from-history` for clean, portable dependency spec
+  - Docker layer caching with `docker/build-push-action` keyed on `environment.yml` hash — normal code pushes skip the 4+ minute install and go straight to tests in ~30 seconds
+  - 22-test pytest suite covering core logic, handlers, imports, and database
+  - `pytest.ini` with `asyncio_mode = auto` for clean async test support
+  - Results visible on GitHub Actions tab with pass/fail per commit
+- **About Section Language Support** — Updated `/about` command to document per-feature language coverage:
+  - Text translation: any language via Google Translate
+  - Voice-to-voice: the 18 XTTS-supported languages listed explicitly
+  - Pronunciation scoring: 13 languages (Wav2Vec2 model coverage)
+  - Smart Synonyms (CEFR): 13 languages
+  - Voice effects: any language
+  - Credits section separating Coqui XTTS (voice TTS) from Google TTS (text TTS)
 
 ### Changed
-- Ongoing refinements and optimization of dictionary parsing
-- Improved message history preservation in bot navigation
-- Enhanced keyboard layouts with universal Home button
+- Switched CI approach from pip-based to Docker-based after irresolvable dependency conflicts between whisperx (requires numpy>=2.0.2), deepfilternet and gruut (require numpy<2.0), and 20+ other packages with pinned versions
+- whisperx excluded from CI environment (too problematic in Linux CI; tested locally)
+- `sys.modules` pre-registration used in handler tests to block heavy ML imports before module load, replacing unreliable `patch()` path resolution
+
+### Technical Notes
+- Docker image is ~10GB due to torch, TTS, and ML model dependencies
+- Cache upload is slow on first run but subsequent runs restore from cache in seconds
+- flake8 not yet installed in Docker environment — linting step removed from workflow pending fix
 
 ---
 
@@ -261,7 +279,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Week 3** — ASR alignment (ASRWrapper with phoneme timestamps) [COMPLETE]
 - **Week 4** — Accent softening (FormantShifter DSP module) [COMPLETE]
 - **Week 5** — Recombiner + metrics (Enhanced overlap-add, latency tracking) [COMPLETE]
-- **Week 6** — Tests + CI + documentation (Full test suite, README, CI setup) [IN PROGRESS]
+- **Week 6** — Tests + CI + documentation (Full test suite, README, CI setup) [COMPLETE]
 
 ---
 
@@ -269,7 +287,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Focus | Status |
 |---------|------|-------|--------|
-| 0.6.1 | Feb 19, 2026 | CI/CD Pipeline Integration | Complete |
+| Unreleased | — | Phoneme correction tips | In progress |
+| 0.6.1 | Feb 22, 2026 | CI/CD Pipeline & About section language docs | Complete |
 | 0.6.0 | Feb 19, 2026 | Latency Metrics & Multi-language Pronunciation | Complete |
 | 0.5.5 | Feb 14, 2026 | Dictionary Elements | Complete |
 | 0.5.0 | Feb 9, 2026 | Learning Analytics & Pronunciation Scoring Enhancements | Complete |
@@ -295,11 +314,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Feb 2-4, 2026** — Dictionary functionality enhancements and bot UX improvements  
 **Feb 8-9, 2026** — Word statistics, learning progress tracking, and pronunciation scoring integration  
 **Feb 14, 2026** — Added functionality within dictionary for word forms: verb conjugations, plural and superlative forms of lemmas  
-**Feb 18-19, 2026** — Multi-language pronunciation scoring, bilingual dictionary definitions, complete verb conjugation tables, comprehensive performance metrics and latency tracking, CI/CD pipeline with GitHub Actions
+**Feb 18-19, 2026** — Multi-language pronunciation scoring, bilingual dictionary definitions, complete verb conjugation tables, comprehensive performance metrics and latency tracking  
+**Feb 22, 2026** — CI/CD pipeline with GitHub Actions (Docker-based), about section language documentation, pair-based phoneme correction tips
 
 ---
 
 ## Next Steps
 
-- [ ] CI/CD pipeline setup (GitHub Actions)
 - [ ] Add capability to press "pronunciation" or "syntax" for IPA, tongue position/shape info and word type, grammar info, respectively
